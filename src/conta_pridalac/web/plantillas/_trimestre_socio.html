@@ -1,0 +1,47 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+{% if hecho %}
+<div class="formulario importacion">
+  <h2 id="modal-titulo">Marcadas como pagadas por el socio</h2>
+  <p class="suave">{{ hecho.n }} factura(s) pagadas por <strong>{{ hecho.banco }}</strong>. Ya no se buscan en el extracto; se contabilizarán con «Aplicar propuestas».</p>
+  <div class="botones-formulario"><button type="button" class="boton primario" data-cerrar-modal hx-get="{{ base }}/tabla" hx-target="#tabla" hx-swap="innerHTML">Cerrar</button></div>
+</div>
+{% else %}
+<form class="formulario" hx-post="{{ base }}/accion/socio" hx-target="#modal-contenido" hx-swap="innerHTML">
+  <h2 id="modal-titulo">Facturas pagadas por el socio</h2>
+  {% for er in errores %}<div class="aviso error" role="alert">{{ er }}</div>{% endfor %}
+  <p class="suave">Estas facturas no tienen ningún movimiento en el extracto. Marque las que pagó un socio con su dinero y diga quién; se contabilizan con un pago de su cuenta. Para otro pagador o día, repita la operación o cambie la factura con doble clic en la lista.</p>
+  {% if not facturas %}
+  <div class="aviso info">No hay facturas sin movimiento en el extracto.</div>
+  {% else %}
+  <div class="campos">
+    <div class="campo"><label for="banco">Pagadas por</label>
+      <select id="banco" name="banco" required><option value="">—</option>{% for id, nombre in bancos %}<option value="{{ id }}">{{ nombre }}</option>{% endfor %}</select></div>
+    <div class="campo"><label for="fecha">Fecha del pago</label><input id="fecha" name="fecha" type="text" placeholder="vacía = la de cada factura" autocomplete="off"></div>
+  </div>
+  <div id="socio-facturas" style="max-height: 20rem; overflow: auto">
+    <table class="tabla">
+      <thead><tr>
+        <th><input type="checkbox" title="Marcar todas" aria-label="Marcar todas" onclick="document.querySelectorAll('#socio-facturas input[name=factura]').forEach(c => c.checked = this.checked)"></th>
+        <th>Fecha</th><th>Proveedor</th><th>Nº factura</th><th class="num">Total</th>
+      </tr></thead>
+      <tbody>
+        {% for f in facturas %}
+        <tr>
+          <td><input type="checkbox" name="factura" value="{{ f.id }}" id="fac-{{ f.id }}" aria-label="Marcar {{ f.nombre }}"></td>
+          <td><label for="fac-{{ f.id }}">{{ f.fecha_factura | fmt('fecha') }}</label></td>
+          <td><label for="fac-{{ f.id }}">{{ f.nombre }}</label></td>
+          <td>{{ f.numero_factura or '—' }}</td>
+          <td class="num">{{ f.total | fmt('dinero') }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="suave">{{ facturas | length }} factura(s) sin movimiento en el extracto.</p>
+  {% endif %}
+  <div class="botones-formulario">
+    <button type="button" class="boton" data-cerrar-modal>Cancelar</button>
+    {% if facturas %}<button type="submit" class="boton primario">Marcar como pagadas</button>{% endif %}
+  </div>
+</form>
+{% endif %}

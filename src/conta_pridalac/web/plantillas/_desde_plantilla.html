@@ -1,0 +1,17 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+<form class="formulario" hx-post="{{ base }}/accion/plantilla" hx-target="#modal-contenido" hx-swap="innerHTML">
+  <h2 id="modal-titulo">Nuevo asiento desde una plantilla</h2>
+  {% for er in errores %}<div class="aviso error" role="alert">{{ er }}</div>{% endfor %}
+  {% if not plantillas %}
+  <div class="aviso info">Esta empresa no tiene plantillas. Cree una en <a href="/e/{{ ctx.slug }}/{{ ctx.ejercicio.anio }}/plantillas">Plantillas de asientos</a>.</div>
+  {% else %}
+  <div class="campo"><label for="plantilla">Plantilla</label>
+    <select id="plantilla" name="plantilla" size="{{ [plantillas | length, 8] | min + 1 }}">{% for p in plantillas %}<option value="{{ p.id }}" {% if elegida == p.id | string %}selected{% endif %}>{{ p.titulo }}</option>{% endfor %}</select></div>
+  <div class="campo"><label for="fecha">Fecha del asiento</label><input id="fecha" name="fecha" type="text" value="{{ fecha }}" placeholder="DDMMAA" autocomplete="off"></div>
+  <p class="suave">Se abrirá el asiento con sus líneas; sólo hay que teclear los importes (la línea de cuadre y los vencimientos se calculan solos).</p>
+  {% endif %}
+  <div class="botones-formulario">
+    <button type="button" class="boton" data-cerrar-modal>Cancelar</button>
+    {% if plantillas %}<button type="submit" class="boton primario">Continuar</button>{% endif %}
+  </div>
+</form>

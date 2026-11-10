@@ -1,0 +1,71 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+<form class="formulario" hx-post="{{ base }}/accion/{{ modo }}" hx-target="#modal-contenido" hx-swap="innerHTML" hx-disabled-elt="find button[type=submit]" hx-on::before-request="document.getElementById('espera-copias').hidden = false">
+  <h2 id="modal-titulo">{{ {'hacer': 'Hacer una copia de seguridad', 'verificar': 'Verificar una copia', 'restaurar': 'Restaurar una copia', 'recuperar': 'Recuperar justificantes'}[modo] }}</h2>
+  {% for er in errores %}<div class="aviso error" role="alert">{{ er }}</div>{% endfor %}
+
+  {% if modo == 'hacer' %}
+  <p>Se guardará una copia de la base de datos de <strong>{{ ctx.empresa.nombre }}</strong> en:</p>
+  <p><code>{{ carpeta }}</code></p>
+  <p>La copia es <strong>ligera</strong>: lleva la base y los documentos que no se pueden recuperar de otro sitio (declaraciones y acuses de la sede, libros, depósito, ficheros de los modelos) y, de los PDF de las facturas, <strong>solo su huella</strong>.
+    Esos PDF ya están en sus carpetas de trimestre y, si algún día faltan, «Recuperar justificantes» los repone buscándolos por su contenido. Pesa unos pocos MB.</p>
+  <div class="campo"><label><input type="checkbox" name="completa"> Copia <strong>completa</strong>: incluir también los PDF de las facturas (pesa cientos de MB; para un disco externo, por ejemplo)</label></div>
+  <p>La copia se comprueba al terminar (huellas de los ficheros, integridad de la base y recuento de registros) y, si no pasa la comprobación, se descarta.</p>
+  <div class="aviso warning">Una copia en el mismo disco no protege de un fallo del disco: copie de vez en cuando los ficheros <code>.zip</code> a otro sitio (OneDrive, un disco externo).</div>
+  {% elif modo == 'recuperar' %}
+  {% if faltan is not none %}<div class="aviso {{ 'warning' if faltan else 'info' }}">{% if faltan %}<strong>Faltan {{ faltan }} justificante(s)</strong> de facturas en el almacén: la base de datos los conoce (con su huella) y no están.{% else %}No falta ningún justificante: todos los que la base de datos conoce están en el almacén.{% endif %}</div>{% endif %}
+  <p>Se buscan <strong>por su contenido</strong>, en las carpetas que indique y en todas sus subcarpetas, los PDF que faltan: no importa cómo se llamen ni dónde estén, y no se mueve ni se borra nada de esas carpetas. Los que aparezcan se copian al almacén, a la ruta que espera el programa.</p>
+  <div class="campo"><label for="carpetas">Carpetas donde buscar (una por línea)</label>
+    <textarea id="carpetas" name="carpetas" rows="4" placeholder="D:\OneDrive\Mi empresa&#10;D:\OneDrive\Otra empresa">{{ carpetas_buscadas }}</textarea></div>
+  {% if recuperacion %}
+  <div class="aviso info" role="status"><strong>Recuperados: {{ recuperacion.recuperados }}.</strong> Se han mirado {{ recuperacion.revisados }} fichero(s) con el tamaño de alguno de los que faltan.
+    {% if recuperacion.total_faltan %}<br><strong>Siguen sin aparecer {{ recuperacion.total_faltan }}:</strong> pruebe con otras carpetas.
+    <ul>{% for f in recuperacion.faltan %}<li><code>{{ f.ruta }}</code></li>{% endfor %}{% if recuperacion.mas %}<li>… y {{ recuperacion.mas }} más</li>{% endif %}</ul>{% else %}<br>No falta ningún justificante.{% endif %}</div>
+  {% endif %}
+  {% else %}
+  {% if restaurado %}{% elif not copias %}<div class="aviso info">No hay copias de seguridad de esta empresa. Haga una primero.</div>{% else %}
+  <div class="campo"><label for="copia">Copia</label>
+    <select id="copia" name="copia">
+      {% for c in copias %}<option value="{{ c.nombre }}">{{ c.momento.strftime('%d/%m/%Y %H:%M') }} · {{ tamano(c.tamano) }} · {{ c.tablas.get('factura', 0) }} facturas · {{ 'completa' if c.completa else 'ligera' }}{% if 'antes_de_restaurar' in c.etiqueta %} · antes de restaurar{% endif %}</option>{% endfor %}
+    </select></div>
+  {% endif %}
+  {% endif %}
+
+  {% if modo == 'verificar' and resultado %}
+  {% if resultado.problemas %}
+  <div class="aviso error"><strong>{{ resultado.copia }} tiene problemas:</strong><ul>{% for p in resultado.problemas %}<li>{{ p }}</li>{% endfor %}</ul></div>
+  {% else %}
+  <div class="aviso info"><strong>{{ resultado.copia }}</strong> está en buen estado: las huellas de todos sus ficheros coinciden, la base de datos pasa la comprobación de integridad y el recuento de registros es el anotado.
+    Es una copia <strong>{{ resultado.tipo }}</strong>: {{ resultado.pdfs }}.</div>
+  {% endif %}
+  {% endif %}
+
+  {% if modo == 'restaurar' and restaurado %}
+  <div class="aviso info" role="status">
+    <strong>Copia restaurada.</strong> La base de datos y los justificantes de {{ ctx.empresa.nombre }} son ahora los de <code>{{ restaurado.copia }}</code>.<br>
+    El estado anterior se guardó en <code>{{ restaurado.previa }}</code>: si no era lo que quería, restaure esa copia y vuelve todo a como estaba.
+    {% if restaurado.faltan %}<br><strong>Faltan {{ restaurado.faltan }} PDF de facturas en el almacén</strong> (la copia ligera no los lleva): use «Recuperar justificantes» para reponerlos desde sus carpetas de trimestre.{% endif %}
+  </div>
+  <script>htmx.trigger(document.body, 'refrescar')</script>
+  {% elif modo == 'restaurar' and copias %}
+  <div class="aviso warning">
+    <strong>Restaurar sustituye la base de datos y los justificantes de {{ ctx.empresa.nombre }} por los de la copia.</strong> Lo hecho después de esa copia desaparecerá del programa.
+    Antes de sustituir nada, el programa hace una copia del estado actual (<code>…antes_de_restaurar</code>) y comprueba que la copia elegida está en buen estado, así que se puede deshacer.
+  </div>
+  <div class="campo"><label for="confirmacion">Escriba {{ confirmacion }} para confirmar</label><input id="confirmacion" name="confirmacion" type="text" autocomplete="off"></div>
+  {% endif %}
+
+  <div id="espera-copias" class="aviso info" role="status" hidden>
+    {% if modo == 'hacer' %}<strong>Haciendo la copia de seguridad…</strong> Copia la base de datos y todos los justificantes y la verifica. Puede tardar un poco: no cierre esta ventana, se cerrará sola cuando termine.
+    {% elif modo == 'recuperar' %}<strong>Buscando los justificantes…</strong> Calcula la huella de los ficheros de esas carpetas que tienen el tamaño de alguno de los que faltan. Puede tardar un poco: el resultado saldrá en esta misma ventana.
+    {% elif modo == 'verificar' %}<strong>Verificando la copia…</strong> Comprueba las huellas de todos sus ficheros y la integridad de la base de datos. Puede tardar un poco: el resultado saldrá en esta misma ventana.
+    {% else %}<strong>Restaurando la copia…</strong> Hace antes una copia del estado actual y después sustituye la base de datos y los justificantes. Puede tardar un poco: no cierre esta ventana ni la aplicación.{% endif %}
+  </div>
+
+  <div class="botones-formulario">
+    <button type="button" class="boton" data-cerrar-modal>Cerrar</button>
+    {% if modo == 'hacer' %}<button type="submit" class="boton primario">Hacer la copia</button>
+    {% elif modo == 'recuperar' %}<button type="submit" class="boton primario">Buscar y recuperar</button>
+    {% elif copias and modo == 'verificar' %}<button type="submit" class="boton primario">Verificar</button>
+    {% elif copias and modo == 'restaurar' and not restaurado %}<button type="submit" class="boton peligro">Restaurar</button>{% endif %}
+  </div>
+</form>

@@ -1,0 +1,178 @@
+[
+{
+"orden": 1,
+"pos": 1,
+"lon": 2,
+"tipo": "An",
+"desc": "Inicio del identificador de modelo y página",
+"casilla": null
+},
+{
+"orden": 2,
+"pos": 3,
+"lon": 3,
+"tipo": "Num",
+"desc": "Modelo",
+"casilla": null
+},
+{
+"orden": 3,
+"pos": 6,
+"lon": 2,
+"tipo": "Num",
+"desc": "Página",
+"casilla": null
+},
+{
+"orden": 4,
+"pos": 8,
+"lon": 4,
+"tipo": "An",
+"desc": "Fin de identificador de modelo",
+"casilla": null
+},
+{
+"orden": 5,
+"pos": 12,
+"lon": 1,
+"tipo": "A",
+"desc": "Reservado página complementaria",
+"casilla": null
+},
+{
+"orden": 6,
+"pos": 13,
+"lon": 1,
+"tipo": "A",
+"desc": "Tipo de declaración",
+"casilla": null
+},
+{
+"orden": 7,
+"pos": 14,
+"lon": 9,
+"tipo": "An",
+"desc": "Identificación. Sujeto pasivo. NIF",
+"casilla": null
+},
+{
+"orden": 8,
+"pos": 23,
+"lon": 60,
+"tipo": "An",
+"desc": "Identificación. Sujeto pasivo. Razón o denominación social/Apellidos",
+"casilla": null
+},
+{
+"orden": 9,
+"pos": 83,
+"lon": 20,
+"tipo": "An",
+"desc": "Identificación. Sujeto pasivo. Nombre",
+"casilla": null
+},
+{
+"orden": 10,
+"pos": 103,
+"lon": 4,
+"tipo": "Num",
+"desc": "Identificación. Ejercicio",
+"casilla": null
+},
+{
+"orden": 11,
+"pos": 107,
+"lon": 2,
+"tipo": "An",
+"desc": "Identificación. Periodo",
+"casilla": null
+},
+{
+"orden": 12,
+"pos": 109,
+"lon": 15,
+"tipo": "Num",
+"desc": "Retenciones e ingresos a cuenta. Número perceptores [01]",
+"casilla": 1
+},
+{
+"orden": 13,
+"pos": 124,
+"lon": 17,
+"tipo": "Num",
+"desc": "Retenciones e ingresos a cuenta. Base retenciones e ingresos a cuenta [02]",
+"casilla": 2
+},
+{
+"orden": 14,
+"pos": 141,
+"lon": 17,
+"tipo": "Num",
+"desc": "Retenciones e ingresos a cuenta. Retenciones e ingresos a cuenta [03]",
+"casilla": 3
+},
+{
+"orden": 15,
+"pos": 158,
+"lon": 17,
+"tipo": "Num",
+"desc": "Retenciones e ingresos a cuenta. Resultado anteriores declaraciones [04]",
+"casilla": 4
+},
+{
+"orden": 16,
+"pos": 175,
+"lon": 17,
+"tipo": "Num",
+"desc": "Retenciones e ingresos a cuenta. Resultado a ingresar [03] - [04]",
+"casilla": 5
+},
+{
+"orden": 17,
+"pos": 192,
+"lon": 1,
+"tipo": "An",
+"desc": "Declaración complementaria.",
+"casilla": null
+},
+{
+"orden": 18,
+"pos": 193,
+"lon": 13,
+"tipo": "An",
+"desc": "Número de justificante de la declaración anterior",
+"casilla": null
+},
+{
+"orden": 19,
+"pos": 206,
+"lon": 34,
+"tipo": "An",
+"desc": "Domiciliación IBAN",
+"casilla": null
+},
+{
+"orden": 20,
+"pos": 240,
+"lon": 236,
+"tipo": "An",
+"desc": "Reservado AEAT",
+"casilla": null
+},
+{
+"orden": 21,
+"pos": 476,
+"lon": 13,
+"tipo": "An",
+"desc": "Reservado para la Administración. Sello electronico",
+"casilla": null
+},
+{
+"orden": 22,
+"pos": 489,
+"lon": 12,
+"tipo": "An",
+"desc": "Identificador de fin de registro.",
+"casilla": null
+}
+]

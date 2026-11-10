@@ -1,0 +1,40 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+{% if resultado %}
+<div class="formulario importacion">
+  <h2 id="modal-titulo">Propuestas aplicadas</h2>
+  <section class="bloque totales-factura">
+    <div><span class="suave">Facturas creadas</span><strong>{{ resultado.facturas | length }}</strong></div>
+    <div><span class="suave">Movimientos de banco</span><strong>{{ resultado.movimientos }}</strong></div>
+    <div><span class="suave">Justificantes (PDF)</span><strong>{{ resultado.pdfs }}</strong></div>
+  </section>
+  {% if resultado.terceros_nuevos %}<div class="aviso info">{{ 'Clientes' if listado.sentido == 'E' else 'Proveedores' }} nuevos: {{ resultado.terceros_nuevos | join(', ') }}. Revise su subcuenta de {{ 'ingreso' if listado.sentido == 'E' else 'gasto' }}.</div>{% endif %}
+  {% for av in resultado.avisos %}<div class="aviso warning">{{ av }}</div>{% endfor %}
+  <div class="botones-formulario"><button type="button" class="boton primario" data-cerrar-modal hx-get="{{ base }}/tabla" hx-target="#tabla" hx-swap="innerHTML">Cerrar</button></div>
+</div>
+{% else %}
+<form class="formulario" hx-post="{{ base }}/accion/aplicar" hx-target="#modal-contenido" hx-swap="innerHTML">
+  <h2 id="modal-titulo">Aplicar las propuestas</h2>
+  {% for er in errores %}<div class="aviso error" role="alert">{{ er }}</div>{% endfor %}
+  {% if listado.sentido == 'E' %}<p class="suave">Se aplican las propuestas seguras (una factura cobrada por un ingreso del mismo importe). Para cada una se crea la factura, su vencimiento y el movimiento de banco con la fecha y el importe del extracto. Es todo o nada. Las dudosas y las que no tienen ingreso se quedan en la lista.</p>{% else %}<p class="suave">Se aplican las propuestas seguras (una factura pagada por un movimiento del mismo importe) y las que ha marcado como pagadas por un socio. Para cada una se crea la factura, su vencimiento y el movimiento de banco con la fecha y el importe del extracto. Es todo o nada. Las dudosas, las que hay que revisar y las que no tienen movimiento se quedan en la lista.</p>{% endif %}
+  <section class="bloque totales-factura">
+    <div><span class="suave">Se aplicarán</span><strong>{{ preparadas.aplicables | length }}</strong></div>
+    <div><span class="suave">· con movimiento del extracto</span><strong>{{ preparadas.con_extracto | length }}</strong></div>
+    <div><span class="suave">· pagadas por el socio</span><strong>{{ preparadas.sin_extracto | length }}</strong></div>
+    <div><span class="suave">Se dejan fuera</span><strong>{{ preparadas.omitidas | length }}</strong></div>
+  </section>
+  {% if preparadas.avisos %}
+  <div class="aviso info"><strong>Revise el IVA de estas facturas antes de aplicar:</strong> lo que el Excel no explica con base e IVA se contabiliza sin IVA.
+    {% for f, texto in preparadas.avisos[:8] %}<br>{{ f.nombre }} · {{ f.numero_factura or '—' }} · {{ f.total | fmt('dinero') }}: {{ texto }}{% endfor %}
+    {% if preparadas.avisos | length > 8 %}<br>y {{ preparadas.avisos | length - 8 }} más{% endif %}</div>
+  {% endif %}
+  {% if preparadas.omitidas %}
+  <div class="aviso warning"><strong>Se dejan fuera:</strong>
+    {% for f, motivo in preparadas.omitidas[:8] %}<br>{{ f.nombre }} · {{ f.numero_factura or '—' }} · {{ f.total | fmt('dinero') }}: {{ motivo }}{% endfor %}
+    {% if preparadas.omitidas | length > 8 %}<br>y {{ preparadas.omitidas | length - 8 }} más{% endif %}</div>
+  {% endif %}
+  <div class="botones-formulario">
+    <button type="button" class="boton" data-cerrar-modal>Cancelar</button>
+    {% if preparadas.aplicables %}<button type="submit" class="boton primario">Aplicar {{ preparadas.aplicables | length }}</button>{% endif %}
+  </div>
+</form>
+{% endif %}

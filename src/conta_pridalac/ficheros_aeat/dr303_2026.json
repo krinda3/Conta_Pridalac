@@ -1,0 +1,3464 @@
+{
+"DP30300": [
+{
+"pos": 1,
+"lon": 2,
+"tipo": "An",
+"desc": "Constante.",
+"contenido": "\"<T\"",
+"casilla": null
+},
+{
+"pos": 3,
+"lon": 3,
+"tipo": "An",
+"desc": "Modelo",
+"contenido": "\"303\"",
+"casilla": null
+},
+{
+"pos": 6,
+"lon": 1,
+"tipo": "An",
+"desc": "Discriminante",
+"contenido": "\"0\"",
+"casilla": null
+},
+{
+"pos": 7,
+"lon": 4,
+"tipo": "An",
+"desc": "Ejercicio de devengo (EEEE)",
+"contenido": "Nota 2",
+"casilla": null
+},
+{
+"pos": 11,
+"lon": 2,
+"tipo": "An",
+"desc": "Período. (PP)",
+"contenido": "\"01\"...\"12\" o \"1T\"…\"4T\"",
+"casilla": null
+},
+{
+"pos": 13,
+"lon": 5,
+"tipo": "An",
+"desc": "Tipo y cierre",
+"contenido": "\"0000>\"",
+"casilla": null
+},
+{
+"pos": 18,
+"lon": 5,
+"tipo": "An",
+"desc": "Constante",
+"contenido": "\"<AUX>\"",
+"casilla": null
+},
+{
+"pos": 23,
+"lon": 70,
+"tipo": "An",
+"desc": "Reservado para la Administración. Rellenar con blancos",
+"contenido": "BLANCOS",
+"casilla": null
+},
+{
+"pos": 93,
+"lon": 4,
+"tipo": "An",
+"desc": "Versión del Programa (Nota 1)",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 97,
+"lon": 4,
+"tipo": "An",
+"desc": "Reservado para la Administración. Rellenar con blancos",
+"contenido": "BLANCOS",
+"casilla": null
+},
+{
+"pos": 101,
+"lon": 9,
+"tipo": "An",
+"desc": "NIF Empresa Desarrollo (Nota 1)",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 110,
+"lon": 213,
+"tipo": "An",
+"desc": "Reservado para la Administración. Rellenar con blancos",
+"contenido": "BLANCOS",
+"casilla": null
+},
+{
+"pos": 323,
+"lon": 6,
+"tipo": "An",
+"desc": "Constante",
+"contenido": "\"</AUX>\"",
+"casilla": null
+},
+{
+"pos": 329,
+"lon": 18,
+"tipo": "An",
+"desc": "Constante. </T+ modelo+discriminante+Ejercicio+periodo+Tipo+>",
+"contenido": "\"</T3030AAAAPP0000>\"",
+"casilla": null
+}
+],
+"DP30301": [
+{
+"pos": 1,
+"lon": 2,
+"tipo": "An",
+"desc": "Inicio del identificador de modelo y página.",
+"contenido": "Constante \"<T\"",
+"casilla": null
+},
+{
+"pos": 3,
+"lon": 3,
+"tipo": "Num",
+"desc": "Modelo.",
+"contenido": "Constante \"303\"",
+"casilla": null
+},
+{
+"pos": 6,
+"lon": 5,
+"tipo": "Num",
+"desc": "Página.",
+"contenido": "Constante \"01000\"",
+"casilla": null
+},
+{
+"pos": 11,
+"lon": 1,
+"tipo": "An",
+"desc": "Fin de identificador de modelo.",
+"contenido": "Constante \">\"",
+"casilla": null
+},
+{
+"pos": 12,
+"lon": 1,
+"tipo": "A",
+"desc": "Indicador de página complementaria.",
+"contenido": "En blanco",
+"casilla": null
+},
+{
+"pos": 13,
+"lon": 1,
+"tipo": "A",
+"desc": "Tipo Declaración",
+"contenido": "Nota 1",
+"casilla": null
+},
+{
+"pos": 14,
+"lon": 9,
+"tipo": "An",
+"desc": "Identificación (1) - NIF",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 23,
+"lon": 80,
+"tipo": "An",
+"desc": "Identificación (1) - Apellidos y nombre o Razón social",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 103,
+"lon": 4,
+"tipo": "Num",
+"desc": "Devengo (2) - Ejercicio",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 107,
+"lon": 2,
+"tipo": "An",
+"desc": "Devengo (2) - Período",
+"contenido": "\"01\",..., \"12\" o \"1T\" … \"4T\"",
+"casilla": null
+},
+{
+"pos": 109,
+"lon": 1,
+"tipo": "Num",
+"desc": "Identificación (1) - Tributación exclusivamente foral. Sujeto pasivo que tributa exclusivamente a una Administración tributaria Foral con IVA a la importación liquidado por la Aduana pendiente de ingreso",
+"contenido": "\"1\" SI, \"2\" NO. Nota 5",
+"casilla": null
+},
+{
+"pos": 110,
+"lon": 1,
+"tipo": "Num",
+"desc": "Identificación (1) - Sujeto pasivo inscrito en el Registro de devolución mensual (art. 30 RIVA)",
+"contenido": "\"1\" SI, \"2\" NO. Nota 5",
+"casilla": null
+},
+{
+"pos": 111,
+"lon": 1,
+"tipo": "Num",
+"desc": "Identificación (1) - Sujeto pasivo que tributa exclusivamente en régimen simplificado",
+"contenido": "\"1\" SI (sólo RS), \"2\" NO (RG + RS), \"3\" NO (sólo RG). Nota 5",
+"casilla": null
+},
+{
+"pos": 112,
+"lon": 1,
+"tipo": "Num",
+"desc": "Identificación (1) - Autoliquidación conjunta",
+"contenido": "\"1\" SI, \"2\" NO. Nota 5",
+"casilla": null
+},
+{
+"pos": 113,
+"lon": 1,
+"tipo": "Num",
+"desc": "Identificación (1) - Sujeto pasivo acogido al régimen especial del criterio de Caja (art. 163 undecies LIVA)",
+"contenido": "\"1\" SI, \"2\" NO. Nota 5",
+"casilla": null
+},
+{
+"pos": 114,
+"lon": 1,
+"tipo": "Num",
+"desc": "Identificación (1) - Sujeto pasivo destinatario de operaciones acogidas al régimen especial del criterio de caja",
+"contenido": "\"1\" SI, \"2\" NO. Nota 5",
+"casilla": null
+},
+{
+"pos": 115,
+"lon": 1,
+"tipo": "Num",
+"desc": "Identificación (1) - Opción por la aplicación de la prorrata especial (art. 103.Dos.1º LIVA)",
+"contenido": "Nota 6. Nota 5",
+"casilla": null
+},
+{
+"pos": 116,
+"lon": 1,
+"tipo": "Num",
+"desc": "Identificación (1) - Revocación de la opción por la aplicación de la prorrata especial",
+"contenido": "Nota 6. Nota 5",
+"casilla": null
+},
+{
+"pos": 117,
+"lon": 1,
+"tipo": "Num",
+"desc": "Identificación (1) - Sujeto pasivo declarado en concurso de acreedores en el presente período de liquidación",
+"contenido": "\"1\" SI, \"2\" NO. Nota 5",
+"casilla": null
+},
+{
+"pos": 118,
+"lon": 8,
+"tipo": "An",
+"desc": "Identificación (1) - Fecha en que se dictó el auto de declaración de concurso",
+"contenido": "DDMMYYYY",
+"casilla": null
+},
+{
+"pos": 126,
+"lon": 1,
+"tipo": "An",
+"desc": "Identificación (1) - Tipo de autoliquidación si se ha dictado auto de declaración de concurso en este período",
+"contenido": "\"1\" SI Preconcursal, \"2\" SI Postconcursal blanco NO. Nota 5",
+"casilla": null
+},
+{
+"pos": 127,
+"lon": 1,
+"tipo": "Num",
+"desc": "Identificación (1) - Sujeto pasivo acogido voluntariamente al SII",
+"contenido": "\"1\" SI, \"2\" NO. Nota 5",
+"casilla": null
+},
+{
+"pos": 128,
+"lon": 1,
+"tipo": "Num",
+"desc": "Identificación (1) - Sujeto pasivo exonerado de la Declaración-resumen anual del IVA, modelo 390",
+"contenido": "Nota 4. Nota 5",
+"casilla": null
+},
+{
+"pos": 129,
+"lon": 1,
+"tipo": "Num",
+"desc": "Identificación (1) - Sujeto pasivo con volumen anual de operaciones distinto de cero (art. 121 LIVA)",
+"contenido": "Nota 3. Nota 5",
+"casilla": null
+},
+{
+"pos": 130,
+"lon": 1,
+"tipo": "Num",
+"desc": "Identificación (1) - Sujeto pasivo con derecho a deducir pago a cuenta de entregas de gasolinas, gasóleos y biocarburantes posteriores a la ultimación del régimen de depósito distinto del aduanero",
+"contenido": "\"1\" SI, \"2\" NO. Nota 8. Nota 9. Nota 5",
+"casilla": null
+},
+{
+"pos": 131,
+"lon": 17,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Devengado - Régimen general - Base imponible [150]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 150
+},
+{
+"pos": 148,
+"lon": 5,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Devengado - Régimen general - Tipo % [151]",
+"contenido": "Constante \"00000\"",
+"casilla": 151
+},
+{
+"pos": 153,
+"lon": 17,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Devengado - Régimen general - Cuota [152]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 152
+},
+{
+"pos": 170,
+"lon": 17,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Devengado - Régimen general - Base imponible [165]",
+"contenido": "15 enteros y 2 decimales.",
+"casilla": 165
+},
+{
+"pos": 187,
+"lon": 5,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Devengado - Régimen general - Tipo % [166]",
+"contenido": "Constante \"00000\"",
+"casilla": 166
+},
+{
+"pos": 192,
+"lon": 17,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Devengado - Régimen general - Cuota [167]",
+"contenido": "15 enteros y 2 decimales.",
+"casilla": 167
+},
+{
+"pos": 209,
+"lon": 17,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Devengado - Régimen general - Base imponible [01]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 1
+},
+{
+"pos": 226,
+"lon": 5,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Devengado - Régimen general - Tipo % [02]",
+"contenido": "Constante \"00400\". Nota 7",
+"casilla": 2
+},
+{
+"pos": 231,
+"lon": 17,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Devengado - Régimen general - Cuota [03]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 3
+},
+{
+"pos": 248,
+"lon": 17,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Devengado - Régimen general - Base imponible [153]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 153
+},
+{
+"pos": 265,
+"lon": 5,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Devengado - Régimen general - Tipo % [154]",
+"contenido": "Constante \"00000\"",
+"casilla": 154
+},
+{
+"pos": 270,
+"lon": 17,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Devengado - Régimen general - Cuota [155]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 155
+},
+{
+"pos": 287,
+"lon": 17,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Devengado - Régimen general - Base imponible [04]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 4
+},
+{
+"pos": 304,
+"lon": 5,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Devengado - Régimen general - Tipo % [05]",
+"contenido": "Constante \"01000\". Nota 7",
+"casilla": 5
+},
+{
+"pos": 309,
+"lon": 17,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Devengado - Régimen general - Cuota [06]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 6
+},
+{
+"pos": 326,
+"lon": 17,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Devengado - Régimen general - Base imponible [07]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 7
+},
+{
+"pos": 343,
+"lon": 5,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Devengado - Régimen general - Tipo % [08]",
+"contenido": "Constante \"02100\". Nota 7",
+"casilla": 8
+},
+{
+"pos": 348,
+"lon": 17,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Devengado - Régimen general - Cuota [09]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 9
+},
+{
+"pos": 365,
+"lon": 17,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Devengado - Adquisiciones intracomunitarias de bienes y servicios - Base imponible [10]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 10
+},
+{
+"pos": 382,
+"lon": 17,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Devengado - Adquisiciones intracomunitarias de bienes y servicios - Cuota [11]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 11
+},
+{
+"pos": 399,
+"lon": 17,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Devengado - Otras operaciones con inversión del sujeto pasivo (excepto. adq. intracom) - Base imponible [12]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 12
+},
+{
+"pos": 416,
+"lon": 17,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Devengado - Otras operaciones con inversión del sujeto pasivo (excepto. adq. intracom) - Cuota [13]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 13
+},
+{
+"pos": 433,
+"lon": 17,
+"tipo": "N",
+"desc": "Liquidación (3) - Regimen General - IVA Devengado - Modificación bases y cuotas- Base imponible [14]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 14
+},
+{
+"pos": 450,
+"lon": 17,
+"tipo": "N",
+"desc": "Liquidación (3) - Regimen General - IVA Devengado - Modificación bases y cuotas - Cuota [15]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 15
+},
+{
+"pos": 467,
+"lon": 17,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Devengado - Recargo equivalencia - Base imponible [156]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 156
+},
+{
+"pos": 484,
+"lon": 5,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Devengado - Recargo equivalencia - Tipo % [157]",
+"contenido": "Constante \"00175\". Nota 7",
+"casilla": 157
+},
+{
+"pos": 489,
+"lon": 17,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Devengado - Recargo equivalencia - Cuota [158]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 158
+},
+{
+"pos": 506,
+"lon": 17,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Devengado - Recargo equivalencia - Base imponible [168]",
+"contenido": "15 enteros y 2 decimales.",
+"casilla": 168
+},
+{
+"pos": 523,
+"lon": 5,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Devengado - Recargo equivalencia - Tipo % [169]",
+"contenido": "\"00050\". Nota 7.",
+"casilla": 169
+},
+{
+"pos": 528,
+"lon": 17,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Devengado - Recargo equivalencia - Cuota [170]",
+"contenido": "15 enteros y 2 decimales.",
+"casilla": 170
+},
+{
+"pos": 545,
+"lon": 17,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Devengado - Recargo equivalencia - Base imponible [16]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 16
+},
+{
+"pos": 562,
+"lon": 5,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Devengado - Recargo equivalencia - Tipo % [17]",
+"contenido": "Constante \"00000\"",
+"casilla": 17
+},
+{
+"pos": 567,
+"lon": 17,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Devengado - Recargo equivalencia - Cuota [18]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 18
+},
+{
+"pos": 584,
+"lon": 17,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Devengado - Recargo equivalencia - Base imponible [19]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 19
+},
+{
+"pos": 601,
+"lon": 5,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Devengado - Recargo equivalencia - Tipo % [20]",
+"contenido": "Constante \"00140\". Nota 7",
+"casilla": 20
+},
+{
+"pos": 606,
+"lon": 17,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Devengado - Recargo equivalencia - Cuota [21]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 21
+},
+{
+"pos": 623,
+"lon": 17,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Devengado - Recargo equivalencia - Base imponible [22]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 22
+},
+{
+"pos": 640,
+"lon": 5,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Devengado - Recargo equivalencia - Tipo % [23]",
+"contenido": "Constante \"00520\". Nota 7",
+"casilla": 23
+},
+{
+"pos": 645,
+"lon": 17,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Devengado - Recargo equivalencia - Cuota [24]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 24
+},
+{
+"pos": 662,
+"lon": 17,
+"tipo": "N",
+"desc": "Liquidación (3) - Regimen General - IVA Devengado - Modificaciones bases y cuotas del recargo de equivalencia - Base imponible [25]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 25
+},
+{
+"pos": 679,
+"lon": 17,
+"tipo": "N",
+"desc": "Liquidación (3) - Regimen General - IVA Devengado - Modificaciones bases y cuotas del recargo de equivalencia - Cuota [26]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 26
+},
+{
+"pos": 696,
+"lon": 17,
+"tipo": "N",
+"desc": "Liquidación (3) - Regimen General - IVA Devengado - Total cuota devengada ( [152] + [167] + [03] + [155] + [06] + [09] + [11] + [13] + [15] + [158] + [170] + [18] + [21] + [24] + [26] ) [27]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 27
+},
+{
+"pos": 713,
+"lon": 17,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Deducible - Por cuotas soportadas en operaciones interiores corrientes - Base [28]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 28
+},
+{
+"pos": 730,
+"lon": 17,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Deducible - Por cuotas soportadas en operaciones interiores corrientes - Cuota [29]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 29
+},
+{
+"pos": 747,
+"lon": 17,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Deducible - Por cuotas soportadas en operaciones interiores con bienes de inversión - Base [30]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 30
+},
+{
+"pos": 764,
+"lon": 17,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Deducible - Por cuotas soportadas en operaciones interiores con bienes de inversión - Cuota [31]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 31
+},
+{
+"pos": 781,
+"lon": 17,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Deducible - Por cuotas soportadas en las importaciones de bienes corrientes - Base [32]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 32
+},
+{
+"pos": 798,
+"lon": 17,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Deducible - Por cuotas soportadas en las importaciones de bienes corrientes - Cuota [33]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 33
+},
+{
+"pos": 815,
+"lon": 17,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Deducible - Por cuotas soportadas en las importaciones de bienes de inversión - Base [34]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 34
+},
+{
+"pos": 832,
+"lon": 17,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Deducible - Por cuotas soportadas en las importaciones de bienes de inversión - Cuota [35]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 35
+},
+{
+"pos": 849,
+"lon": 17,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Deducible - En adquisiciones intracomunitarias de bienes y servicios corrientes - Base [36]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 36
+},
+{
+"pos": 866,
+"lon": 17,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Deducible - En adquisiciones intracomunitarias de bienes y servicios corrientes - Cuota [37]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 37
+},
+{
+"pos": 883,
+"lon": 17,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Deducible - En adquisiciones intracomunitarias de bienes de inversión - Base [38]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 38
+},
+{
+"pos": 900,
+"lon": 17,
+"tipo": "Num",
+"desc": "Liquidación (3) - Regimen General - IVA Deducible - En adquisiciones intracomunitarias de bienes de inversión - Cuota [39]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 39
+},
+{
+"pos": 917,
+"lon": 17,
+"tipo": "N",
+"desc": "Liquidación (3) - Regimen General - IVA Deducible - Rectificación de deducciones - Base [40]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 40
+},
+{
+"pos": 934,
+"lon": 17,
+"tipo": "N",
+"desc": "Liquidación (3) - Regimen General - IVA Deducible - Rectificación de deducciones - Cuota [41]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 41
+},
+{
+"pos": 951,
+"lon": 17,
+"tipo": "N",
+"desc": "Liquidación (3) - Regimen General - IVA Deducible - Compensaciones Régimen Especial A.G. y P. - Cuota [42]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 42
+},
+{
+"pos": 968,
+"lon": 17,
+"tipo": "N",
+"desc": "Liquidación (3) - Regimen General - IVA Deducible - Regularización inversiones - Cuota [43]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 43
+},
+{
+"pos": 985,
+"lon": 17,
+"tipo": "N",
+"desc": "Liquidación (3) - Regimen General - IVA Deducible - Regularización por aplicación del porcentaje definitivo de prorrata - Cuota [44]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 44
+},
+{
+"pos": 1002,
+"lon": 17,
+"tipo": "N",
+"desc": "Liquidación (3) - Regimen General - IVA Deducible - Total a deducir ( [29] + [31] + [33] + [35] + [37] + [39] + [41] + [42] + [43] + [44] ) - Cuota [45]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 45
+},
+{
+"pos": 1019,
+"lon": 17,
+"tipo": "N",
+"desc": "Liquidación (3) - Regimen General - IVA Deducible - Resultado régimen general ( [27] - [45] ) - Cuota [46]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 46
+},
+{
+"pos": 1036,
+"lon": 521,
+"tipo": "An",
+"desc": "Reservado para la AEAT",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1557,
+"lon": 13,
+"tipo": "An",
+"desc": "Reservado para la AEAT - Sello electrónico reservado para la AEAT",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1570,
+"lon": 12,
+"tipo": "An",
+"desc": "Indicador de fin de registro",
+"contenido": "Constante \"</T30301000>\"",
+"casilla": null
+}
+],
+"DP30302": [
+{
+"pos": 1,
+"lon": 2,
+"tipo": "An",
+"desc": "",
+"contenido": "Obligatorio",
+"casilla": null
+},
+{
+"pos": 3,
+"lon": 3,
+"tipo": "Num",
+"desc": "",
+"contenido": "Obligatorio",
+"casilla": null
+},
+{
+"pos": 6,
+"lon": 5,
+"tipo": "Num",
+"desc": "",
+"contenido": "Obligatorio",
+"casilla": null
+},
+{
+"pos": 11,
+"lon": 1,
+"tipo": "An",
+"desc": "",
+"contenido": "Obligatorio",
+"casilla": null
+},
+{
+"pos": 12,
+"lon": 1,
+"tipo": "A",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 13,
+"lon": 2,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 15,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 32,
+"lon": 6,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 38,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 55,
+"lon": 5,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 60,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 77,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 94,
+"lon": 17,
+"tipo": "N",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 111,
+"lon": 2,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 113,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 130,
+"lon": 6,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 136,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 153,
+"lon": 5,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 158,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 175,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 192,
+"lon": 17,
+"tipo": "N",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 209,
+"lon": 4,
+"tipo": "An",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 213,
+"lon": 1,
+"tipo": "An",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 214,
+"lon": 10,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 224,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 241,
+"lon": 10,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 251,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 268,
+"lon": 10,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 278,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 295,
+"lon": 10,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 305,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 322,
+"lon": 10,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 332,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 349,
+"lon": 10,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 359,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 376,
+"lon": 10,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 386,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 403,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 420,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 437,
+"lon": 3,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 440,
+"lon": 5,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 445,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 462,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 479,
+"lon": 3,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 482,
+"lon": 17,
+"tipo": "N",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 499,
+"lon": 5,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 504,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 521,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 538,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 555,
+"lon": 4,
+"tipo": "An",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 559,
+"lon": 1,
+"tipo": "An",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 560,
+"lon": 10,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 570,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 587,
+"lon": 10,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 597,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 614,
+"lon": 10,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 624,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 641,
+"lon": 10,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 651,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 668,
+"lon": 10,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 678,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 695,
+"lon": 10,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 705,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 722,
+"lon": 10,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 732,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 749,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 766,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 783,
+"lon": 3,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 786,
+"lon": 5,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 791,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 808,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 825,
+"lon": 3,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 828,
+"lon": 17,
+"tipo": "N",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 845,
+"lon": 5,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 850,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 867,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 884,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 901,
+"lon": 17,
+"tipo": "Num",
+"desc": "",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 918,
+"lon": 17,
+"tipo": "N",
+"desc": "",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 935,
+"lon": 17,
+"tipo": "Num",
+"desc": "",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 952,
+"lon": 17,
+"tipo": "N",
+"desc": "",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 969,
+"lon": 17,
+"tipo": "N",
+"desc": "",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 986,
+"lon": 17,
+"tipo": "N",
+"desc": "",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1003,
+"lon": 17,
+"tipo": "N",
+"desc": "",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1020,
+"lon": 17,
+"tipo": "N",
+"desc": "",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1037,
+"lon": 17,
+"tipo": "N",
+"desc": "",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1054,
+"lon": 17,
+"tipo": "N",
+"desc": "",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1071,
+"lon": 17,
+"tipo": "N",
+"desc": "",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1088,
+"lon": 17,
+"tipo": "N",
+"desc": "",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1105,
+"lon": 3,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1108,
+"lon": 2,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1110,
+"lon": 3,
+"tipo": "Num",
+"desc": "",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1113,
+"lon": 3,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1116,
+"lon": 4,
+"tipo": "Num",
+"desc": "",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1120,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1137,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1154,
+"lon": 7,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1161,
+"lon": 7,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1168,
+"lon": 7,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1175,
+"lon": 4,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1179,
+"lon": 4,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1183,
+"lon": 1,
+"tipo": "An",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1184,
+"lon": 4,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1188,
+"lon": 7,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1195,
+"lon": 2,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1197,
+"lon": 4,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1201,
+"lon": 3,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1204,
+"lon": 2,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1206,
+"lon": 4,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1210,
+"lon": 3,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1213,
+"lon": 2,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1215,
+"lon": 4,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1219,
+"lon": 3,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1222,
+"lon": 2,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1224,
+"lon": 4,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1228,
+"lon": 3,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1231,
+"lon": 3,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1234,
+"lon": 2,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1236,
+"lon": 3,
+"tipo": "Num",
+"desc": "",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1239,
+"lon": 3,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1242,
+"lon": 4,
+"tipo": "Num",
+"desc": "",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1246,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1263,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1280,
+"lon": 7,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1287,
+"lon": 7,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1294,
+"lon": 7,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1301,
+"lon": 4,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1305,
+"lon": 4,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1309,
+"lon": 1,
+"tipo": "An",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1310,
+"lon": 4,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1314,
+"lon": 7,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1321,
+"lon": 2,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1323,
+"lon": 4,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1327,
+"lon": 3,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1330,
+"lon": 2,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1332,
+"lon": 4,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1336,
+"lon": 3,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1339,
+"lon": 2,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1341,
+"lon": 4,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1345,
+"lon": 3,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1348,
+"lon": 2,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1350,
+"lon": 4,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1354,
+"lon": 3,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1357,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1374,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1391,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1408,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1425,
+"lon": 110,
+"tipo": "Num",
+"desc": "",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1535,
+"lon": 7,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1542,
+"lon": 3,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1545,
+"lon": 7,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1552,
+"lon": 3,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1555,
+"lon": 7,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1562,
+"lon": 3,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1565,
+"lon": 7,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1572,
+"lon": 3,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1575,
+"lon": 7,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1582,
+"lon": 3,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1585,
+"lon": 7,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1592,
+"lon": 3,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1595,
+"lon": 7,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1602,
+"lon": 3,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1605,
+"lon": 7,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1612,
+"lon": 3,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1615,
+"lon": 274,
+"tipo": "An",
+"desc": "",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1889,
+"lon": 12,
+"tipo": "An",
+"desc": "",
+"contenido": "Obligatorio",
+"casilla": null
+}
+],
+"DP30303": [
+{
+"pos": 1,
+"lon": 2,
+"tipo": "An",
+"desc": "Inicio del identificador de modelo y página.",
+"contenido": "Constante \"<T\"",
+"casilla": null
+},
+{
+"pos": 3,
+"lon": 3,
+"tipo": "Num",
+"desc": "Modelo.",
+"contenido": "Constante \"303\"",
+"casilla": null
+},
+{
+"pos": 6,
+"lon": 5,
+"tipo": "Num",
+"desc": "Página.",
+"contenido": "Constante \"03000\"",
+"casilla": null
+},
+{
+"pos": 11,
+"lon": 1,
+"tipo": "An",
+"desc": "Fin de identificador de modelo.",
+"contenido": "Constante \">\"",
+"casilla": null
+},
+{
+"pos": 12,
+"lon": 17,
+"tipo": "N",
+"desc": "Información adicional - Entregas intracomunitarias de bienes y servicios [59]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 59
+},
+{
+"pos": 29,
+"lon": 17,
+"tipo": "N",
+"desc": "Información adicional - Exportaciones y operaciones asimiladas [60]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 60
+},
+{
+"pos": 46,
+"lon": 17,
+"tipo": "N",
+"desc": "Información adicional - Operaciones no sujetas por reglas de localización (excepto las incluidas en la casilla 123) [120]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 120
+},
+{
+"pos": 63,
+"lon": 17,
+"tipo": "N",
+"desc": "Información adicional - Operaciones sujetas con inversión del sujeto pasivo [122]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 122
+},
+{
+"pos": 80,
+"lon": 17,
+"tipo": "N",
+"desc": "Información adicional - Operaciones no sujetas por reglas de localización acogidas a los regímenes especiales de ventanilla única [123]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 123
+},
+{
+"pos": 97,
+"lon": 17,
+"tipo": "N",
+"desc": "Información adicional - Operaciones sujetas y acogidas a los regímenes especiales de ventanilla única [124]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 124
+},
+{
+"pos": 114,
+"lon": 17,
+"tipo": "N",
+"desc": "Información adicional - Importes de las entregas de bienes y prestaciones de servicios a las que habiéndoles sido aplicado el régimen especial del criterio de caja hubieran resultado devengadas conforme a la regla general de devengo contenida en el art. 75 LIVA - Base Imponible [62]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 62
+},
+{
+"pos": 131,
+"lon": 17,
+"tipo": "N",
+"desc": "Información adicional - Importes de las entregas de bienes y prestaciones de servicios a las que habiéndoles sido aplicado el régimen especial del criterio de caja hubieran resultado devengadas conforme a la regla general de devengo contenida en el art. 75 LIVA - Cuota [63]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 63
+},
+{
+"pos": 148,
+"lon": 17,
+"tipo": "N",
+"desc": "Información adicional - Importes de las adquisiciones de bienes y servicios a las que sea de aplicación o afecte el régimen especial del criterio de caja - Base Imponible [74]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 74
+},
+{
+"pos": 165,
+"lon": 17,
+"tipo": "N",
+"desc": "Información adicional - Importes de las adquisiciones de bienes y servicios a las que sea de aplicación o afecte el régimen especial del criterio de caja - Cuota [75]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 75
+},
+{
+"pos": 182,
+"lon": 17,
+"tipo": "N",
+"desc": "Resultado - Regularización cuotas art. 80.cinco.5ª LIVA [76]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 76
+},
+{
+"pos": 199,
+"lon": 17,
+"tipo": "N",
+"desc": "Resultado - Suma de resultados ( [46] + [58] + [76] ) [64]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 64
+},
+{
+"pos": 216,
+"lon": 5,
+"tipo": "Num",
+"desc": "Resultado - % Atribuible a la Administración del Estado [65]",
+"contenido": "3 enteros y 2 decimales",
+"casilla": 65
+},
+{
+"pos": 221,
+"lon": 17,
+"tipo": "N",
+"desc": "Resultado - Atribuible a la Administración del Estado [66]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 66
+},
+{
+"pos": 238,
+"lon": 17,
+"tipo": "Num",
+"desc": "Resultado - IVA a la importación liquidado por la Aduana pendiente de ingreso [77]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 77
+},
+{
+"pos": 255,
+"lon": 17,
+"tipo": "Num",
+"desc": "Resultado - Cuotas a compensar pendientes de periodos anteriores [110]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 110
+},
+{
+"pos": 272,
+"lon": 17,
+"tipo": "Num",
+"desc": "Resultado - Cuotas a compensar de periodos anteriores aplicadas en este periodo [78]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 78
+},
+{
+"pos": 289,
+"lon": 17,
+"tipo": "Num",
+"desc": "Resultado - Cuotas a compensar de periodos previos pendientes para periodos posteriores ([110] - [78]) [87]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 87
+},
+{
+"pos": 306,
+"lon": 17,
+"tipo": "N",
+"desc": "Resultado - Exclusivamente para sujetos pasivos que tributan conjuntamente a la Administración del Estado y a las Haciendas Forales Resultado de la regularización anual [68]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 68
+},
+{
+"pos": 323,
+"lon": 17,
+"tipo": "N",
+"desc": "Rectificativa - Exclusivamente para determinados supuestos de autoliquidación rectificativa por discrepancia de criterio administrativo que no deban incluirse en otras casillas. Otros ajustes [108]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 108
+},
+{
+"pos": 340,
+"lon": 17,
+"tipo": "N",
+"desc": "Resultado - Resultado de la autoliquidación ( [66] + [77] - [78] + [68] + [108] ) [69]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 69
+},
+{
+"pos": 357,
+"lon": 17,
+"tipo": "Num",
+"desc": "Resultado - Resultados a ingresar de anteriores autoliquidaciones o liquidaciones administrativas correspondientes al ejercicio y período objeto de la autoliquidación [70]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 70
+},
+{
+"pos": 374,
+"lon": 17,
+"tipo": "Num",
+"desc": "Resultado - Devoluciones acordadas por la Agencia Tributaria como consecuencia de la tramitación de anteriores autoliquidaciones correspondientes al ejercicio y período objeto de la autoliquidación [109]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 109
+},
+{
+"pos": 391,
+"lon": 17,
+"tipo": "Num",
+"desc": "Resultado - Pago a cuenta de entregas de gasolinas, gasóleos y biocarburantes posteriores a la ultimación del régimen de depósito distinto del aduanero atribuible a la Administración del Estado (Suma de la casilla 36 de todos los modelos 319 correspondientes a entregas incluidas en esta autoliquidación) [112]",
+"contenido": "15 enteros y 2 decimales. Nota 2",
+"casilla": 112
+},
+{
+"pos": 408,
+"lon": 17,
+"tipo": "N",
+"desc": "Resultado - Resultado ( [69] - [70] + [109] - [112] ) [71]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 71
+},
+{
+"pos": 425,
+"lon": 1,
+"tipo": "An",
+"desc": "Declaración Sin actividad",
+"contenido": "X o blanco",
+"casilla": null
+},
+{
+"pos": 426,
+"lon": 1,
+"tipo": "An",
+"desc": "Rectificativa - Autoliquidación rectificativa",
+"contenido": "X o blanco",
+"casilla": null
+},
+{
+"pos": 427,
+"lon": 13,
+"tipo": "An",
+"desc": "Rectificativa - Número justificante identificativo de la autoliquidación anterior",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 440,
+"lon": 1,
+"tipo": "An",
+"desc": "Rectificativa - Como consecuencia de la presentación de la autoliquidación rectificativa solicito dar de baja/modificar la domiciliación efectuada",
+"contenido": "X o blanco",
+"casilla": null
+},
+{
+"pos": 441,
+"lon": 17,
+"tipo": "Num",
+"desc": "Rectificativa - Rectificación - Importe [111]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 111
+},
+{
+"pos": 458,
+"lon": 1,
+"tipo": "An",
+"desc": "Rectificativa - Motivo de la rectificación: Rectificaciones (excepto incluidas en el motivo siguiente)",
+"contenido": "X o blanco",
+"casilla": null
+},
+{
+"pos": 459,
+"lon": 1,
+"tipo": "An",
+"desc": "Rectificativa - Motivo de la rectificación: Discrepancia criterio administrativo",
+"contenido": "X o blanco",
+"casilla": null
+},
+{
+"pos": 460,
+"lon": 546,
+"tipo": "An",
+"desc": "Reservado para la AEAT",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1006,
+"lon": 12,
+"tipo": "An",
+"desc": "Indicador de fin de registro",
+"contenido": "Constante \"</T30303000>\"",
+"casilla": null
+}
+],
+"DP30304": [
+{
+"pos": 1,
+"lon": 2,
+"tipo": "An",
+"desc": "Inicio del identificador de modelo y página.",
+"contenido": "Constante \"<T\"",
+"casilla": null
+},
+{
+"pos": 3,
+"lon": 3,
+"tipo": "Num",
+"desc": "Modelo.",
+"contenido": "Constante \"303\"",
+"casilla": null
+},
+{
+"pos": 6,
+"lon": 5,
+"tipo": "Num",
+"desc": "Página.",
+"contenido": "Constante \"04000\"",
+"casilla": null
+},
+{
+"pos": 11,
+"lon": 1,
+"tipo": "An",
+"desc": "Fin de identificador de modelo.",
+"contenido": "Constante \">\"",
+"casilla": null
+},
+{
+"pos": 12,
+"lon": 1,
+"tipo": "A",
+"desc": "Indicador de página complementaria.",
+"contenido": "En blanco",
+"casilla": null
+},
+{
+"pos": 13,
+"lon": 3,
+"tipo": "An",
+"desc": "Exclusivamente a cumplimentar en el último periodo por sujetos pasivos exonerados de la Declaración-resumen anual del IVA: B - Código de actividad - Principal",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 16,
+"lon": 4,
+"tipo": "An",
+"desc": "Exclusivamente a cumplimentar en el último periodo por sujetos pasivos exonerados de la Declaración-resumen anual del IVA: C - Epígrafe IAE - Principal",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 20,
+"lon": 3,
+"tipo": "An",
+"desc": "Exclusivamente a cumplimentar en el último periodo por sujetos pasivos exonerados de la Declaración-resumen anual del IVA: B - Código de actividad - Otras - 1ª",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 23,
+"lon": 4,
+"tipo": "An",
+"desc": "Exclusivamente a cumplimentar en el último periodo por sujetos pasivos exonerados de la Declaración-resumen anual del IVA: C - Epígrafe IAE - Otras - 1ª",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 27,
+"lon": 3,
+"tipo": "An",
+"desc": "Exclusivamente a cumplimentar en el último periodo por sujetos pasivos exonerados de la Declaración-resumen anual del IVA: B - Código de actividad - Otras - 2ª",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 30,
+"lon": 4,
+"tipo": "An",
+"desc": "Exclusivamente a cumplimentar en el último periodo por sujetos pasivos exonerados de la Declaración-resumen anual del IVA: C - Epígrafe IAE - Otras - 2ª",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 34,
+"lon": 3,
+"tipo": "An",
+"desc": "Exclusivamente a cumplimentar en el último periodo por sujetos pasivos exonerados de la Declaración-resumen anual del IVA: B - Código de actividad - Otras - 3ª",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 37,
+"lon": 4,
+"tipo": "An",
+"desc": "Exclusivamente a cumplimentar en el último periodo por sujetos pasivos exonerados de la Declaración-resumen anual del IVA: C - Epígrafe IAE - Otras - 3ª",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 41,
+"lon": 3,
+"tipo": "An",
+"desc": "Exclusivamente a cumplimentar en el último periodo por sujetos pasivos exonerados de la Declaración-resumen anual del IVA: B - Código de actividad - Otras - 4ª",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 44,
+"lon": 4,
+"tipo": "An",
+"desc": "Exclusivamente a cumplimentar en el último periodo por sujetos pasivos exonerados de la Declaración-resumen anual del IVA: C - Epígrafe IAE - Otras - 4ª",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 48,
+"lon": 3,
+"tipo": "An",
+"desc": "Exclusivamente a cumplimentar en el último periodo por sujetos pasivos exonerados de la Declaración-resumen anual del IVA: B - Código de actividad - Otras - 5ª",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 51,
+"lon": 4,
+"tipo": "An",
+"desc": "Exclusivamente a cumplimentar en el último periodo por sujetos pasivos exonerados de la Declaración-resumen anual del IVA: C - Epígrafe IAE - Otras - 5ª",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 55,
+"lon": 1,
+"tipo": "An",
+"desc": "Exclusivamente a cumplimentar en el último periodo por sujetos pasivos exonerados de la Declaración-resumen anual del IVA: D - Marque si ha efectuado operaciones por las que tenga obligación de presentar la declaración anual de operaciones con terceras personas.",
+"contenido": "X o blanco",
+"casilla": null
+},
+{
+"pos": 56,
+"lon": 5,
+"tipo": "Num",
+"desc": "Exclusivamente a cumplimentar en el último periodo por sujetos pasivos exonerados de la Declaración-resumen anual del IVA - Información de la tributación por razón de territorio: Álava [89]",
+"contenido": "3 enteros y 2 decimales",
+"casilla": 89
+},
+{
+"pos": 61,
+"lon": 5,
+"tipo": "Num",
+"desc": "Exclusivamente a cumplimentar en el último periodo por sujetos pasivos exonerados de la Declaración-resumen anual del IVA - Información de la tributación por razón de territorio: Guipuzcoa [90]",
+"contenido": "3 enteros y 2 decimales",
+"casilla": 90
+},
+{
+"pos": 66,
+"lon": 5,
+"tipo": "Num",
+"desc": "Exclusivamente a cumplimentar en el último periodo por sujetos pasivos exonerados de la Declaración-resumen anual del IVA - Información de la tributación por razón de territorio: Vizcaya [91]",
+"contenido": "3 enteros y 2 decimales",
+"casilla": 91
+},
+{
+"pos": 71,
+"lon": 5,
+"tipo": "Num",
+"desc": "Exclusivamente a cumplimentar en el último periodo por sujetos pasivos exonerados de la Declaración-resumen anual del IVA - Información de la tributación por razón de territorio: Navarra [92]",
+"contenido": "3 enteros y 2 decimales",
+"casilla": 92
+},
+{
+"pos": 76,
+"lon": 5,
+"tipo": "Num",
+"desc": "Exclusivamente a cumplimentar en el último periodo por sujetos pasivos exonerados de la Declaración-resumen anual del IVA - Información de la tributación por razón de territorio: Territorio común [107]",
+"contenido": "3 enteros y 2 decimales",
+"casilla": 107
+},
+{
+"pos": 81,
+"lon": 17,
+"tipo": "N",
+"desc": "Exclusivamente a cumplimentar en el último periodo por sujetos pasivos exonerados de la Declaración-resumen anual del IVA - Operaciones realizadas en el ejercicio - Operaciones en régimen general [80]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 80
+},
+{
+"pos": 98,
+"lon": 17,
+"tipo": "N",
+"desc": "Exclusivamente a cumplimentar en el último periodo por sujetos pasivos exonerados de la Declaración-resumen anual del IVA - Operaciones realizadas en el ejercicio - Operaciones en régimen especial del criterio de caja conforme art. 75 LIVA [81]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 81
+},
+{
+"pos": 115,
+"lon": 17,
+"tipo": "N",
+"desc": "Exclusivamente a cumplimentar en el último periodo por sujetos pasivos exonerados de la Declaración-resumen anual del IVA - Operaciones realizadas en el ejercicio - Entregas intracomunitarias de bienes y servicios [93]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 93
+},
+{
+"pos": 132,
+"lon": 17,
+"tipo": "N",
+"desc": "Exclusivamente a cumplimentar en el último periodo por sujetos pasivos exonerados de la Declaración-resumen anual del IVA - Operaciones realizadas en el ejercicio - Exportaciones y otras operaciones exentas con derecho a deducción [94]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 94
+},
+{
+"pos": 149,
+"lon": 17,
+"tipo": "N",
+"desc": "Exclusivamente a cumplimentar en el último periodo por sujetos pasivos exonerados de la Declaración-resumen anual del IVA - Operaciones realizadas en el ejercicio - Operaciones exentas sin derecho a deducción [83]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 83
+},
+{
+"pos": 166,
+"lon": 17,
+"tipo": "N",
+"desc": "Exclusivamente a cumplimentar en el último periodo por sujetos pasivos exonerados de la Declaración-resumen anual del IVA - Operaciones realizadas en el ejercicio - Operaciones no sujetas por reglas de localización (excepto las incluidas en la casilla 126) [84]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 84
+},
+{
+"pos": 183,
+"lon": 17,
+"tipo": "N",
+"desc": "Exclusivamente a cumplimentar en el último periodo por sujetos pasivos exonerados de la Declaración-resumen anual del IVA - Operaciones sujetas con inversión del sujeto pasivo [125]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 125
+},
+{
+"pos": 200,
+"lon": 17,
+"tipo": "N",
+"desc": "Exclusivamente a cumplimentar en el último periodo por sujetos pasivos exonerados de la Declaración-resumen anual del IVA - Operaciones no sujetas por reglas de localización acogidas a los regímenes especiales de ventanilla única [126]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 126
+},
+{
+"pos": 217,
+"lon": 17,
+"tipo": "N",
+"desc": "Exclusivamente a cumplimentar en el último periodo por sujetos pasivos exonerados de la Declaración-resumen anual del IVA - OSS. Operaciones sujetas y acogidas a los regímenes especiales de ventanilla única [127]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 127
+},
+{
+"pos": 234,
+"lon": 17,
+"tipo": "N",
+"desc": "Exclusivamente a cumplimentar en el último periodo por sujetos pasivos exonerados de la Declaración-resumen anual del IVA - Operaciones intragrupo valoradas conforme a lo dispuesto en los arts. 78 y 79 LIVA [128]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 128
+},
+{
+"pos": 251,
+"lon": 17,
+"tipo": "N",
+"desc": "Exclusivamente a cumplimentar en el último periodo por sujetos pasivos exonerados de la Declaración-resumen anual del IVA - Operaciones realizadas en el ejercicio - Operaciones en régimen simplificado [86]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 86
+},
+{
+"pos": 268,
+"lon": 17,
+"tipo": "N",
+"desc": "Exclusivamente a cumplimentar en el último periodo por sujetos pasivos exonerados de la Declaración-resumen anual del IVA - Operaciones realizadas en el ejercicio - Operaciones en régimen especial de la agricultura, ganadería y pesca [95]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 95
+},
+{
+"pos": 285,
+"lon": 17,
+"tipo": "N",
+"desc": "Exclusivamente a cumplimentar en el último periodo por sujetos pasivos exonerados de la Declaración-resumen anual del IVA - Operaciones realizadas en el ejercicio - Operaciones realizadas por sujetos pasivos acogidos al régimen especial del recargo de equivalencia [96]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 96
+},
+{
+"pos": 302,
+"lon": 17,
+"tipo": "N",
+"desc": "Exclusivamente a cumplimentar en el último periodo por sujetos pasivos exonerados de la Declaración-resumen anual del IVA - Operaciones realizadas en el ejercicio - Operaciones en Régimen especial de bienes usados, objetos de arte, antigüedades y objetos de colección [97]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 97
+},
+{
+"pos": 319,
+"lon": 17,
+"tipo": "N",
+"desc": "Exclusivamente a cumplimentar en el último periodo por sujetos pasivos exonerados de la Declaración-resumen anual del IVA - Operaciones realizadas en el ejercicio - Operaciones en régimen especial de Agencias de Viajes [98]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 98
+},
+{
+"pos": 336,
+"lon": 17,
+"tipo": "N",
+"desc": "Exclusivamente a cumplimentar en el último periodo por sujetos pasivos exonerados de la Declaración-resumen anual del IVA - Operaciones realizadas en el ejercicio - Entregas de bienes inmuebles, operaciones financieras y relativas al oro de inversión no habituales [79]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 79
+},
+{
+"pos": 353,
+"lon": 17,
+"tipo": "N",
+"desc": "Exclusivamente a cumplimentar en el último periodo por sujetos pasivos exonerados de la Declaración-resumen anual del IVA - Operaciones realizadas en el ejercicio - Entregas de bienes de inversión [99]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 99
+},
+{
+"pos": 370,
+"lon": 17,
+"tipo": "N",
+"desc": "Exclusivamente a cumplimentar en el último periodo por sujetos pasivos exonerados de la Declaración-resumen anual del IVA - Operaciones realizadas en el ejercicio - Total volumen de operaciones ([80]+[81]+[93]+[94]+[83]+[84]+[125]+[126]+[127]+[128]+[86]+[95]+[96]+[97]+[98]-[79]-[99]) [88]",
+"contenido": "15 enteros y 2 decimales",
+"casilla": 88
+},
+{
+"pos": 387,
+"lon": 600,
+"tipo": "An",
+"desc": "Reservado para la AEAT",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 987,
+"lon": 12,
+"tipo": "An",
+"desc": "Indicador de fin de registro",
+"contenido": "Constante \"</T30304000>\"",
+"casilla": null
+}
+],
+"DP30305": [
+{
+"pos": 1,
+"lon": 2,
+"tipo": "An",
+"desc": "",
+"contenido": "Obligatorio",
+"casilla": null
+},
+{
+"pos": 3,
+"lon": 3,
+"tipo": "Num",
+"desc": "",
+"contenido": "Obligatorio",
+"casilla": null
+},
+{
+"pos": 6,
+"lon": 5,
+"tipo": "Num",
+"desc": "",
+"contenido": "Obligatorio",
+"casilla": null
+},
+{
+"pos": 11,
+"lon": 1,
+"tipo": "An",
+"desc": "",
+"contenido": "Obligatorio",
+"casilla": null
+},
+{
+"pos": 12,
+"lon": 1,
+"tipo": "A",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 13,
+"lon": 4,
+"tipo": "An",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 17,
+"lon": 17,
+"tipo": "N",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 34,
+"lon": 17,
+"tipo": "N",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 51,
+"lon": 1,
+"tipo": "An",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 52,
+"lon": 5,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 57,
+"lon": 4,
+"tipo": "An",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 61,
+"lon": 17,
+"tipo": "N",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 78,
+"lon": 17,
+"tipo": "N",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 95,
+"lon": 1,
+"tipo": "An",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 96,
+"lon": 5,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 101,
+"lon": 4,
+"tipo": "An",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 105,
+"lon": 17,
+"tipo": "N",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 122,
+"lon": 17,
+"tipo": "N",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 139,
+"lon": 1,
+"tipo": "An",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 140,
+"lon": 5,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 145,
+"lon": 4,
+"tipo": "An",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 149,
+"lon": 17,
+"tipo": "N",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 166,
+"lon": 17,
+"tipo": "N",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 183,
+"lon": 1,
+"tipo": "An",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 184,
+"lon": 5,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 189,
+"lon": 4,
+"tipo": "An",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 193,
+"lon": 17,
+"tipo": "N",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 210,
+"lon": 17,
+"tipo": "N",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 227,
+"lon": 1,
+"tipo": "An",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 228,
+"lon": 5,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 233,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 250,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 267,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 284,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 301,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 318,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 335,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 352,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 369,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 386,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 403,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 420,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 437,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 454,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 471,
+"lon": 17,
+"tipo": "N",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 488,
+"lon": 17,
+"tipo": "N",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 505,
+"lon": 17,
+"tipo": "N",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 522,
+"lon": 17,
+"tipo": "N",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 539,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 556,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 573,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 590,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 607,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 624,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 641,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 658,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 675,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 692,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 709,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 726,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 743,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 760,
+"lon": 17,
+"tipo": "Num",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 777,
+"lon": 17,
+"tipo": "N",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 794,
+"lon": 17,
+"tipo": "N",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 811,
+"lon": 17,
+"tipo": "N",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 828,
+"lon": 17,
+"tipo": "N",
+"desc": "C",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 845,
+"lon": 672,
+"tipo": "An",
+"desc": "",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 1517,
+"lon": 12,
+"tipo": "An",
+"desc": "",
+"contenido": "Obligatorio",
+"casilla": null
+}
+],
+"DP303DID": [
+{
+"pos": 1,
+"lon": 2,
+"tipo": "An",
+"desc": "Inicio del identificador de modelo y página.",
+"contenido": "Constante \"<T\"",
+"casilla": null
+},
+{
+"pos": 3,
+"lon": 3,
+"tipo": "Num",
+"desc": "Modelo.",
+"contenido": "Constante \"303\"",
+"casilla": null
+},
+{
+"pos": 6,
+"lon": 5,
+"tipo": "An",
+"desc": "Página.",
+"contenido": "Constante \"DID00\"",
+"casilla": null
+},
+{
+"pos": 11,
+"lon": 1,
+"tipo": "An",
+"desc": "Fin de identificador de modelo.",
+"contenido": "Constante \">\"",
+"casilla": null
+},
+{
+"pos": 12,
+"lon": 11,
+"tipo": "An",
+"desc": "Devolución. SWIFT-BIC",
+"contenido": "Nota 3",
+"casilla": null
+},
+{
+"pos": 23,
+"lon": 34,
+"tipo": "An",
+"desc": "Domiciliación/Devolución - IBAN",
+"contenido": "Nota 3",
+"casilla": null
+},
+{
+"pos": 57,
+"lon": 70,
+"tipo": "An",
+"desc": "Devolución - Banco/Bank name",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 127,
+"lon": 35,
+"tipo": "An",
+"desc": "Devolución - Dirección del Banco/ Bank address",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 162,
+"lon": 30,
+"tipo": "An",
+"desc": "Devolución - Ciudad/City",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 192,
+"lon": 2,
+"tipo": "An",
+"desc": "Devolución - Código País/Country code",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 194,
+"lon": 1,
+"tipo": "Num",
+"desc": "Devolución - Marca SEPA",
+"contenido": "\"0\", \"1\", \"2\", \"3\" Nota 2, Nota 3",
+"casilla": null
+},
+{
+"pos": 195,
+"lon": 617,
+"tipo": "An",
+"desc": "Reservado para la AEAT",
+"contenido": "",
+"casilla": null
+},
+{
+"pos": 812,
+"lon": 12,
+"tipo": "An",
+"desc": "Indicador de fin de registro",
+"contenido": "Constante \"</T303DID00>\"",
+"casilla": null
+}
+]
+}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block titulo %}Normativa y diseños · Conta Pridalac{% endblock %}
+{% block contenido %}
+<p><a href="/">← Empresas</a></p>
+<h1>Normativa y diseños</h1>
+<p class="suave">De qué normas y diseños de registro depende Conta (modelos de la AEAT, calendario de plazos, depósito de cuentas, plan contable), con la versión que tiene implementada y cuándo suele salir lo nuevo. «Consultar la sede» pregunta a la AEAT si ha cambiado algún diseño o si ya existe el del ejercicio siguiente, y mira en el BOE la resolución de los modelos de cuentas anuales (no descarga nada; la primera vez tarda unos segundos). Pulse una fila para ver qué hacer si hay cambios y marcarla como revisada.</p>
+
+{% if mensaje %}<div class="aviso {{ 'error' if tipo == 'error' else 'info' }}" role="status">{{ mensaje }}</div>{% endif %}
+
+<form method="post" action="/normativa/consultar" onsubmit="this.querySelector('button').disabled=true;this.querySelector('button').textContent='Consultando… (puede tardar unos segundos)'">
+  <button type="submit" class="boton primario">Consultar la sede</button>
+</form>
+
+<table class="datos simple" style="margin-top:.8rem">
+  <thead><tr><th>Fuente</th><th>Versión en uso</th><th>Ejercicio</th><th>Estado</th><th>Revisada</th><th>Próxima ventana</th><th>Última consulta</th></tr></thead>
+  <tbody>
+    {% for fila in filas %}
+    {% set e = fila.e %}
+    <tr class="{{ 'aviso-fila' if fila.situacion != 'al_dia' else '' }}">
+      <td><a href="/normativa/{{ e.fuente.clave }}">{{ e.fuente.nombre }}</a></td>
+      <td>{{ e.fuente.version }}</td>
+      <td>{{ e.fuente.ejercicio }}</td>
+      <td>{{ fila.estado }}</td>
+      <td>{{ e.revisada | fmt('fecha') }}</td>
+      <td>{{ e.proxima | fmt('fecha') }}</td>
+      <td>{{ fila.consulta }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

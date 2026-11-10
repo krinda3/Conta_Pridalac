@@ -1,0 +1,21 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+<form class="formulario" hx-post="{{ base }}/accion/transferencia" hx-target="#modal-contenido" hx-swap="innerHTML">
+  <h2 id="modal-titulo">Transferencia entre bancos</h2>
+  {% for er in errores %}<div class="aviso error" role="alert">{{ er }}</div>{% endfor %}
+  {% if bancos | length < 2 %}
+  <div class="aviso info">Hacen falta al menos dos bancos. Créelos en <a href="/e/{{ ctx.slug }}/{{ ctx.ejercicio.anio }}/bancos">Bancos</a>.</div>
+  {% else %}
+  <div class="campo"><label for="origen">Banco de origen (sale el dinero)</label>
+    <select id="origen" name="origen"><option value="">—</option>{% for b in bancos %}<option value="{{ b.id }}" {% if valores.origen == b.id | string %}selected{% endif %}>{{ b.nombre }}</option>{% endfor %}</select></div>
+  <div class="campo"><label for="destino">Banco de destino (entra el dinero)</label>
+    <select id="destino" name="destino"><option value="">—</option>{% for b in bancos %}<option value="{{ b.id }}" {% if valores.destino == b.id | string %}selected{% endif %}>{{ b.nombre }}</option>{% endfor %}</select></div>
+  <div class="campo"><label for="fecha">Fecha</label><input id="fecha" name="fecha" type="text" value="{{ valores.fecha }}" placeholder="DDMMAA" autocomplete="off"></div>
+  <div class="campo"><label for="importe">Importe</label><input id="importe" name="importe" type="text" value="{{ valores.importe }}" inputmode="decimal" autocomplete="off"></div>
+  <div class="campo"><label for="texto">Texto (opcional)</label><input id="texto" name="texto" type="text" value="{{ valores.texto }}" autocomplete="off"></div>
+  <p class="suave">Se crean los dos movimientos (la salida y la entrada) y un asiento entre las dos cuentas de banco.</p>
+  {% endif %}
+  <div class="botones-formulario">
+    <button type="button" class="boton" data-cerrar-modal>Cancelar</button>
+    {% if bancos | length >= 2 %}<button type="submit" class="boton primario">Registrar transferencia</button>{% endif %}
+  </div>
+</form>

@@ -1,0 +1,31 @@
+{% macro tabla(t, con_titulo=false) %}
+<table class="datos simple">
+  {% if con_titulo %}<caption>{{ t.titulo }}</caption>{% endif %}
+  <thead>
+    <tr>{% for c in t.columnas %}<th class="{{ 'num' if c.tipo in ('dinero', 'entero', 'porcentaje') else '' }}">{{ c.titulo }}</th>{% endfor %}</tr>
+  </thead>
+  <tbody>
+    {% for fila in t.filas %}
+    <tr>{% for v in fila %}{% set c = t.columnas[loop.index0] %}<td class="{{ clase_numero(v, c.tipo) }}">{{ v | fmt(c.tipo) }}</td>{% endfor %}</tr>
+    {% else %}
+    <tr class="vacia"><td colspan="{{ t.columnas | length }}">Sin datos</td></tr>
+    {% endfor %}
+  </tbody>
+  {% if t.totales %}
+  <tfoot><tr>{% for v in t.totales %}{% set c = t.columnas[loop.index0] %}<td class="{{ clase_numero(v, c.tipo) }}">{{ v | fmt(c.tipo) }}</td>{% endfor %}</tr></tfoot>
+  {% endif %}
+</table>
+{% endmacro %}
+<div class="detalle">
+  <h2 id="modal-titulo">{{ detalle.titulo }}</h2>
+  {% if detalle.tabla.subtitulo %}<p class="suave">{{ detalle.tabla.subtitulo }}</p>{% endif %}
+  {% if detalle.datos %}
+  <dl class="datos-ficha">
+    {% for nombre, valor in detalle.datos %}<div><dt>{{ nombre }}</dt><dd>{{ valor if valor not in (none, '') else '—' }}</dd></div>{% endfor %}
+  </dl>
+  {% endif %}
+  {{ tabla(detalle.tabla) }}
+  {% for extra in detalle.extras %}{{ tabla(extra, true) }}{% endfor %}
+  {% if detalle.enlaces %}<p>{% for texto, url in detalle.enlaces %}<a class="boton" href="{{ url }}"{% if url.endswith('/pdf') %} target="_blank" rel="noopener"{% endif %}>{{ texto }}</a> {% endfor %}</p>{% endif %}
+  <div class="botones-formulario"><button type="button" class="boton" data-cerrar-modal>Cerrar</button></div>
+</div>

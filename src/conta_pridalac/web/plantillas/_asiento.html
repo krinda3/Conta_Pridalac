@@ -1,0 +1,37 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+<div class="factura asiento {% if adjuntos %}con-vista{% endif %}">
+  <form id="f-asiento" class="formulario" hx-post="{{ base }}/guardar" hx-encoding="multipart/form-data" hx-target="#modal-contenido" hx-swap="innerHTML">
+    <h2 id="modal-titulo">{{ 'Editar asiento manual' if e.id else 'Nuevo asiento manual' }}</h2>
+    {% for er in errores %}<div class="aviso error" role="alert">{{ er }}</div>{% endfor %}
+    {% if e.id %}<input type="hidden" name="id" value="{{ e.id }}">{% endif %}
+    {% include "_asiento_cuerpo.html" %}
+
+    <section class="bloque">
+      <h3>Justificantes (PDF o JPG)</h3>
+      {% if adjuntos %}
+      <ul class="lista-adjuntos">
+        {% for a in adjuntos %}
+        <li>
+          <a href="/e/{{ ctx.slug }}/{{ ctx.ejercicio.anio }}/adjuntos/{{ a.id }}" target="vista">{{ a.nombre }}</a>
+          {% if not a.presente %}<span class="etiqueta-aviso">fichero ausente</span>{% endif %}
+          <label class="quitar"><input type="checkbox" name="quitar_adjunto" value="{{ a.id }}"> quitar</label>
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+      <input type="file" name="ficheros" accept="application/pdf,image/jpeg,.pdf,.jpg,.jpeg" multiple>
+      <small class="suave">Se guardan al grabar el asiento.</small>
+    </section>
+
+    <div class="botones-formulario">
+      <button type="button" class="boton" data-cerrar-modal>Cancelar</button>
+      <button type="submit" class="boton primario">Guardar asiento</button>
+    </div>
+  </form>
+  {% if adjuntos %}
+  <aside class="vista" aria-label="Vista del justificante">
+    {% set primero = adjuntos | selectattr("presente") | first %}
+    <iframe name="vista" title="Justificante" {% if primero %}src="/e/{{ ctx.slug }}/{{ ctx.ejercicio.anio }}/adjuntos/{{ primero.id }}"{% endif %}></iframe>
+  </aside>
+  {% endif %}
+</div>

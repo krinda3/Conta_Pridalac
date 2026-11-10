@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block titulo %}Ayuda{% if actual %} · {{ actual.titulo }}{% endif %} · Conta Pridalac{% endblock %}
+{% block contenido %}
+<div class="ayuda">
+  <aside class="ayuda-indice" aria-label="Temas de la ayuda">
+    <form method="get" action="{{ base_ayuda }}" role="search" class="ayuda-buscar">
+      <input type="search" name="q" value="{{ q }}" placeholder="Buscar en la ayuda…" aria-label="Buscar en la ayuda" autocomplete="off">
+      <button type="submit" class="boton">Buscar</button>
+    </form>
+    <nav>
+      <a href="{{ base_ayuda }}" class="{{ 'actual' if not actual and resultados is none else '' }}">Índice</a>
+      {% for slug, titulo in temas %}
+      <a href="{{ base_ayuda }}/{{ slug }}" class="{{ 'actual' if actual and actual.slug == slug else '' }}">{{ titulo }}</a>
+      {% if actual and actual.slug == slug and indice %}
+      <ul class="ayuda-apartados">
+        {% for nivel, ancla, texto in indice if nivel == 2 %}<li><a href="#{{ ancla }}">{{ texto }}</a></li>{% endfor %}
+      </ul>
+      {% endif %}
+      {% endfor %}
+    </nav>
+  </aside>
+
+  <article class="ayuda-texto">
+    {% if resultados is not none %}
+    <h1>Resultados para «{{ q }}»</h1>
+    {% if resultados %}
+    <ul class="ayuda-resultados">
+      {% for r in resultados %}
+      <li><a href="{{ base_ayuda }}/{{ r.slug }}{% if r.ancla %}#{{ r.ancla }}{% endif %}"><strong>{{ r.apartado }}</strong></a> <span class="suave">· {{ r.tema }}</span><br><span class="suave">{{ r.extracto }}</span></li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p>No hay nada sobre «{{ q }}». Pruebe con otra palabra (por ejemplo, <em>factura</em>, <em>303</em>, <em>copia</em>, <em>plazo</em>) o mire el <a href="{{ base_ayuda }}">índice</a>.</p>
+    {% endif %}
+    {% elif actual %}
+    {{ cuerpo | safe }}
+    {% else %}
+    <h1>Ayuda de Conta Pridalac</h1>
+    <p>Conta Pridalac lleva la contabilidad de la empresa y prepara los modelos de la AEAT y las cuentas para el Registro Mercantil. Esta ayuda explica qué hace cada pantalla y en qué orden se hacen las cosas. Elija un tema, o escriba lo que busca arriba.</p>
+    <div class="ayuda-tarjetas">
+      {% for slug, titulo in temas %}<a class="tarjeta" href="{{ base_ayuda }}/{{ slug }}"><strong>{{ titulo }}</strong></a>{% endfor %}
+    </div>
+    <p class="suave">En cada pantalla, el botón <strong>?</strong> de la barra de arriba abre el tema que la explica.</p>
+    {% endif %}
+  </article>
+</div>
+{% endblock %}

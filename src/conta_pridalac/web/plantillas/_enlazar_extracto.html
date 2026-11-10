@@ -1,0 +1,30 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+{% if hecho %}
+<div class="formulario importacion">
+  <h2 id="modal-titulo">Líneas enlazadas</h2>
+  <p class="suave">{{ hecho.pares | length }} línea(s) del extracto enlazadas con su movimiento. No se ha creado ni cambiado ningún asiento.</p>
+  {% if hecho.ambiguos %}<div class="aviso warning">{{ hecho.ambiguos }} línea(s) podrían ser de más de un movimiento y se han dejado sin enlazar.</div>{% endif %}
+  <div class="botones-formulario"><button type="button" class="boton primario" data-cerrar-modal hx-get="{{ base }}/tabla" hx-target="#tabla" hx-swap="innerHTML">Cerrar</button></div>
+</div>
+{% else %}
+<form class="formulario" hx-post="{{ base }}/accion/enlazar" hx-target="#modal-contenido" hx-swap="innerHTML">
+  <h2 id="modal-titulo">Enlazar el extracto con lo ya contabilizado</h2>
+  <p class="suave">Hay movimientos de banco contabilizados que no están unidos a su línea del extracto (los que vienen del programa anterior, por ejemplo), y por eso esas líneas siguen saliendo libres. Se enlazan las que coinciden en banco, importe y día con un único movimiento. No se crea ni se cambia ningún asiento.</p>
+  <section class="bloque totales-factura">
+    <div><span class="suave">Se enlazarán</span><strong>{{ previsto.pares | length }}</strong></div>
+    <div><span class="suave">Ambiguas (se dejan)</span><strong>{{ previsto.ambiguos }}</strong></div>
+  </section>
+  {% if previsto.pares %}
+  <div style="max-height: 16rem; overflow: auto">
+    <table class="tabla">
+      <thead><tr><th>Fecha</th><th>Banco</th><th>Concepto del extracto</th><th class="num">Importe</th><th class="num">Movimiento nº</th></tr></thead>
+      <tbody>{% for l, m in previsto.pares %}<tr><td>{{ (l.fecha_valor or l.fecha) | fmt('fecha') }}</td><td>{{ l.banco.nombre }}</td><td>{{ l.texto }}</td><td class="num">{{ l.importe | fmt('dinero') }}</td><td class="num">{{ m.numero }}</td></tr>{% endfor %}</tbody>
+    </table>
+  </div>
+  {% else %}<p class="suave">No hay líneas libres que coincidan con un movimiento sin enlazar.</p>{% endif %}
+  <div class="botones-formulario">
+    <button type="button" class="boton" data-cerrar-modal>Cancelar</button>
+    {% if previsto.pares %}<button type="submit" class="boton primario">Enlazar {{ previsto.pares | length }}</button>{% endif %}
+  </div>
+</form>
+{% endif %}

@@ -1,0 +1,59 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+{% macro accion(texto, valor, clase="boton") %}<button type="button" class="{{ clase }}" hx-post="{{ base }}/recalcular" hx-vals='{"accion": "{{ valor }}"}' hx-include="closest form" hx-target="#cuerpo" hx-swap="outerHTML" hx-encoding="application/x-www-form-urlencoded">{{ texto }}</button>{% endmacro %}
+<div id="cuerpo" hx-sync="this:replace" hx-post="{{ base }}/recalcular" hx-trigger="change[!event.target.matches('[type=file], [name=quitar_adjunto]')]" hx-include="closest form" hx-target="#cuerpo" hx-swap="outerHTML" hx-encoding="application/x-www-form-urlencoded">
+  <datalist id="dl-cuentas">{% for codigo, nombre in cuentas %}<option value="{{ codigo }}">{{ nombre }}</option>{% endfor %}</datalist>
+  <input type="hidden" name="plantilla" value="{{ e.plantilla }}">
+
+  <section class="bloque rejilla">
+    <div class="campo"><label for="fecha">Fecha <span class="req">*</span></label><input id="fecha" name="fecha" type="text" value="{{ e.fecha }}" placeholder="DDMMAA" autocomplete="off"></div>
+    <div class="campo ancho3"><label for="concepto">Concepto</label><input id="concepto" name="concepto" type="text" value="{{ e.concepto }}" autocomplete="off"></div>
+  </section>
+
+  <section class="bloque">
+    <h3>Líneas</h3>
+    <table class="lineas">
+      <thead><tr><th>Cuenta</th><th>Lado</th><th class="num">Importe</th><th>Concepto de la línea</th><th></th></tr></thead>
+      <tbody>
+      {% for l in e.lineas %}{% set i = loop.index0 %}
+      <tr>
+        <td>
+          <input type="hidden" name="ln-{{ i }}-cuadre" value="{{ '1' if l.cuadre else '0' }}"><input type="hidden" name="ln-{{ i }}-reglas" value="{{ l.reglas }}">
+          <input type="hidden" name="ln-{{ i }}-plauto" id="ln-{{ i }}-plauto" value="{{ '1' if l.plauto else '0' }}">
+          <input type="text" name="ln-{{ i }}-cuenta" value="{{ l.cuenta }}" list="dl-cuentas" aria-label="Cuenta" autocomplete="off">
+        </td>
+        <td><select name="ln-{{ i }}-dh" aria-label="Debe o Haber" {% if l.cuadre %}class="solo-lectura"{% endif %}><option value="D" {% if l.dh == 'D' %}selected{% endif %}>Debe</option><option value="H" {% if l.dh == 'H' %}selected{% endif %}>Haber</option></select></td>
+        <td><input class="num" type="text" name="ln-{{ i }}-importe" value="{{ l.importe }}" inputmode="decimal" aria-label="Importe" autocomplete="off" {% if l.cuadre %}readonly title="Línea de cuadre: se calcula sola"{% endif %}>{% if l.cuadre %}<small class="suave">cuadre</small>{% endif %}</td>
+        <td><input type="text" name="ln-{{ i }}-ayuda" value="{{ l.ayuda }}" aria-label="Concepto de la línea" autocomplete="off"></td>
+        <td>{{ accion("✕", "del-ln-" ~ i, "boton plano quitar-linea") }}</td>
+      </tr>
+      <tr class="vencimientos-linea">
+        <td colspan="5">
+          {% for p in l.plazos %}{% set j = loop.index0 %}
+          <span class="plazo">
+            <span class="suave">Vto.</span>
+            <input type="text" name="ln-{{ i }}-pl-{{ j }}-fecha" value="{{ p.fecha }}" placeholder="DDMMAA" aria-label="Fecha del vencimiento" autocomplete="off" oninput="document.getElementById('ln-{{ i }}-plauto').value='0'">
+            <input class="num" type="text" name="ln-{{ i }}-pl-{{ j }}-importe" value="{{ p.importe }}" inputmode="decimal" aria-label="Importe del vencimiento (positivo a cobrar, negativo a pagar)" autocomplete="off" oninput="document.getElementById('ln-{{ i }}-plauto').value='0'">
+            <input type="hidden" name="ln-{{ i }}-pl-{{ j }}-pagos" value="{{ '1' if p.pagos else '0' }}">
+            {% if p.pagos %}<span class="etiqueta-aviso" title="Tiene cobros o pagos aplicados">con pagos</span>{% else %}{{ accion("✕", "del-pl-" ~ i ~ "-" ~ j, "boton plano quitar-linea") }}{% endif %}
+          </span>
+          {% endfor %}
+          {{ accion("＋ vencimiento", "add-pl-" ~ i, "boton plano") }}
+          {% if l.reglas %}<small class="suave">reglas de la plantilla: {{ l.reglas }}</small>{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <div class="fila-acciones">
+      {{ accion("＋ Línea", "add-ln") }}
+      {{ accion("Línea de cuadre", "cuadrar") }}
+      <small class="suave">Los vencimientos van con signo: positivo si se va a cobrar, negativo si se va a pagar.</small>
+    </div>
+  </section>
+
+  <section class="bloque totales-factura">
+    <div><span class="suave">Debe</span><strong>{{ e.debe | fmt('dinero') }}</strong></div>
+    <div><span class="suave">Haber</span><strong>{{ e.haber | fmt('dinero') }}</strong></div>
+    {% if diferencia != 0 %}<div class="descuadre"><span>Descuadre</span><strong>{{ diferencia | fmt('dinero') }}</strong></div>{% else %}<div><span class="suave">Estado</span><strong>Cuadrado</strong></div>{% endif %}
+  </section>
+</div>

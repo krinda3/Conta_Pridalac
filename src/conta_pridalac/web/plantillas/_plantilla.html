@@ -1,0 +1,13 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+<div class="factura">
+  <form id="f-plantilla" class="formulario" hx-post="{{ base }}/guardar" hx-target="#modal-contenido" hx-swap="innerHTML">
+    <h2 id="modal-titulo">{{ 'Editar plantilla' if e.id else 'Nueva plantilla' }}</h2>
+    {% for er in errores %}<div class="aviso error" role="alert">{{ er }}</div>{% endfor %}
+    {% if e.id %}<input type="hidden" name="id" value="{{ e.id }}">{% endif %}
+    {% include "_plantilla_cuerpo.html" %}
+    <div class="botones-formulario">
+      <button type="button" class="boton" data-cerrar-modal>Cancelar</button>
+      <button type="submit" class="boton primario">Guardar plantilla</button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block titulo %}Añadir empresa desde MGD{% endblock %}
+{% block contenido %}
+<h1>Añadir empresa desde MGD</h1>
+<p class="suave">Copia examinada: <strong>{{ fichero }}</strong></p>
+{% for e in errores %}<div class="aviso error" role="alert">{{ e }}</div>{% endfor %}
+<section class="tarjeta">
+  <h2>Lo que contiene</h2>
+  <ul class="lista">
+    <li>{{ copia.asientos }} asientos del ejercicio {{ copia.anio or '(año desconocido)' }}</li>
+    <li>{{ copia.justificantes }} justificantes (facturas en PDF o imagen)</li>
+    <li>Subcuentas de <strong>{{ copia.digitos_cuenta }} dígitos</strong>: se mantienen tal como están en MGD</li>
+    {% if copia.codigo_empresa %}<li>Empresa nº {{ copia.codigo_empresa }} de MGD</li>{% endif %}
+  </ul>
+</section>
+<form class="formulario" method="post" action="/empresa-nueva/mgd/crear">
+  <input type="hidden" name="token" value="{{ token }}">
+  <div class="campo"><label for="nombre">Nombre o razón social</label><input id="nombre" name="nombre" type="text" value="{{ valores.nombre }}" required autocomplete="off"></div>
+  <div class="campo"><label for="nif">NIF o CIF (puede completarse después)</label><input id="nif" name="nif" type="text" value="{{ valores.nif }}" autocomplete="off"></div>
+  <div class="campo"><label for="anio">Año del ejercicio</label><input id="anio" name="anio" type="text" inputmode="numeric" value="{{ valores.anio }}" required></div>
+  <div class="campo"><label for="tipo_plan">Plan de cuentas de la entidad</label>
+    <select id="tipo_plan" name="tipo_plan">{% for clave, texto in tipos_de_plan.items() %}<option value="{{ clave }}" {% if clave == (valores.tipo_plan or 'pymes') %}selected{% endif %}>{{ texto }}</option>{% endfor %}</select>
+    <span class="suave">Las cuentas se cargan tal como están en MGD; el tipo de plan decide los nombres de los grupos y los modelos de cuentas anuales.</span></div>
+  {% set proteccion_actual = valores.proteccion or 'ninguna' %}{% include '_proteccion.html' %}
+  <div class="botones-formulario">
+    <button type="submit" class="boton" formaction="/empresa-nueva/mgd/cancelar" formnovalidate>Cancelar</button>
+    <button type="submit" class="boton primario">Crear la empresa</button>
+  </div>
+</form>
+{% endblock %}

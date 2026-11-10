@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block titulo %}{{ listado.titulo }} · {{ ctx.empresa.nombre }}{% endblock %}
+{% block contenido %}
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+<div class="pagina-listado">
+<div class="cabecera-listado">
+  <h1>{{ listado.titulo }}</h1>
+  <p class="suave descripcion-fija">{{ listado.descripcion }}</p>
+  <details class="descripcion-plegable suave"><summary>Qué hace esta pantalla</summary><p>{{ listado.descripcion }}</p></details>
+  {% set trabajo = listado.trimestre_de_trabajo(ctx) %}{% if trabajo %}<p class="aviso info trimestre-trabajo"><strong>Trabajando en {{ trabajo }}</strong> · sólo se ve lo de ese trimestre · <a href="/e/{{ ctx.slug }}/{{ ctx.ejercicio.anio }}/trimestre">cambiar de trimestre</a></p>{% endif %}
+</div>
+
+<form id="filtros" class="filtros" data-base="{{ base }}" onsubmit="return false">
+  <input type="hidden" name="orden" id="orden" value="">
+  <input type="hidden" name="dir" id="dir" value="asc">
+  <input type="hidden" name="ocultas" id="ocultas" value="">
+  <label class="busqueda">
+    <span class="sr">Buscar</span>
+    <input type="search" name="q" id="q" value="{{ q }}" placeholder="Buscar en todas las columnas…" autocomplete="off"
+           hx-get="{{ base }}/tabla" hx-trigger="input changed delay:250ms, search" hx-target="#tabla" hx-include="#filtros">
+  </label>
+  {% for p in listado.parametros %}
+  <label class="parametro">{{ p.titulo }}
+    {% if p.tipo == "select" %}
+    <select name="{{ p.nombre }}" hx-get="{{ base }}/tabla" hx-trigger="change" hx-target="#tabla" hx-include="#filtros">
+      {% for valor, texto in p.lista_de_opciones(ctx) %}<option value="{{ valor }}" {% if crudos[p.nombre] == valor %}selected{% endif %}>{{ texto }}</option>{% endfor %}
+    </select>
+    {% else %}
+    <input type="text" name="{{ p.nombre }}" value="{{ crudos[p.nombre] }}" placeholder="{{ 'DDMMAA' if p.tipo == 'fecha' else p.ayuda }}" title="{{ p.ayuda }}"
+           {% if p.sugerencias %}list="dl-{{ p.nombre }}"{% endif %} autocomplete="off"
+           hx-get="{{ base }}/tabla" hx-trigger="{{ 'change' if p.sugerencias else 'change, keyup changed delay:400ms' }}" hx-target="#tabla" hx-include="#filtros">
+    {% if p.sugerencias %}<datalist id="dl-{{ p.nombre }}">{% for valor, texto in p.sugerencias(ctx) %}<option value="{{ valor }}">{{ texto }}</option>{% endfor %}</datalist>{% endif %}
+    {% endif %}
+  </label>
+  {% endfor %}
+  <span class="acciones">
+    {% if listado.anadir %}<button type="button" class="boton primario" hx-get="{{ base }}/nuevo" hx-target="#modal-contenido">＋ Añadir</button>{% endif %}
+    {% if listado.importa_excel %}<button type="button" class="boton" hx-get="{{ base }}/importar" hx-target="#modal-contenido">⇪ Importar Excel</button>{% endif %}
+    {% for texto, ruta in listado.acciones_extra %}<button type="button" class="boton" hx-get="{{ base }}/{{ ruta }}" hx-target="#modal-contenido">{{ texto }}</button>{% endfor %}
+    {% for texto, ruta in listado.acciones_con_seleccion %}<button type="button" class="boton sel-accion" data-texto="{{ texto }}" hx-post="{{ base }}/{{ ruta }}" hx-include=".sel:checked" hx-target="#modal-contenido" hx-swap="innerHTML" disabled>{{ texto }}</button>{% endfor %}
+    {% if listado.borrar %}<button type="button" class="boton peligro" id="borrar" hx-post="{{ base }}/borrar" hx-include=".sel:checked" hx-swap="none" hx-confirm="¿Borrar las filas seleccionadas?" disabled>Borrar</button>{% endif %}
+    <button type="button" class="boton" data-exportar="pdf">PDF</button>
+    <button type="button" class="boton" data-exportar="xlsx">Excel</button>
+  </span>
+</form>
+
+<div id="tabla" class="contenedor-tabla" hx-get="{{ base }}/tabla" hx-trigger="load, refrescar from:body" hx-include="#filtros">
+  <p class="suave">Cargando…</p>
+</div>
+{% if listado.bloque_inferior %}
+{% set otro = listados[listado.bloque_inferior] %}
+<div class="cabecera-listado bloque-inferior">
+  <h2>{{ otro.titulo }}</h2>
+  <p class="suave descripcion-fija">{{ otro.descripcion }}</p>
+  <details class="descripcion-plegable suave"><summary>Qué hace esta pantalla</summary><p>{{ otro.descripcion }}</p></details>
+</div>
+<div id="tabla-inferior" class="contenedor-tabla" hx-get="/e/{{ ctx.slug }}/{{ ctx.ejercicio.anio }}/{{ otro.nombre }}/tabla" hx-trigger="load, refrescar from:body">
+  <p class="suave">Cargando…</p>
+</div>
+{% endif %}
+</div>
+{% if listado.abre_con_doble_clic() %}
+<script>
+  // ?abrir=<id> abre ese registro en el diálogo (lo usan los enlaces de la auditoría)
+  (function () {
+    var id = new URLSearchParams(location.search).get('abrir');
+    if (id) window.addEventListener('load', function () { htmx.ajax('GET', '{{ base }}/f/' + encodeURIComponent(id), { target: '#modal-contenido', swap: 'innerHTML' }); });
+  })();
+</script>
+{% endif %}
+{% endblock %}

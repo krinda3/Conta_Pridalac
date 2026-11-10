@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block titulo %}{{ f.nombre }} · Conta Pridalac{% endblock %}
+{% block contenido %}
+<p><a href="/normativa">← Normativa y diseños</a></p>
+<h1>{{ f.nombre }} <span class="etiqueta-aviso">{{ estado_texto }}</span></h1>
+
+{% if mensaje %}<div class="aviso {{ 'error' if tipo == 'error' else 'info' }}" role="status">{{ mensaje }}</div>{% endif %}
+
+<section class="tarjeta">
+  <h2>Lo que Conta tiene implementado</h2>
+  <table class="lineas"><tbody>
+    <tr><td>Versión en uso</td><td>{{ f.version }} · ejercicio {{ f.ejercicio }}</td></tr>
+    <tr><td>Dónde está en el programa</td><td><code>{{ f.donde }}</code></td></tr>
+    <tr><td>Última revisión</td><td>{{ e.revisada | fmt('fecha') }}</td></tr>
+    <tr><td>Época en que suele salir lo nuevo</td><td>desde el {{ '%02d' | format(f.ventana[1]) }}/{{ '%02d' | format(f.ventana[0]) }} de cada año (ventana actual abierta el {{ e.apertura | fmt('fecha') }}; próxima, el {{ e.proxima | fmt('fecha') }})</td></tr>
+    <tr><td>Dónde se publica</td><td>{{ f.oficial }}</td></tr>
+    {% if direccion %}<tr><td>Fichero que se sondea</td><td><code>{{ direccion }}</code></td></tr>{% endif %}
+    {% if f.boe %}<tr><td>Se busca en el BOE</td><td>títulos con «{{ f.boe | join('», «') }}», cada año de {{ ['', 'enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][f.boe_meses[0]] }} a {{ ['', 'enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][f.boe_meses[1]] }}{% if e.sondeo.get('boe', {}).get('hasta') %} · mirado hasta el {{ e.sondeo.boe.hasta[8:10] }}/{{ e.sondeo.boe.hasta[5:7] }}/{{ e.sondeo.boe.hasta[0:4] }}{% endif %}</td></tr>{% endif %}
+    <tr><td>Última consulta</td><td>{{ consulta }}{% if e.sondeo.get('modificado') %} · fichero modificado el {{ e.sondeo.modificado }}{% endif %}</td></tr>
+  </tbody></table>
+</section>
+
+{% if e.sondeo.get('boe', {}).get('encontradas') %}
+<section class="tarjeta">
+  <h2>Disposiciones del BOE halladas</h2>
+  <ul>{% for h in e.sondeo.boe.encontradas %}<li>{{ h.fecha[8:10] }}/{{ h.fecha[5:7] }}/{{ h.fecha[0:4] }} · <a href="{{ h.url }}" target="_blank" rel="noopener">{{ h.id }}</a> · {{ h.titulo }}{% if h in e.novedades_boe %} <strong>(posterior a la última revisión)</strong>{% endif %}</li>{% endfor %}</ul>
+  <p class="suave">Lea la disposición y, si cambia algo que Conta tenga implementado, adáptelo; después marque la fuente como revisada para que no vuelva a avisar por ella.</p>
+</section>
+{% endif %}
+
+<section class="tarjeta">
+  <h2>Si hay cambios</h2>
+  <p>{{ f.que_hacer }}</p>
+  <p class="suave">La comparación campo a campo entre dos diseños: <code>python tools/comparar_disenos.py diseño_viejo.json diseño_nuevo.json</code>. Procedimiento completo: <code>docs/11_control_de_cambios_normativos.md</code>.</p>
+</section>
+
+<div style="display:flex; gap:.6rem; flex-wrap:wrap; margin-top:.8rem">
+  {% if f.url or f.siguiente or f.boe %}
+  <form method="post" action="/normativa/{{ f.clave }}/consultar" onsubmit="this.querySelector('button').disabled=true;this.querySelector('button').textContent='Consultando…'"><button type="submit" class="boton">Consultar la sede</button></form>
+  {% endif %}
+  <form method="post" action="/normativa/{{ f.clave }}/revisada"><button type="submit" class="boton {{ 'primario' if situacion != 'al_dia' else '' }}">Marcar como revisada hoy</button></form>
+</div>
+{% endblock %}

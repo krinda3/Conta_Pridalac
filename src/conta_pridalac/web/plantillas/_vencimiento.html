@@ -1,0 +1,59 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+<form class="formulario" hx-post="{{ base }}/guardar" hx-target="#modal-contenido" hx-swap="innerHTML">
+  <h2 id="modal-titulo">Vencimiento {{ v.origen_tipo }} {{ v.origen_numero }}</h2>
+  {% for er in errores %}<div class="aviso error" role="alert">{{ er }}</div>{% endfor %}
+  <input type="hidden" name="id" value="{{ v.id }}">
+  <dl class="datos-ficha">
+    {% for nombre, valor in ficha %}<div><dt>{{ nombre }}</dt><dd>{{ valor if valor else '—' }}</dd></div>{% endfor %}
+  </dl>
+
+  {% if pagos %}
+  <section class="bloque">
+    <h3>Cobros y pagos aplicados</h3>
+    <table class="lineas">
+      <thead><tr><th>Movimiento</th><th>Fecha</th><th>Banco</th><th class="num">Importe</th></tr></thead>
+      <tbody>{% for numero, fecha, banco, importe in pagos %}<tr><td>{{ numero }}</td><td>{{ fecha | fmt('fecha') }}</td><td>{{ banco }}</td><td class="num">{{ importe | fmt('dinero') }}</td></tr>{% endfor %}</tbody>
+    </table>
+  </section>
+  {% endif %}
+
+  {% if pte != 0 %}
+  <section class="bloque">
+    <h3>{{ 'Cobrar' if sentido == 'cobrar' else 'Pagar' }}</h3>
+    <div class="rejilla">
+      <div class="campo ancho2"><label for="banco">Banco</label>
+        <select id="banco" name="banco"><option value="">—</option>{% for b in bancos %}<option value="{{ b.id }}" {% if valores.banco == b.id | string %}selected{% endif %}>{{ b.nombre }}</option>{% endfor %}</select></div>
+      <div class="campo"><label for="fecha_pago">Fecha del {{ 'cobro' if sentido == 'cobrar' else 'pago' }}</label><input id="fecha_pago" name="fecha_pago" type="text" value="{{ valores.fecha_pago }}" placeholder="DDMMAA" autocomplete="off"></div>
+      <div class="campo"><label for="importe">Importe</label><input id="importe" name="importe" type="text" value="{{ valores.importe }}" inputmode="decimal" autocomplete="off"></div>
+      <div class="campo ancho2"><label for="texto">Texto (opcional)</label><input id="texto" name="texto" type="text" value="{{ valores.texto }}" autocomplete="off"></div>
+    </div>
+    <button type="submit" name="accion" value="pagar" class="boton primario">Registrar {{ 'cobro' if sentido == 'cobrar' else 'pago' }}</button>
+    <small class="suave">El importe lleva el signo del vencimiento ({{ 'positivo: a cobrar' if sentido == 'cobrar' else 'negativo: a pagar' }}); si es menor que el pendiente, queda el resto.</small>
+  </section>
+
+  <section class="bloque">
+    <h3>Compensar contra otra cuenta</h3>
+    <div class="campo"><label for="cuenta">Cuenta</label><input id="cuenta" name="cuenta" type="text" value="{{ valores.cuenta }}" list="dl-cuentas" placeholder="subcuenta" autocomplete="off"></div>
+    <datalist id="dl-cuentas">{% for codigo, nombre in cuentas %}<option value="{{ codigo }}">{{ nombre }}</option>{% endfor %}</datalist>
+    <button type="submit" name="accion" value="compensar" class="boton">Compensar el pendiente</button>
+    <small class="suave">Salda el vencimiento sin pasar por el banco (con la fecha de arriba).</small>
+  </section>
+  {% else %}
+  <div class="aviso info">Este vencimiento está saldado.</div>
+  {% endif %}
+
+  <section class="bloque">
+    <h3>Datos del vencimiento</h3>
+    <div class="rejilla">
+      <div class="campo"><label for="fecha">Fecha de vencimiento</label><input id="fecha" name="fecha" type="text" value="{{ valores.fecha }}" placeholder="DDMMAA" autocomplete="off"></div>
+      <div class="campo"><label for="forma">Forma de pago</label>
+        <select id="forma" name="forma"><option value="">—</option>{% for f in formas %}<option value="{{ f.id }}" {% if valores.forma == f.id | string %}selected{% endif %}>{{ f.texto }}</option>{% endfor %}</select></div>
+      <div class="campo ancho2"><label for="banco_previsto">Banco previsto</label>
+        <select id="banco_previsto" name="banco_previsto"><option value="">—</option>{% for b in bancos %}<option value="{{ b.id }}" {% if valores.banco_previsto == b.id | string %}selected{% endif %}>{{ b.nombre }}</option>{% endfor %}</select>
+        <small class="suave">Sólo es una previsión (para saber de qué banco saldrá o entrará); el banco real es el del pago que registre.</small></div>
+    </div>
+    <button type="submit" name="accion" value="guardar" class="boton">Guardar fecha, forma de pago y banco previsto</button> <small class="suave">No registra ningún pago: para pagar use «Registrar pago» arriba.</small>
+  </section>
+
+  <div class="botones-formulario"><button type="button" class="boton" data-cerrar-modal>Cerrar</button></div>
+</form>

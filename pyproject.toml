@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "conta-pridalac"
+version = "0.0.1"
+description = "Contabilidad para pequeñas empresas (sustituye a Gestión MGD)"
+requires-python = ">=3.11"
+dependencies = [
+    "sqlalchemy>=2.0",
+    "dbfread>=2.0",
+    "openpyxl>=3.1",
+    "reportlab>=4",
+    "pypdf>=4",
+    "fastapi>=0.110",
+    "uvicorn>=0.29",
+    "jinja2>=3.1",
+    "python-multipart>=0.0.9",
+    "cryptography>=42",  # abrir el certificado .pfx de la empresa (su contraseña es la de entrada a la empresa)
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "httpx>=0.27"]
+tools = ["xlrd>=2"]  # sólo para extraer los diseños de registro en .xls de la AEAT (tools/extraer_diseno_111.py)
+
+[project.scripts]
+conta-web = "conta_pridalac.web.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+conta_pridalac = ["web/plantillas/*.html", "web/static/*", "web/ayuda/*.md", "ficheros_aeat/*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+markers = ["datos_reales: necesita los datos de MGD/el programa anterior (se omite si no están)"]

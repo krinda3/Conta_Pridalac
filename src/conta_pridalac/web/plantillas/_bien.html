@@ -1,0 +1,94 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+<form class="formulario bien" hx-post="{{ base }}/guardar" hx-target="#modal-contenido" hx-swap="innerHTML">
+  <button type="submit" name="accion" value="guardar" class="oculto" tabindex="-1" aria-hidden="true"></button>
+  <h2 id="modal-titulo">{{ b.descripcion if b else 'Nuevo bien de inversión' }}{% if b %} <span class="suave">· {{ estado }}</span>{% endif %}</h2>
+  {% for er in errores %}<div class="aviso error" role="alert">{{ er }}</div>{% endfor %}
+  {% if b %}<input type="hidden" name="id" value="{{ b.id }}">{% endif %}
+  <datalist id="dl-cuentas">{% for codigo, nombre in cuentas %}<option value="{{ codigo }}">{{ nombre }}</option>{% endfor %}</datalist>
+
+  <section class="bloque">
+    <h3>Ficha</h3>
+    <div class="rejilla">
+      <div class="campo ancho3"><label for="descripcion">Descripción <span class="req">*</span></label><input id="descripcion" name="descripcion" type="text" value="{{ valores.descripcion }}" autocomplete="off"></div>
+      <div class="campo"><label for="tipo_elemento">Tipo de elemento</label><input id="tipo_elemento" name="tipo_elemento" type="text" value="{{ valores.tipo_elemento }}" autocomplete="off"></div>
+      <div class="campo"><label for="numero_factura_compra">Nº de factura de compra</label><input id="numero_factura_compra" name="numero_factura_compra" type="text" value="{{ valores.numero_factura_compra }}" autocomplete="off"></div>
+      <div class="campo"><label for="fecha_adquisicion">Fecha de adquisición</label><input id="fecha_adquisicion" name="fecha_adquisicion" type="text" value="{{ valores.fecha_adquisicion }}" placeholder="DDMMAA" autocomplete="off"></div>
+      <div class="campo"><label for="fecha_funcionamiento">Puesta en funcionamiento <span class="req">*</span></label><input id="fecha_funcionamiento" name="fecha_funcionamiento" type="text" value="{{ valores.fecha_funcionamiento }}" placeholder="DDMMAA" autocomplete="off"></div>
+      <div class="campo"><label for="precio_compra">Precio de compra <span class="req">*</span></label><input class="num" id="precio_compra" name="precio_compra" type="text" value="{{ valores.precio_compra }}" inputmode="decimal" autocomplete="off"></div>
+      <div class="campo"><label for="valor_residual">Valor residual</label><input class="num" id="valor_residual" name="valor_residual" type="text" value="{{ valores.valor_residual }}" inputmode="decimal" autocomplete="off"></div>
+      <div class="campo"><label for="periodos_vida">Vida útil (periodos)</label><input class="num" id="periodos_vida" name="periodos_vida" type="text" value="{{ valores.periodos_vida }}" inputmode="numeric" autocomplete="off"></div>
+      <div class="campo"><label for="coeficiente_pct">o % por periodo</label><input class="num" id="coeficiente_pct" name="coeficiente_pct" type="text" value="{{ valores.coeficiente_pct }}" inputmode="decimal" autocomplete="off"></div>
+      <div class="campo"><label for="meses_periodo">Meses por periodo</label><input class="num" id="meses_periodo" name="meses_periodo" type="text" value="{{ valores.meses_periodo }}" inputmode="numeric" autocomplete="off"></div>
+      <div class="campo"><label for="iva_soportado">IVA soportado</label><input class="num" id="iva_soportado" name="iva_soportado" type="text" value="{{ valores.iva_soportado }}" inputmode="decimal" autocomplete="off"></div>
+      <div class="campo"><label for="cuenta_inmovilizado">Cuenta del inmovilizado <span class="req">*</span></label><input id="cuenta_inmovilizado" name="cuenta_inmovilizado" type="text" list="dl-cuentas" value="{{ valores.cuenta_inmovilizado }}" autocomplete="off"></div>
+      <div class="campo"><label for="cuenta_amortizacion">Amortización acumulada <span class="req">*</span></label><input id="cuenta_amortizacion" name="cuenta_amortizacion" type="text" list="dl-cuentas" value="{{ valores.cuenta_amortizacion }}" autocomplete="off"></div>
+      <div class="campo"><label for="cuenta_dotacion">Dotación (gasto) <span class="req">*</span></label><input id="cuenta_dotacion" name="cuenta_dotacion" type="text" list="dl-cuentas" value="{{ valores.cuenta_dotacion }}" autocomplete="off"></div>
+      <div class="campo ancho3"><label for="notas">Notas</label><input id="notas" name="notas" type="text" value="{{ valores.notas }}" autocomplete="off"></div>
+    </div>
+    <button type="submit" name="accion" value="guardar" class="boton primario">{{ 'Guardar la ficha' if b else 'Crear el bien y generar su cuadro' }}</button>
+    {% if b and amortizado %}<small class="suave">Con periodos amortizados sólo se cambian los datos descriptivos; para el resto, deshaga antes las amortizaciones.</small>{% endif %}
+  </section>
+
+  {% if b %}
+  <section class="bloque">
+    <h3>Cuadro de amortización</h3>
+    <table class="lineas">
+      <thead><tr><th>Año</th><th>Desde</th><th>Hasta</th><th class="num">Previsto</th><th class="num">Contabilizado</th><th>Asiento</th><th></th></tr></thead>
+      <tbody>
+      {% for a, aqui in cuadro %}
+      <tr {% if a.importe_contable is none and aqui %}class="periodo-pendiente"{% endif %}>
+        <td>{{ a.anio }}</td><td>{{ a.desde | fmt('fecha') }}</td><td>{{ a.hasta | fmt('fecha') }}</td>{% if a.asiento_id %}<td class="num">{{ a.importe_previsto | fmt('dinero') }}</td>
+        <td class="num">{{ a.importe_contable | fmt('dinero') if a.importe_contable is not none else '—' }}</td>{% else %}
+        <td class="num"><input class="importe-cuadro" name="prev-{{ a.id }}" type="text" inputmode="decimal" value="{{ a.importe_previsto | fmt('dinero') }}" autocomplete="off" aria-label="Previsto {{ a.anio }}"></td>
+        <td class="num"><input class="importe-cuadro" name="cont-{{ a.id }}" type="text" inputmode="decimal" value="{{ a.importe_contable | fmt('dinero') if a.importe_contable is not none else '' }}" placeholder="—" autocomplete="off" aria-label="Contabilizado {{ a.anio }}"></td>{% endif %}
+        <td>{% if a.asiento_id %}sí{% elif a.importe_contable is not none %}<span class="suave">importe fijado a mano</span>{% endif %}</td>
+        <td>
+          {% if a.importe_contable is none and a.importe_previsto > 0 %}
+            {% if aqui %}<button type="submit" name="accion" value="amortizar-{{ a.id }}" class="boton">Amortizar</button>{% else %}<span class="suave" title="Acaba en otro ejercicio">otro ejercicio</span>{% endif %}
+          {% elif a.asiento_id and aqui %}
+            <button type="submit" name="accion" value="deshacer-{{ a.id }}" class="boton plano">Deshacer</button>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+      </tbody>
+      <tfoot><tr><td colspan="3">Totales</td><td class="num">{{ previsto | fmt('dinero') }}</td><td class="num">{{ amortizado | fmt('dinero') }}</td><td colspan="2"></td></tr></tfoot>
+    </table>
+    <button type="submit" name="accion" value="periodos" class="boton">Guardar los importes del cuadro</button>
+    <small class="suave">Puede corregir a mano el previsto de un periodo y, si ya lo contabilizó por fuera, escribir el contabilizado (queda «fijado a mano», sin asiento; vacío lo deja pendiente). Los periodos con asiento propio se cambian tras «Deshacer». Si cambia después el precio, la vida o el coeficiente, los periodos pendientes se recalculan.</small><br>
+    <small class="suave">«Amortizar» crea el asiento de dotación (gasto al Debe, amortización acumulada al Haber) fechado al fin del periodo. Sólo se pueden contabilizar los periodos que acaban en el ejercicio {{ ctx.ejercicio.anio }}; para el resto, abra su ejercicio.</small>
+  </section>
+
+  <section class="bloque">
+    <h3>Baja</h3>
+    {% if not b.fecha_baja %}
+    <div class="rejilla">
+      <div class="campo"><label for="fecha_baja">Fecha de baja</label><input id="fecha_baja" name="fecha_baja" type="text" value="{{ valores.fecha_baja }}" placeholder="DDMMAA" autocomplete="off"></div>
+      <div class="campo ancho2"><label for="causa_baja">Causa</label><input id="causa_baja" name="causa_baja" type="text" value="{{ valores.causa_baja }}" autocomplete="off"></div>
+      <div class="campo"><label><input type="checkbox" name="no_amortizar_en_baja" {% if valores.no_amortizar_en_baja %}checked{% endif %}> No amortizar en el ejercicio de baja</label></div>
+    </div>
+    <button type="submit" name="accion" value="baja" class="boton peligro">Dar de baja</button>
+    <small class="suave">Acorta el cuadro y prorratea el último periodo. El asiento de baja se contabiliza después.</small>
+    {% else %}
+    <p>Dado de baja el <strong>{{ b.fecha_baja | fmt('fecha') }}</strong>{% if b.causa_baja %} · {{ b.causa_baja }}{% endif %}.
+      {% if not b.asiento_baja_id %}<button type="submit" name="accion" value="anular-baja" class="boton plano">Anular la baja</button>{% endif %}</p>
+    {% if not b.asiento_baja_id %}
+    <h4>Asiento de baja</h4>
+    <div class="rejilla">
+      <div class="campo"><label for="fecha_asiento_baja">Fecha del asiento</label><input id="fecha_asiento_baja" name="fecha_asiento_baja" type="text" value="{{ valores.fecha_asiento_baja }}" placeholder="DDMMAA" autocomplete="off"></div>
+      <div class="campo"><label for="precio_venta">Precio de venta (si se vende)</label><input class="num" id="precio_venta" name="precio_venta" type="text" value="{{ valores.precio_venta }}" inputmode="decimal" autocomplete="off"></div>
+      <div class="campo"><label for="cuenta_cobro">Cuenta de cobro de la venta</label><input id="cuenta_cobro" name="cuenta_cobro" type="text" list="dl-cuentas" value="{{ valores.cuenta_cobro }}" autocomplete="off"></div>
+      <div class="campo"><label for="cuenta_perdidas">Pérdidas del inmovilizado</label><input id="cuenta_perdidas" name="cuenta_perdidas" type="text" list="dl-cuentas" value="{{ valores.cuenta_perdidas }}" autocomplete="off"></div>
+      <div class="campo"><label for="cuenta_beneficios">Beneficios del inmovilizado</label><input id="cuenta_beneficios" name="cuenta_beneficios" type="text" list="dl-cuentas" value="{{ valores.cuenta_beneficios }}" autocomplete="off"></div>
+    </div>
+    <button type="submit" name="accion" value="asiento-baja" class="boton primario">Contabilizar la baja</button>
+    <small class="suave">Retira el coste, salda la amortización acumulada y lleva la diferencia con el precio de venta a pérdidas o beneficios. Exige tener amortizados todos los periodos anteriores a la baja. El IVA de la venta va en la factura emitida.</small>
+    {% else %}
+    <p>Asiento de baja contabilizado. <button type="submit" name="accion" value="deshacer-asiento-baja" class="boton plano">Deshacer el asiento de baja</button></p>
+    {% endif %}
+    {% endif %}
+  </section>
+  {% endif %}
+
+  <div class="botones-formulario"><button type="button" class="boton" data-cerrar-modal>Cerrar</button></div>
+</form>

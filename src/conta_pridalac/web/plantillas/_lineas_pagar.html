@@ -1,0 +1,37 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+<form class="formulario" hx-post="{{ base }}/accion/pagar" hx-target="#modal-contenido" hx-swap="innerHTML">
+  <h2 id="modal-titulo">Pagar vencimientos con las líneas marcadas</h2>
+  {% for er in errores %}<div class="aviso error" role="alert">{{ er }}</div>{% endfor %}
+  <input type="hidden" name="paso" value="resumen">
+  {% for l in lineas %}<input type="hidden" name="ids" value="l{{ l.id }}">{% endfor %}
+  <p class="suave">Marque abajo los vencimientos pendientes que pagan estas líneas: uno o varios, y las líneas pueden ser una o varias (un descuento o una devolución, con importe en negativo, se resta). En el siguiente paso verá las sumas y decidirá qué hacer con la diferencia.</p>
+  <section class="bloque">
+    <h3>Líneas del extracto ({{ lineas | length }})</h3>
+    <table class="tabla">
+      <thead><tr><th>Fecha</th><th>Banco</th><th>Concepto</th><th class="num">Se paga</th></tr></thead>
+      <tbody>
+        {% for l in lineas %}<tr><td>{{ (l.fecha_valor or l.fecha) | fmt('fecha') }}</td><td>{{ l.banco.nombre }}</td><td>{{ l.texto }}</td><td class="num">{{ (-l.importe) | fmt('dinero') }}</td></tr>{% endfor %}
+      </tbody>
+      <tfoot><tr><td colspan="3">Total del extracto</td><td class="num">{{ total | fmt('dinero') }}</td></tr></tfoot>
+    </table>
+  </section>
+  <section class="bloque">
+    <h3>Vencimientos pendientes de pago ({{ vencimientos | length }})</h3>
+    <div style="max-height: 16rem; overflow: auto">
+      <table class="tabla">
+        <thead><tr><th></th><th>Vence</th><th>Proveedor</th><th>Factura</th><th class="num">Pendiente</th></tr></thead>
+        <tbody>
+          {% for v, pte, nom in vencimientos %}
+          <tr><td><input type="checkbox" name="venc" value="{{ v.id }}" id="v-{{ v.id }}" aria-label="Marcar {{ nom }}"></td>
+              <td><label for="v-{{ v.id }}">{{ v.fecha | fmt('fecha') }}</label></td><td><label for="v-{{ v.id }}">{{ nom }}</label></td>
+              <td>{{ v.factura.numero_factura if v.factura else '' }}</td><td class="num">{{ pte | fmt('dinero') }}</td></tr>
+          {% else %}<tr><td colspan="5" class="suave">Todas las facturas recibidas del ejercicio están pagadas. Si falta la factura de estas líneas, cárguela en «Recibidas del trimestre» o dé de alta la factura a mano en Facturas recibidas, y vuelva aquí.</td></tr>{% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+  <div class="botones-formulario">
+    <button type="button" class="boton" data-cerrar-modal>Cancelar</button>
+    <button type="submit" class="boton primario">Ver el resumen</button>
+  </div>
+</form>

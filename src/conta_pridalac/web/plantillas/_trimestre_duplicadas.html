@@ -1,0 +1,29 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+{% if quitadas is not none %}
+<div class="formulario importacion">
+  <h2 id="modal-titulo">Duplicadas quitadas</h2>
+  <p class="suave">{% if quitadas %}Se han quitado {{ quitadas | length }} factura(s) de la lista de trabajo. Siguen guardadas, así que volver a cargar el mismo Excel no las devuelve.{% else %}No había ninguna posible duplicada.{% endif %}</p>
+  <div class="botones-formulario"><button type="button" class="boton primario" data-cerrar-modal hx-get="{{ base }}/tabla" hx-target="#tabla" hx-swap="innerHTML">Cerrar</button></div>
+</div>
+{% elif parejas %}
+<form class="formulario" hx-post="{{ base }}/accion/duplicadas" hx-target="#modal-contenido" hx-swap="innerHTML">
+  <h2 id="modal-titulo">Quitar facturas duplicadas</h2>
+  <p class="suave">Verifactu reconoce a veces la factura y también el justificante de su pago. Estas parejas tienen el mismo proveedor, el mismo importe, fechas cercanas y un número parecido. Se quita la segunda (la del justificante) y se deja la primera.</p>
+  <table class="tabla">
+    <thead><tr><th>Se queda</th><th>Se quita</th><th>Importe</th></tr></thead>
+    <tbody>{% for copia, original in parejas %}
+      <tr><td>{{ original.nombre }} · nº {{ original.numero_factura or '—' }} · {{ original.fecha_factura | fmt('fecha') }}</td><td>{{ copia.numero_factura or '—' }} · {{ copia.fecha_factura | fmt('fecha') }}</td><td>{{ copia.total | fmt('dinero') }}</td></tr>
+    {% endfor %}</tbody>
+  </table>
+  <div class="botones-formulario">
+    <button type="button" class="boton" data-cerrar-modal>Cancelar</button>
+    <button type="submit" class="boton primario">Quitar {{ parejas | length }} duplicada(s)</button>
+  </div>
+</form>
+{% else %}
+<div class="formulario importacion">
+  <h2 id="modal-titulo">Quitar facturas duplicadas</h2>
+  <p class="suave">No se ha encontrado ninguna posible duplicada en la lista de trabajo.</p>
+  <div class="botones-formulario"><button type="button" class="boton primario" data-cerrar-modal>Cerrar</button></div>
+</div>
+{% endif %}

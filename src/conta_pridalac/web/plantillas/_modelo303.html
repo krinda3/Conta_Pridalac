@@ -1,0 +1,185 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+<form class="formulario liquidacion" hx-post="{{ base }}/guardar" hx-target="#modal-contenido" hx-swap="innerHTML" hx-encoding="multipart/form-data">
+  <h2 id="modal-titulo">Modelo 303 · {{ periodo }}T {{ ctx.ejercicio.anio }} <span class="estado-iva {{ estado | lower | replace(' ', '-') | replace('(', '') | replace(')', '') }}">{{ estado }}</span></h2>
+  <p class="suave">Del {{ desde | fmt('fecha') }} al {{ hasta | fmt('fecha') }} · {{ ctx.empresa.nombre }}</p>
+  {% for er in errores %}<div class="aviso error" role="alert">{{ er }}</div>{% endfor %}
+  <input type="hidden" name="id" value="{{ id }}">
+
+  {% if registrada %}
+  <section class="bloque">
+    <h3>Presentación registrada</h3>
+    <p>Justificante <strong>{{ registrada.justificante }}</strong> · CSV <strong>{{ registrada.csv }}</strong> · presentada el {{ registrada.presentada_en.strftime('%d/%m/%Y a las %H:%M') if registrada.presentada_en else '—' }}
+      por {{ registrada.presentada_por or '—' }} · {{ registrada.tipo_presentacion }} · resultado {{ registrada.resultado | fmt('dinero') }}{% if registrada.nrc %} · NRC {{ registrada.nrc }}{% endif %}</p>
+    <p>{% if registrada.respuesta_ruta %}<a href="/e/{{ ctx.slug }}/{{ ctx.ejercicio.anio }}/modelo-303/{{ registrada.id }}/justificante" target="_blank">Ver el justificante (PDF)</a>{% endif %}
+      {% if registrada.fichero_ruta %} · <a href="/e/{{ ctx.slug }}/{{ ctx.ejercicio.anio }}/modelo-303/{{ registrada.id }}/fichero" download>Fichero presentado</a>{% endif %}</p>
+    <small class="suave">Diseño de registro {{ registrada.diseno_version }} · SHA-256 del fichero {{ (registrada.fichero_sha256 or '')[:16] }}…</small>
+  </section>
+  {% endif %}
+  {% if presentada %}
+  <div class="aviso info">
+    Este trimestre ya está presentado{% if presentada.fecha_emision is defined and presentada.fecha_emision %} (emitido el {{ presentada.fecha_emision | fmt('fecha') }}){% endif %}.
+    Sólo se puede rectificar con una autoliquidación rectificativa.
+    {% if presentada.__class__.__name__ == 'DeclaracionPresentada' %}<a href="/e/{{ ctx.slug }}/{{ ctx.ejercicio.anio }}/declaraciones?abrir={{ presentada.id }}">Ver la declaración</a>{% endif %}
+  </div>
+  {% endif %}
+
+  <section class="bloque">
+    <h3>Plazos y pago</h3>
+    <p>Presentación: del {{ plazo.inicio | fmt('fecha') }} al {{ plazo.fin | fmt('fecha') }}. Domiciliación: hasta el {{ plazo.fin_domiciliacion | fmt('fecha') }}{% if not plazo.confirmado %} <span class="suave">(fecha estimada: la AEAT aún no la ha publicado)</span>{% endif %}.</p>
+    {% if pago %}
+    <p>Contabilidad: liquidación {{ pago.asiento }}, a pagar {{ pago.importe | fmt('dinero') }}{% if pago.fecha %} el {{ pago.fecha | fmt('fecha') }}{% endif %} ·
+      {% if pago.pendiente <= 0 %}<strong>pagado</strong>{% else %}pendiente {{ pago.pendiente | fmt('dinero') }}{% endif %}</p>
+    {% if pago.pagos %}<table class="lineas"><tbody>{% for fecha, banco, importe, texto in pago.pagos %}<tr><td>{{ fecha | fmt('fecha') }}</td><td>{{ banco }}</td><td>{{ texto }}</td><td class="num">{{ importe | fmt('dinero') }}</td></tr>{% endfor %}</tbody></table>{% endif %}
+    {% else %}<p class="suave">Todavía no hay liquidación del IVA de este trimestre con importe a pagar en la contabilidad.</p>{% endif %}
+  </section>
+
+  {% if calculo %}
+  <section class="bloque totales-factura">
+    <div><span class="suave">IVA devengado (27)</span><strong>{{ calculo[27] | fmt('dinero') }}</strong></div>
+    <div><span class="suave">Total a deducir (45)</span><strong>{{ calculo[45] | fmt('dinero') }}</strong></div>
+    {% if calculo[78] %}<div><span class="suave">Compensado de antes (78)</span><strong>{{ calculo[78] | fmt('dinero') }}</strong></div>{% endif %}
+    <div><span class="suave">Resultado (71)</span><strong>{{ calculo[71] | fmt('dinero') }}</strong></div>
+    {% if calculo[87] %}<div><span class="suave">Pendiente de compensar (87)</span><strong>{{ calculo[87] | fmt('dinero') }}</strong></div>{% endif %}
+  </section>
+
+  <section class="bloque">
+    <h3>Controles</h3>
+    {% for h in hallazgos %}
+    <div class="aviso {{ 'error' if h.gravedad == 'ERROR' else 'warning' }}">{{ 'Error' if h.gravedad == 'ERROR' else 'Aviso' }}: {{ h.mensaje }}</div>
+    {% else %}
+    <div class="aviso info">Sin errores ni avisos.</div>
+    {% endfor %}
+    {% if hay_errores %}<small class="suave">Mientras haya errores se puede guardar el borrador pero no generar el fichero.</small>{% endif %}
+  </section>
+
+  <section class="bloque">
+    <h3>Casillas</h3>
+    <table class="lineas">
+      <thead><tr><th>Casilla</th><th>Concepto</th><th class="num">Importe</th></tr></thead>
+      <tbody>
+      {% for casilla, importe in casillas %}
+      <tr><td>{{ casilla }}</td><td>{{ etiquetas.get(casilla, '') }}</td><td class="num">{{ importe | fmt('dinero') }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+  {% if desglose %}
+  <section class="bloque">
+    <details>
+      <summary><strong>Desglose por factura</strong> ({{ calculo.lineas | length }} líneas)</summary>
+      {% for casilla in desglose | sort %}
+      <h4>Casilla {{ casilla }} · {{ etiquetas.get(casilla, '') }}</h4>
+      <table class="lineas">
+        <thead><tr><th>Factura</th><th>Nº</th><th class="num">Base</th><th class="num">Cuota</th></tr></thead>
+        <tbody>{% for l in desglose[casilla] %}<tr><td>{{ l.sentido }} {{ l.numero }}</td><td>{{ l.numero_factura or '' }}</td><td class="num">{{ l.base | fmt('dinero') }}</td><td class="num">{{ l.cuota | fmt('dinero') }}</td></tr>{% endfor %}</tbody>
+      </table>
+      {% endfor %}
+    </details>
+  </section>
+  {% endif %}
+  {% endif %}
+
+  <section class="bloque">
+    <h3>Datos que se introducen a mano</h3>
+    <div class="campo"><label for="prorrata">Regularización por prorrata (casilla 44)</label>
+      <input type="text" id="prorrata" name="prorrata" value="{{ entradas.prorrata }}" inputmode="decimal" placeholder="p. ej. -792,51 (negativo si se deduce menos)">
+      <small class="suave">Sólo en el último trimestre si la empresa aplica prorrata. Es el importe de su hoja de cálculo.</small></div>
+    <div class="campo"><label for="bolsa">Cuotas a compensar al empezar el trimestre (110)</label>
+      <input type="text" id="bolsa" name="bolsa" value="{{ entradas.bolsa }}" inputmode="decimal" placeholder="vacío = lo presentado en el trimestre anterior">
+      <small class="suave">Sólo si el trimestre anterior no consta como presentado.</small></div>
+    <div class="campo"><label for="tipo_presentacion">Tipo de presentación</label>
+      <select id="tipo_presentacion" name="tipo_presentacion">
+        {% for t in tipos_de_presentacion %}<option value="{{ t }}" {% if entradas.tipo_presentacion == t %}selected{% endif %}>{{ t | capitalize }}</option>{% endfor %}
+      </select></div>
+    {% if entradas.tipo_presentacion == 'rectificativa' %}
+    <label><input type="checkbox" name="baja_domiciliacion" {% if entradas.baja %}checked{% endif %}> La anterior se domició y esta es favorable: modificar o dar de baja la domiciliación</label>
+    {% endif %}
+    <div class="campo"><label for="forma_pago">Forma de pago (si hay importe a ingresar)</label>
+      <select id="forma_pago" name="forma_pago">
+        <option value="domiciliacion" {% if entradas.domiciliar %}selected{% endif %}>Domiciliación en la cuenta de la empresa</option>
+        <option value="nrc" {% if not entradas.domiciliar %}selected{% endif %}>Ingreso con NRC (si ya no se puede domiciliar)</option>
+      </select></div>
+    {% if calculo and not entradas.domiciliar and calculo[71] > 0 %}
+    <div class="aviso info datos-pago">
+      <strong>Datos para obtener el NRC</strong> (en el banco o en la sede de la AEAT):
+      modelo <strong>303</strong> · ejercicio <strong>{{ ctx.ejercicio.anio }}</strong> · periodo <strong>{{ periodo }}T</strong> · NIF <strong>{{ ctx.empresa.nif or '—' }}</strong> ·
+      {{ ctx.empresa.nombre }} · importe exacto <strong>{{ calculo[71] | fmt('dinero') }} €</strong> (casilla 71).
+      <br><small>Si después cambia el importe, el NRC ya no vale: hay que pagar de nuevo con el importe correcto.</small>
+    </div>
+    {% endif %}
+    <div class="campo"><label for="nrc">NRC (22 caracteres)</label>
+      <input type="text" id="nrc" name="nrc" value="{{ entradas.nrc }}" maxlength="22" autocomplete="off" placeholder="sólo con ingreso: se obtiene pagando en la sede de la AEAT">
+      <small class="suave">No va en el fichero: se pide al presentar. Se obtiene en la sede («Pago mediante cargo en cuenta») con el importe exacto de la casilla 71.</small></div>
+    {% if rectificativas %}
+    <div class="campo"><strong>Facturas rectificativas recibidas del trimestre</strong>
+      <small class="suave">Marque las que rectifican deducciones de trimestres anteriores (van a las casillas 40 y 41); las demás restan de la 28 y la 29.</small>
+      {% for f in rectificativas %}<label><input type="checkbox" name="rectifican" value="{{ f.id }}" {% if f.id | string in entradas.rectifican %}checked{% endif %}> R {{ f.numero }} · {{ f.numero_factura or '' }} · {{ f.total | fmt('dinero') }}</label>{% endfor %}
+    </div>
+    {% endif %}
+  </section>
+
+  {% if fichero %}
+  <section class="bloque">
+    <h3>Fichero generado</h3>
+    <p><a href="/e/{{ ctx.slug }}/{{ ctx.ejercicio.anio }}/modelo-303/{{ fichero.id }}/fichero" download>{{ fichero.fichero_nombre }}</a> · {{ tipo_de_fichero }} · {{ fichero.estado }}</p>
+    <small class="suave">Guardado en <code>{{ ctx.config.almacen }}/{{ fichero.fichero_ruta }}</code></small>
+    <button type="button" class="boton plano" hx-post="{{ base }}/{{ fichero.id }}/carpeta" hx-swap="none">Abrir la carpeta</button><br>
+    <button type="button" class="boton primario" hx-post="{{ base }}/{{ fichero.id }}/copiar" hx-swap="none" title="Copia el fichero a {{ ctx.config.descargas }} con un nombre que se entienda">2.- Copiar para presentar</button>
+    <button type="button" class="boton plano" hx-post="{{ base }}/{{ fichero.id }}/carpeta-copia" hx-swap="none">Abrir la carpeta de copias</button>
+    <small class="suave">Para subirlo en la sede: <code>{{ ctx.config.descargas }}</code></small><br>
+    {% if contenido %}
+    <details><summary><strong>Ver lo que lleva el fichero</strong> ({{ contenido[1] | length }} casillas con importe)</summary>
+      <table class="lineas"><tbody>{% for etiqueta, valor in contenido[0] %}<tr><td>{{ etiqueta }}</td><td>{{ valor }}</td></tr>{% endfor %}</tbody></table>
+      <table class="lineas"><thead><tr><th>Casilla</th><th>Concepto</th><th class="num">Importe</th></tr></thead>
+        <tbody>{% for casilla, importe in contenido[1].items() %}<tr><td>{{ casilla }}</td><td>{{ etiquetas.get(casilla, '') }}</td><td class="num">{{ importe | fmt('dinero') }}</td></tr>{% endfor %}</tbody></table>
+    </details>
+    {% elif fichero.fichero_ruta %}<small class="suave"><strong>El fichero no está en el almacén o ha cambiado desde que se generó.</strong> Genérelo de nuevo.</small>{% endif %}
+    <small class="suave">Diseño de registro {{ fichero.diseno_version }} · huella SHA-256 {{ fichero.fichero_sha256[:16] }}…
+      {% if fichero.diseno_version != diseno_actual %}· <strong>el diseño vigente es {{ diseno_actual }}: vuelva a generarlo</strong>{% endif %}</small>
+  </section>
+  {% endif %}
+
+  {% if para_la_sede %}
+  <section class="bloque presentar-en-la-sede">
+    <h3>Presentar en la sede de la AEAT</h3>
+    <ol>
+      <li>Descargue el fichero generado (arriba) y entre en la sede con el certificado: {% for texto, url in enlaces_sede %}<a href="{{ url }}" target="_blank" rel="noopener">{{ texto }}</a>{% if not loop.last %} · {% endif %}{% endfor %}.</li>
+      <li>Importe el fichero y compruebe que los datos de la sede son los de esta lista antes de firmar y enviar:
+        tipo de declaración <strong>{{ para_la_sede.tipo_declaracion }} · {{ tipo_de_fichero }}</strong>, NIF <strong>{{ ctx.empresa.nif or '—' }}</strong>, {{ ctx.empresa.nombre }}, {{ periodo }}T {{ ctx.ejercicio.anio }}
+        {% for casilla, importe in comprobar %}· casilla {{ casilla }}: <strong>{{ importe | fmt('dinero') }}</strong> {% endfor %}
+        {% if para_la_sede.tipo_declaracion == 'U' %}· IBAN de domiciliación <strong>{{ ctx.empresa.iban or '—' }}</strong>{% elif para_la_sede.tipo_declaracion == 'I' %}· NRC <strong>{{ para_la_sede.nrc or 'sin anotar' }}</strong>{% endif %}.</li>
+      <li>Descargue el PDF «Información de la presentación» que devuelve la sede y súbalo aquí: de él se leen solos el nº de justificante, el CSV, la fecha y hora y el NRC, y se comprueba que corresponde a este fichero.</li>
+    </ol>
+    <div class="campo"><label for="pdf">PDF de la presentación</label><input type="file" id="pdf" name="pdf" accept="application/pdf"></div>
+    <button type="submit" name="accion" value="registrar" class="boton primario" {% if cerrado %}disabled{% endif %}>3.- Registrar la presentación</button>
+    <details><summary>Si el PDF no se lee, teclear los datos</summary>
+      <div class="campo"><label for="justificante">Nº de justificante (13 dígitos)</label><input type="text" id="justificante" name="justificante" inputmode="numeric" maxlength="13" autocomplete="off"></div>
+      <div class="campo"><label for="csv">Código seguro de verificación (16 caracteres)</label><input type="text" id="csv" name="csv" maxlength="16" autocomplete="off"></div>
+      <div class="campo"><label for="fecha_presentacion">Fecha y hora de presentación</label>
+        <input type="date" id="fecha_presentacion" name="fecha_presentacion" max="{{ hoy.isoformat() }}"> <input type="time" name="hora_presentacion"></div>
+    </details>
+    <details><summary>La sede lo ha rechazado</summary>
+      <div class="campo"><label for="motivo">Errores que muestra la sede</label><textarea id="motivo" name="motivo" rows="3"></textarea></div>
+      <button type="submit" name="accion" value="rechazar" class="boton peligro" {% if cerrado %}disabled{% endif %}>Marcar como rechazada</button>
+    </details>
+  </section>
+  {% endif %}
+
+  {% if borrador and borrador.eventos %}
+  <section class="bloque">
+    <details><summary><strong>Historial</strong></summary>
+      <table class="lineas"><tbody>{% for e in borrador.eventos %}<tr><td>{{ e.momento.strftime('%d/%m/%Y %H:%M') }}</td><td>{{ e.usuario or '' }}</td><td>{{ e.evento }}</td><td>{{ e.detalle or '' }}</td></tr>{% endfor %}</tbody></table>
+    </details>
+  </section>
+  {% endif %}
+
+  <div class="botones-formulario">
+    <button type="button" class="boton" data-cerrar-modal>Cerrar</button>
+    {% if sin_presentar %}<button type="submit" name="accion" value="eliminar_sin_presentar" class="boton peligro" {% if cerrado %}disabled{% endif %}
+      onclick="return confirm('¿Eliminar {{ sin_presentar }} borrador(es) o fichero(s) sin presentar de este trimestre, con sus ficheros? Lo presentado no se toca.')">Eliminar lo no presentado ({{ sin_presentar }})</button>{% endif %}
+    <button type="submit" name="accion" value="ver" class="boton plano">Recalcular la vista</button>
+    <button type="submit" name="accion" value="guardar" class="boton" {% if cerrado or not calculo %}disabled{% endif %}>Guardar borrador</button>
+    <button type="submit" name="accion" value="generar" class="boton primario" {% if cerrado or not calculo or hay_errores %}disabled{% endif %} {% if hay_errores %}title="Hay errores en los controles"{% endif %}>1.- Generar el fichero</button>
+  </div>
+</form>

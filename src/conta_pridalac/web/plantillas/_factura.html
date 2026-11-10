@@ -1,0 +1,38 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+<div class="factura {% if adjuntos %}con-vista{% endif %}">
+  <form id="f-factura" class="formulario" hx-post="{{ base }}/guardar" hx-encoding="multipart/form-data" hx-target="#modal-contenido" hx-swap="innerHTML">
+    <h2 id="modal-titulo">{{ 'Editar' if e.id else 'Nueva' }} · {{ listado.titulo | lower }}</h2>
+    {% for er in errores %}<div class="aviso error" role="alert">{{ er }}</div>{% endfor %}
+    {% if e.hay_duplicada %}<div class="campo"><label><input type="checkbox" name="confirmar_duplicada" value="on" {% if e.confirmar_duplicada %}checked{% endif %}> Grabar de todos modos: es otra factura distinta</label></div>{% endif %}
+    {% if e.id %}<input type="hidden" name="id" value="{{ e.id }}">{% endif %}
+    {% include "_factura_cuerpo.html" %}
+
+    <section class="bloque">
+      <h3>Justificantes (PDF o JPG)</h3>
+      {% if adjuntos %}
+      <ul class="lista-adjuntos">
+        {% for a in adjuntos %}
+        <li>
+          <a href="/e/{{ ctx.slug }}/{{ ctx.ejercicio.anio }}/adjuntos/{{ a.id }}" target="vista">{{ a.nombre }}</a>
+          {% if not a.presente %}<span class="etiqueta-aviso">fichero ausente</span>{% endif %}
+          <label class="quitar"><input type="checkbox" name="quitar_adjunto" value="{{ a.id }}"> quitar</label>
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+      <input type="file" name="ficheros" accept="application/pdf,image/jpeg,.pdf,.jpg,.jpeg" multiple>
+      <small class="suave">Se guardan al grabar la factura. Un fichero idéntico a uno ya adjunto no se repite.</small>
+    </section>
+
+    <div class="botones-formulario">
+      <button type="button" class="boton" data-cerrar-modal>Cancelar</button>
+      <button type="submit" class="boton primario">Guardar factura</button>
+    </div>
+  </form>
+  {% if adjuntos %}
+  <aside class="vista" aria-label="Vista del justificante">
+    {% set primero = adjuntos | selectattr("presente") | first %}
+    <iframe name="vista" title="Justificante" {% if primero %}src="/e/{{ ctx.slug }}/{{ ctx.ejercicio.anio }}/adjuntos/{{ primero.id }}"{% endif %}></iframe>
+  </aside>
+  {% endif %}
+</div>

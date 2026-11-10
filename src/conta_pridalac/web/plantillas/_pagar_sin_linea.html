@@ -1,0 +1,38 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+{% if hecho %}
+<div class="formulario importacion">
+  <h2 id="modal-titulo">Pagos registrados</h2>
+  <p class="suave">{{ hecho.n }} vencimiento(s) pagados por <strong>{{ hecho.banco }}</strong>, sin línea de extracto.</p>
+  <div class="botones-formulario"><button type="button" class="boton primario" data-cerrar-modal hx-get="{{ base }}/tabla" hx-target="#tabla" hx-swap="innerHTML">Cerrar</button></div>
+</div>
+{% else %}
+<form class="formulario" hx-post="{{ base }}/accion/sin_linea" hx-target="#modal-contenido" hx-swap="innerHTML">
+  <h2 id="modal-titulo">Pagar sin línea de extracto</h2>
+  {% for er in errores %}<div class="aviso error" role="alert">{{ er }}</div>{% endfor %}
+  <p class="suave">Para lo que adelantó un socio con su dinero (o un banco del que no hay extracto): marque los vencimientos, elija quién pagó y el día. Se registra un pago por vencimiento.</p>
+  <section class="bloque">
+    <h3>Vencimientos pendientes de pago ({{ vencimientos | length }})</h3>
+    <div style="max-height: 16rem; overflow: auto">
+      <table class="tabla">
+        <thead><tr><th></th><th>Vence</th><th>Proveedor</th><th>Factura</th><th class="num">Pendiente</th></tr></thead>
+        <tbody>
+          {% for v, pte, nom in vencimientos %}
+          <tr><td><input type="checkbox" name="venc" value="{{ v.id }}" id="v-{{ v.id }}" aria-label="Marcar {{ nom }}"></td>
+              <td><label for="v-{{ v.id }}">{{ v.fecha | fmt('fecha') }}</label></td><td><label for="v-{{ v.id }}">{{ nom }}</label></td>
+              <td>{{ v.factura.numero_factura if v.factura else '' }}</td><td class="num">{{ pte | fmt('dinero') }}</td></tr>
+          {% else %}<tr><td colspan="5" class="suave">Todas las facturas recibidas del ejercicio están pagadas. Si falta la factura de estas líneas, cárguela en «Recibidas del trimestre» o dé de alta la factura a mano en Facturas recibidas, y vuelva aquí.</td></tr>{% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+  <div class="campos">
+    <div class="campo"><label for="banco">Pagadas por</label>
+      <select id="banco" name="banco"><option value="">—</option>{% for id, nombre in bancos %}<option value="{{ id }}">{{ nombre }}</option>{% endfor %}</select></div>
+    <div class="campo"><label for="fecha">Fecha del pago</label><input id="fecha" name="fecha" type="text" placeholder="vacía = la del vencimiento" autocomplete="off"></div>
+  </div>
+  <div class="botones-formulario">
+    <button type="button" class="boton" data-cerrar-modal>Cancelar</button>
+    <button type="submit" class="boton primario">Pagar con este banco</button>
+  </div>
+</form>
+{% endif %}

@@ -1,0 +1,8 @@
+{# Cómo se protege la entrada a una empresa. Variables: `protecciones` (clave → texto) y `proteccion_actual`. #}
+<fieldset class="campo proteccion">
+  <legend>Protección de acceso</legend>
+  {% for clave, texto in protecciones.items() %}
+  <label class="opcion-radio"><input type="radio" name="proteccion" value="{{ clave }}" {% if clave == proteccion_actual %}checked{% endif %}> {{ texto }}</label>
+  {% endfor %}
+  <span class="suave">Con certificado, al abrir la empresa se pide la contraseña de su certificado (.pfx). Sin protección, se abre directamente. Es una barrera de pantalla para que no entre cualquiera desde este navegador, no un cifrado de los datos.</span>
+</fieldset>

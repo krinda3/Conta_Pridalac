@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block titulo %}Programa · Conta Pridalac{% endblock %}
+{% block contenido %}
+<p><a href="/">← Empresas</a></p>
+<h1>Programa</h1>
+<p class="suave">La versión de Conta instalada en este equipo. «Buscar actualizaciones» pregunta a GitHub si hay cambios nuevos (no cambia nada); «Actualizar ahora» los descarga, después de hacer una copia de seguridad ligera de cada empresa. Los datos no se tocan. Tras actualizar, hay que cerrar el programa y volver a abrirlo.</p>
+
+{% if mensaje %}<div class="aviso {{ 'error' if tipo == 'error' else 'info' }}" role="status">{{ mensaje }}</div>{% endif %}
+
+{% if resultado %}
+<section class="tarjeta">
+  <h2>{{ 'Programa actualizado' if resultado.ok and resultado.actualizado else ('El programa ya estaba al día' if resultado.ok else 'No se ha actualizado') }}</h2>
+  {% for linea in resultado.informe %}<p class="{{ 'aviso error' if not resultado.ok and loop.first else 'suave' }}">{{ linea }}</p>{% endfor %}
+  {% if resultado.actualizado %}<div class="aviso" role="status"><strong>Cierre el programa y vuelva a abrirlo</strong> con su icono para usar la versión nueva. Cierre también esta pestaña del navegador.</div>{% endif %}
+</section>
+{% endif %}
+
+<section class="tarjeta">
+  <table class="lineas"><tbody>
+    <tr><td>Versión instalada</td><td><strong>{{ version }}</strong></td></tr>
+    {% if origen %}<tr><td>Repositorio</td><td>{{ origen }}</td></tr>{% endif %}
+    {% if motivo %}
+    <tr><td>Actualizar</td><td><span class="aviso aviso-amarillo">{{ motivo }}</span></td></tr>
+    {% else %}
+    <tr><td>Última comprobación</td><td>
+      {% if not ultima %}todavía no se ha buscado
+      {% elif ultima.pendientes < 0 %}{{ cuando }} · {{ ultima.mensaje }}
+      {% elif ultima.pendientes == 0 %}{{ cuando }} · el programa está al día
+      {% else %}{{ cuando }} · <strong>hay {{ ultima.pendientes }} cambio(s) nuevo(s)</strong>{% endif %}
+    </td></tr>
+    {% endif %}
+  </tbody></table>
+
+  {% if not motivo %}
+  <div class="botones-formulario" style="margin-top:.8rem; display:flex; gap:.6rem; flex-wrap:wrap">
+    <form method="post" action="/programa/comprobar" onsubmit="this.querySelector('button').disabled=true;this.querySelector('button').textContent='Buscando…'"><button type="submit" class="boton">Buscar actualizaciones</button></form>
+    {% if ultima and ultima.pendientes > 0 and not resultado %}
+    <form method="post" action="/programa/actualizar" onsubmit="this.querySelector('button').disabled=true;this.querySelector('button').textContent='Actualizando…'"><button type="submit" class="boton primario">Actualizar ahora</button></form>
+    {% endif %}
+  </div>
+  {% endif %}
+</section>
+
+{% if ultima and ultima.pendientes > 0 and not resultado %}
+<section class="tarjeta">
+  <h2>{{ ultima.pendientes }} cambio(s) nuevo(s)</h2>
+  <ul>{% for l in ultima.cambios %}<li>{{ l }}</li>{% endfor %}</ul>
+  <p class="suave">Al pulsar «Actualizar ahora» se hace antes una <strong>copia de seguridad ligera</strong> de cada empresa{% if empresas %} ({{ empresas | join(', ') }}){% endif %}; si falla alguna, no se actualiza. Se niega a actualizar si hay ficheros del programa modificados a mano en este equipo.</p>
+</section>
+{% endif %}
+{% endblock %}

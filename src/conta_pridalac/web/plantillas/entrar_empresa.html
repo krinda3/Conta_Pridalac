@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block titulo %}Abrir {{ empresa_nombre }}{% endblock %}
+{% block contenido %}
+<h1>{{ empresa_nombre }}</h1>
+<form class="formulario entrada" method="post" action="/empresa/{{ slug }}/entrar">
+  <p class="suave">Esta empresa está protegida con la contraseña de su certificado digital.</p>
+  {% if error %}<div class="aviso error" role="alert">{{ error }}</div>{% endif %}
+  <input type="hidden" name="volver" value="{{ volver }}">
+  <div class="campo"><label for="contrasena">Contraseña del certificado</label><input id="contrasena" name="contrasena" type="password" autocomplete="off" autofocus></div>
+  <div class="botones-formulario"><a class="boton" href="/">Cancelar</a><button type="submit" class="boton primario">Abrir la empresa</button></div>
+</form>
+{% endblock %}

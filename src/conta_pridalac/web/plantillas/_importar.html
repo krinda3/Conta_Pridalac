@@ -1,0 +1,12 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+<form class="formulario" hx-post="{{ base }}/importar" hx-encoding="multipart/form-data" hx-target="#modal-contenido" hx-swap="innerHTML">
+  <h2 id="modal-titulo">Importar {{ 'facturas recibidas' if listado.sentido == 'R' else 'facturas emitidas' }} desde Excel</h2>
+  {% for er in errores %}<div class="aviso error" role="alert">{{ er }}</div>{% endfor %}
+  <p class="suave">Elija el Excel de conciliación que genera Verifactu (una fila por factura, con su pago{{ ' o cobro' if listado.sentido == 'E' else '' }} y la ruta de su PDF).
+    Se le enseñará qué se va a importar antes de grabar nada: las facturas que ya existen (mismo {{ 'proveedor' if listado.sentido == 'R' else 'cliente' }} y mismo número) no se vuelven a grabar.</p>
+  <div class="campo"><label for="fichero">Fichero Excel (.xlsx)</label><input id="fichero" name="fichero" type="file" accept=".xlsx,.xlsm"></div>
+  <div class="botones-formulario">
+    <button type="button" class="boton" data-cerrar-modal>Cancelar</button>
+    <button type="submit" class="boton primario">Ver qué se importaría</button>
+  </div>
+</form>

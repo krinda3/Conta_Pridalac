@@ -1,0 +1,12 @@
+<div class="formulario importacion">
+  <h2 id="modal-titulo">Paso {{ paso.numero }} · {{ paso.titulo }}</h2>
+  <dl class="datos-ficha">
+    <div><dt>Estado</dt><dd>{{ paso.rotulo }}</dd></div>
+    <div><dt>Situación</dt><dd>{{ paso.detalle }}</dd></div>
+    <div><dt>Qué hacer</dt><dd>{{ paso.ayuda }}</dd></div>
+  </dl>
+  <div class="botones-formulario">
+    <button type="button" class="boton" data-cerrar-modal>Cerrar</button>
+    <a class="boton primario" href="{{ enlace }}">Abrir la pantalla</a>
+  </div>
+</div>

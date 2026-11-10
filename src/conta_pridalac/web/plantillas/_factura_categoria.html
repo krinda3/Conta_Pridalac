@@ -1,0 +1,31 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+<form class="formulario" hx-post="{{ base }}/accion/categoria" hx-target="#modal-contenido" hx-swap="innerHTML">
+  <h2 id="modal-titulo">Categoría de las facturas marcadas</h2>
+  {% for er in errores %}<div class="aviso error" role="alert">{{ er }}</div>{% endfor %}
+  <p class="suave">Es la categoría de <strong>análisis</strong> del gasto (la del informe «Gastos por categoría»). No cambia ningún asiento, así que se puede cambiar también en ejercicios cerrados o con el trimestre presentado; el cambio queda en el registro de cambios.</p>
+  <section class="bloque">
+    <h3>{{ facturas | length }} factura(s) marcada(s)</h3>
+    <div style="max-height: 10rem; overflow: auto">
+      <table class="tabla">
+        <thead><tr><th>Nº</th><th>Fecha</th><th>Proveedor</th><th class="num">Total</th></tr></thead>
+        <tbody>
+          {% for f in facturas %}
+          <tr><td>{{ f.numero }}<input type="hidden" name="ids" value="{{ f.id }}"></td><td>{{ f.fecha_contable | fmt('fecha') }}</td>
+              <td>{{ f.tercero.nombre if f.tercero else '' }}</td><td class="num">{{ f.total | fmt('dinero') }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+  <div class="campos">
+    <div class="campo"><label for="categoria">Categoría</label>
+      <select id="categoria" name="categoria">
+        <option value="auto">— la que sale de su cuenta de gasto —</option>
+        {% for c in categorias %}<option value="{{ c.id }}">{{ c.nombre }}</option>{% endfor %}
+      </select></div>
+  </div>
+  <div class="botones-formulario">
+    <button type="button" class="boton" data-cerrar-modal>Cancelar</button>
+    <button type="submit" class="boton primario">Asignar a las marcadas</button>
+  </div>
+</form>

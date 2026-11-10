@@ -1,0 +1,20 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+<form class="formulario" hx-post="{{ base }}/accion/amortizar" hx-target="#modal-contenido" hx-swap="innerHTML">
+  <h2 id="modal-titulo">Amortizar los bienes de inversión del ejercicio {{ ctx.ejercicio.anio }}</h2>
+  {% for er in errores %}<div class="aviso error" role="alert">{{ er }}</div>{% endfor %}
+  {% if pendientes.filas %}
+  <p class="suave">Se crea un asiento de dotación por cada periodo pendiente que acaba en el ejercicio:</p>
+  <table class="lineas">
+    <thead><tr><th>Bien</th><th>Desde</th><th>Hasta</th><th class="num">Importe</th></tr></thead>
+    <tbody>{% for bien, desde, hasta, importe in pendientes.filas %}<tr><td>{{ bien }}</td><td>{{ desde | fmt('fecha') }}</td><td>{{ hasta | fmt('fecha') }}</td><td class="num">{{ importe | fmt('dinero') }}</td></tr>{% endfor %}</tbody>
+    <tfoot><tr><td colspan="3"><strong>Total</strong></td><td class="num"><strong>{{ pendientes.total | fmt('dinero') }}</strong></td></tr></tfoot>
+  </table>
+  <div class="campo"><label for="hasta">Sólo los periodos que acaban hasta (opcional)</label><input id="hasta" name="hasta" type="text" value="{{ hasta }}" placeholder="DDMMAA" autocomplete="off"></div>
+  {% else %}
+  <div class="aviso info">No hay periodos pendientes de amortizar en este ejercicio.</div>
+  {% endif %}
+  <div class="botones-formulario">
+    <button type="button" class="boton" data-cerrar-modal>Cancelar</button>
+    {% if pendientes.filas %}<button type="submit" class="boton primario">Amortizar {{ pendientes.filas | length }} periodo(s)</button>{% endif %}
+  </div>
+</form>

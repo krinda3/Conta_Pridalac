@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block titulo %}Conta Pridalac{% endblock %}
+{% block contenido %}
+{% if mensaje %}<div class="aviso {{ 'error' if tipo == 'error' else 'info' }}" role="status">{{ mensaje }}</div>{% endif %}
+{% if datos.guiado %}
+<h1>¿Dónde están sus datos?</h1>
+<div class="aviso warning" role="alert">
+  <p><strong>No encuentro datos en la carpeta que Conta tiene configurada:</strong> <code>{{ datos.raiz }}</code></p>
+  <p>{% if not datos.existe %}{{ datos.problema }}.{% else %}La carpeta existe pero no tiene empresas.{% endif %} Si usa una unidad externa o de red, compruebe que está conectada y pulse «Reintentar».</p>
+</div>
+<div style="display:flex; gap:.6rem; flex-wrap:wrap; margin:.8rem 0">
+  <a class="boton primario" href="/">Reintentar</a>
+  <a class="boton" href="/datos">Elegir la carpeta donde están mis datos</a>
+  <form method="post" action="/datos/empezar" onsubmit="return confirm('Se empezará con datos nuevos en esta carpeta. Si sus datos están en otra carpeta o unidad, elíjala en vez de esto. ¿Seguir?')"><button type="submit" class="boton">Empezar con datos nuevos aquí</button></form>
+</div>
+{% else %}
+<h1>Empresas</h1>
+<p><a class="boton primario" href="/empresa-nueva">Añadir empresa</a></p>
+{% if empresas %}
+<div class="tarjetas">
+  {% for e in empresas %}
+  <section class="tarjeta">
+    <h2>{{ e.nombre }}{% if e.protegida %} <span title="Protegida con la contraseña de su certificado">🔒</span>{% endif %}</h2>
+    <p class="suave">{{ e.slug }}</p>
+    <p>Ejercicios:
+      {% for anio, cerrado in e.ejercicios %}
+      <a class="etiqueta" href="/e/{{ e.slug }}/{{ anio }}">{{ anio }}{% if cerrado %} · cerrado{% endif %}</a>
+      {% endfor %}
+    </p>
+    <p><a href="/empresa/{{ e.slug }}">Ficha de la empresa</a></p>
+  </section>
+  {% endfor %}
+</div>
+{% else %}
+<div class="aviso info">
+  <p>Todavía no hay ninguna empresa en <code>{{ carpeta }}</code>.</p>
+  <p>Pulse <strong>Añadir empresa</strong> para crear una nueva o para traer una copia de Gestión MGD.</p>
+</div>
+{% endif %}
+{% endif %}
+<h2 style="margin-top:2rem">Programa y normativa</h2>
+<div class="tarjetas">
+  <section class="tarjeta">
+    <h2><a href="/programa">Programa</a></h2>
+    <p class="suave">{{ sistema.version or 'versión desconocida' }}</p>
+    <p>{% if sistema.programa_aviso %}<span class="etiqueta-aviso">{{ sistema.programa | capitalize }}</span>{% elif sistema.programa %}{{ sistema.programa | capitalize }}{% endif %}</p>
+    <p><a href="/programa">Buscar actualizaciones y actualizar</a></p>
+  </section>
+  <section class="tarjeta">
+    <h2><a href="/normativa">Normativa y diseños</a></h2>
+    <p class="suave">Modelos de la AEAT, depósito de cuentas, calendario, plan contable</p>
+    <p>{% if sistema.normativa_aviso %}<span class="etiqueta-aviso">{{ sistema.normativa | capitalize }}</span>{% elif sistema.normativa %}{{ sistema.normativa | capitalize }}{% endif %}</p>
+    <p><a href="/normativa">Ver y consultar la sede</a></p>
+  </section>
+  <section class="tarjeta">
+    <h2><a href="/datos">Carpeta de datos</a></h2>
+    <p class="suave" style="word-break:break-all">{{ datos.raiz }}</p>
+    <p><a href="/datos">Ver, usar otra o mover los datos</a></p>
+  </section>
+</div>
+{% endblock %}

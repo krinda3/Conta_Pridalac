@@ -1,0 +1,39 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+{% set rotulos = {"copiado": "Se copiará", "igual": "Ya está copiado", "con_sufijo": "Existe otro distinto: se copiará con sufijo", "fallo": "No se puede leer la carpeta"} %}
+{% if hecho %}
+<div class="formulario importacion">
+  <h2 id="modal-titulo">Justificantes copiados</h2>
+  <section class="bloque totales-factura">
+    <div><span class="suave">Copiados</span><strong>{{ hecho.cuantos("copiado") + hecho.cuantos("con_sufijo") }}</strong></div>
+    <div><span class="suave">Ya estaban</span><strong>{{ hecho.cuantos("igual") }}</strong></div>
+    <div><span class="suave">Con error</span><strong>{{ hecho.cuantos("fallo") }}</strong></div>
+  </section>
+  {% for c in hecho.copias if c.estado == "fallo" %}<div class="aviso warning">{{ c.nombre }}: {{ c.mensaje }}</div>{% endfor %}
+  <p class="suave">Carpeta: {{ carpeta }}</p>
+  <div class="botones-formulario"><button type="button" class="boton primario" data-cerrar-modal hx-get="{{ base }}/tabla" hx-target="#tabla" hx-swap="innerHTML">Cerrar</button></div>
+</div>
+{% elif carpeta is none %}
+<div class="formulario">
+  <h2 id="modal-titulo">Copiar los justificantes de Hacienda</h2>
+  <div class="aviso warning">Esta empresa no tiene configurada la carpeta de copia. Indíquela en los <a href="/empresa/{{ ctx.slug }}">datos de la empresa</a>, con {año} donde va el año (por ejemplo <code>D:\OneDrive\EMPRESA\Hacienda {año}</code>).</div>
+  <div class="botones-formulario"><button type="button" class="boton" data-cerrar-modal>Cerrar</button></div>
+</div>
+{% else %}
+<form class="formulario" hx-post="{{ base }}/accion/copiar" hx-target="#modal-contenido" hx-swap="innerHTML" hx-disabled-elt="find button[type=submit]" hx-on::before-request="document.getElementById('espera-copia').hidden = false">
+  <h2 id="modal-titulo">Copiar los justificantes de Hacienda del {{ etiqueta }}</h2>
+  <p class="suave">Se copian los PDF que ha devuelto la AEAT de los modelos presentados del {{ etiqueta }} a <strong>{{ carpeta }}</strong>; los de trimestres anteriores no se tocan. Si la carpeta no existe se crea; un fichero que ya está idéntico no se vuelve a copiar, y uno distinto con el mismo nombre no se pisa.</p>
+  {% if previsto.copias %}
+  <div style="max-height: 18rem; overflow: auto">
+    <table class="tabla">
+      <thead><tr><th>Fichero</th><th>Qué pasará</th></tr></thead>
+      <tbody>{% for c in previsto.copias %}<tr><td>{{ c.nombre }}</td><td>{{ rotulos.get(c.estado, c.estado) }}</td></tr>{% endfor %}</tbody>
+    </table>
+  </div>
+  {% else %}<p class="suave">No hay modelos presentados del {{ etiqueta }} con su PDF en Conta.</p>{% endif %}
+  <div id="espera-copia" class="aviso info" role="status" hidden><strong>Copiando los justificantes…</strong> Puede tardar un poco; el diálogo cambiará solo cuando termine.</div>
+  <div class="botones-formulario">
+    <button type="button" class="boton" data-cerrar-modal>Cancelar</button>
+    {% if previsto.copias %}<button type="submit" class="boton primario">Copiar</button>{% endif %}
+  </div>
+</form>
+{% endif %}

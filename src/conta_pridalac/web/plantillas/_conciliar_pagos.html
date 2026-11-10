@@ -1,0 +1,45 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/conciliar-pagos" %}  {# se usa también desde «Líneas sin factura» #}
+<form class="formulario" hx-post="{{ base }}/guardar" hx-target="#modal-contenido" hx-swap="innerHTML">
+  <h2 id="modal-titulo">Conciliar pagos</h2>
+  {% for er in errores %}<div class="aviso error" role="alert">{{ er }}</div>{% endfor %}
+  <input type="hidden" name="clave" value="{{ clave }}">
+
+  <section class="bloque">
+    <h3>Vencimientos que se pagan</h3>
+    <table class="lineas">
+      <thead><tr><th>Fecha</th><th>Proveedor</th><th>Factura</th><th class="num">Pendiente</th></tr></thead>
+      <tbody>{% for v, pte in vencimientos %}<tr><td>{{ v.fecha | fmt('fecha') }}</td><td>{{ proveedor_de(v) }}</td><td>{{ v.factura.numero_factura if v.factura else '' }}</td><td class="num">{{ pte | fmt('dinero') }}</td></tr>{% endfor %}</tbody>
+      <tfoot><tr><td colspan="3">Total pendiente</td><td class="num">{{ pte | fmt('dinero') }}</td></tr></tfoot>
+    </table>
+  </section>
+
+  <section class="bloque">
+    <h3>Líneas del extracto con las que se pagan</h3>
+    <table class="lineas">
+      <thead><tr><th>Fecha</th><th>Banco</th><th>Concepto</th><th class="num">Importe</th></tr></thead>
+      <tbody>{% for l in lineas %}<tr><td>{{ (l.fecha_valor or l.fecha) | fmt('fecha') }}</td><td>{{ l.banco.nombre }}</td><td>{{ l.texto }}{% if l.mas_datos %} · {{ l.mas_datos }}{% endif %}</td><td class="num">{{ (-l.importe) | fmt('dinero') }}</td></tr>{% endfor %}</tbody>
+      <tfoot><tr><td colspan="3">Total del extracto</td><td class="num">{{ pagado | fmt('dinero') }}</td></tr></tfoot>
+    </table>
+  </section>
+
+  {% if dif == 0 %}
+  <div class="aviso info">Los importes coinciden: se saldan los vencimientos y cada línea queda como un movimiento de banco con su fecha.</div>
+  <input type="hidden" name="modo" value="parcial">
+  {% else %}
+  <section class="bloque">
+    <h3>Diferencia de {{ (dif | abs) | fmt('dinero') }} € {{ 'por pagar' if dif > 0 else 'pagada de más' }}</h3>
+    {% if dif > 0 %}
+    <label class="marca"><input type="radio" name="modo" value="parcial" {% if valores.modo != 'diferencia' %}checked{% endif %}> <strong>Pago parcial</strong>: el resto sigue pendiente en el vencimiento</label>
+    {% endif %}
+    <label class="marca"><input type="radio" name="modo" value="diferencia" {% if valores.modo == 'diferencia' or dif < 0 %}checked{% endif %}> <strong>Saldar con una diferencia</strong> que se lleva a la cuenta:</label>
+    <div class="campo"><input id="cuenta" name="cuenta" type="text" value="{{ valores.cuenta }}" list="dl-cuentas" placeholder="subcuenta (un gasto o un ingreso)" autocomplete="off"></div>
+    <datalist id="dl-cuentas">{% for codigo, nom in cuentas %}<option value="{{ codigo }}">{{ nom }}</option>{% endfor %}</datalist>
+    <small class="suave">{% if dif > 0 %}Se pagó menos de lo debido: la diferencia es un ingreso o un descuento.{% else %}Se pagó de más (propina, redondeo…): la diferencia es un gasto.{% endif %}</small>
+  </section>
+  {% endif %}
+
+  <div class="botones-formulario">
+    <button type="button" class="boton" data-cerrar-modal>Cancelar</button>
+    <button type="submit" class="boton primario">Conciliar</button>
+  </div>
+</form>

@@ -1,0 +1,24 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+{% if estado.carpeta is none %}
+<div class="formulario">
+  <h2 id="modal-titulo">Copia de seguridad en la carpeta de la empresa</h2>
+  <div class="aviso warning">Esta empresa no tiene configurada la carpeta de las copias de seguridad. Indíquela en los <a href="/empresa/{{ ctx.slug }}">datos de la empresa</a> (por ejemplo <code>D:\OneDrive\EMPRESA\COPIAS CONTABILIDAD Conta-Pridalac</code>).</div>
+  <div class="botones-formulario"><button type="button" class="boton" data-cerrar-modal>Cerrar</button></div>
+</div>
+{% else %}
+<form class="formulario" hx-post="{{ base }}/accion/respaldo" hx-target="#modal-contenido" hx-swap="innerHTML" hx-disabled-elt="find button[type=submit]" hx-on::before-request="document.getElementById('espera-respaldo').hidden = false">
+  <h2 id="modal-titulo">Copia de seguridad en la carpeta de la empresa</h2>
+  {% for er in errores %}<div class="aviso error" role="alert">{{ er }}</div>{% endfor %}
+  <p class="suave">Se hace una copia completa (la base de datos y todos los justificantes), se verifica, se lleva a <strong>{{ estado.carpeta }}</strong> y allí se vuelve a verificar. Si no llega bien, se borra y se avisa.</p>
+  <dl class="datos-ficha">
+    <div><dt>Última copia en esa carpeta</dt><dd>{% if estado.ultima %}{{ estado.ultima.momento.strftime('%d/%m/%Y %H:%M') }} · {{ estado.ultima.nombre }}{% else %}ninguna{% endif %}</dd></div>
+    <div><dt>Último cambio en la contabilidad</dt><dd>{{ estado.ultimo_cambio.strftime('%d/%m/%Y %H:%M') if estado.ultimo_cambio else '—' }}</dd></div>
+    <div><dt>Situación</dt><dd>{% if estado.al_dia %}la última copia es posterior al último cambio{% elif estado.ultima %}hay cambios posteriores a la última copia{% else %}todavía no hay copia{% endif %}</dd></div>
+  </dl>
+  <div id="espera-respaldo" class="aviso info" role="status" hidden><strong>Haciendo la copia de seguridad…</strong> Copia la base de datos y todos los justificantes, la verifica, la lleva a la carpeta y allí la vuelve a verificar. Puede tardar un poco: no cierre esta ventana, se cerrará sola cuando termine.</div>
+  <div class="botones-formulario">
+    <button type="button" class="boton" data-cerrar-modal>Cancelar</button>
+    <button type="submit" class="boton primario">Hacer la copia ahora</button>
+  </div>
+</form>
+{% endif %}

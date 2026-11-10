@@ -1,0 +1,82 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+<form class="formulario liquidacion" hx-post="{{ base }}/guardar" hx-target="#modal-contenido" hx-swap="innerHTML" hx-encoding="multipart/form-data">
+  <h2 id="modal-titulo">Legalización de libros · ejercicio {{ ej.anio }} <span class="estado-iva">{{ 'Enviada' if enviada else ('Preparada' if leg else 'Sin preparar') }}</span></h2>
+  <p class="suave">{{ ctx.empresa.nombre }} · Registro Mercantil de {{ ctx.empresa.registro_provincia or '—' }} · del {{ ej.fecha_inicio | fmt('fecha') }} al {{ ej.fecha_fin | fmt('fecha') }}</p>
+  {% for er in errores %}<div class="aviso error" role="alert">{{ er }}</div>{% endfor %}
+  <input type="hidden" name="id" value="{{ id }}">
+
+  <section class="bloque">
+    <h3>Controles</h3>
+    {% for h in hallazgos %}
+    <div class="aviso {{ 'error' if h.gravedad == 'ERROR' else 'warning' }}">{{ 'Error' if h.gravedad == 'ERROR' else 'Aviso' }}: {{ h.mensaje }}</div>
+    {% else %}
+    <div class="aviso info">Sin errores ni avisos.</div>
+    {% endfor %}
+    {% for a in avisos_memoria %}<div class="aviso info">Memoria: {{ a }}</div>{% endfor %}
+    {% if hay_errores %}<small class="suave">Mientras haya errores no se pueden generar los libros.</small>{% endif %}
+  </section>
+
+  <section class="bloque">
+    <h3>Los cuatro libros</h3>
+    <table class="lineas">
+      <thead><tr><th>Libro</th><th>Nº de libro en el Registro</th><th>Legalizado antes hasta</th><th>PDF</th><th class="num">Páginas</th></tr></thead>
+      <tbody>
+      {% for orden, clave, nombre, prefijo in libros_def %}
+      <tr>
+        <td>{{ nombre }}</td>
+        <td><input type="number" min="1" name="numero_{{ clave }}" value="{{ entradas[clave] }}" style="width:5rem" {% if enviada %}disabled{% endif %}>
+        </td>
+        <td><input type="text" name="anterior_{{ clave }}" value="{{ entradas['anterior_' ~ clave] }}" placeholder="vacío = primera vez" style="width:8rem" autocomplete="off" {% if enviada %}disabled{% endif %}></td>
+        <td>{% if libros.get(clave) and libros[clave].fichero_ruta %}<a href="{{ base }}/{{ leg.id }}/libro/{{ clave }}" target="_blank">{{ libros[clave].fichero_nombre }}</a>
+          {% else %}<span class="suave">sin generar</span>{% endif %}</td>
+        <td class="num">{{ libros[clave].paginas if libros.get(clave) and libros[clave].paginas else '' }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <small class="suave">«Legalizado antes hasta» es el fin del ejercicio de la legalización anterior de ese libro (vacío si es la primera vez): va en el ZIP de Legalia2. El diario y el inventario suben un número cada año; los de socios y actas conservan el suyo. Los PDF se guardan en <code>{{ ctx.config.almacen }}/{{ '%03d' % ctx.empresa.codigo }}/{{ ej.anio }}/libros</code>.</small>
+  </section>
+
+  <script>
+    // un libro que no es el primero (nº > 1) necesita la fecha de su legalización anterior: se propone el fin del año anterior si está vacía
+    document.querySelectorAll('input[name^="numero_"]').forEach(function (n) {
+      n.addEventListener('input', function () {
+        var f = document.querySelector('input[name="anterior_' + n.name.slice(7) + '"]');
+        if (f && !f.value && parseInt(n.value, 10) > 1) f.value = '31/12/{{ ej.anio - 1 }}';
+      });
+    });
+  </script>
+
+  <section class="bloque">
+    <h3>ZIP para Legalia2</h3>
+    {% if leg and leg.zip_ruta %}
+    <p><a href="{{ base }}/{{ leg.id }}/libro/zip">{{ leg.zip_nombre }}</a> · SHA-256 {{ (leg.zip_sha256 or '')[:16] }}… · lleva los cuatro libros, <code>DATOS.TXT</code> y <code>NOMBRES.TXT</code>. En Legalia2: importar el ZIP del programa anterior.</p>
+    <button type="submit" name="accion" value="copiar_zip" class="boton primario">2.- Copiar el ZIP a {{ ctx.config.descargas }}</button>
+    <p class="suave"><strong>Ahora, en Legalia2:</strong> importe el ZIP, revíselo y envíe la legalización.</p>
+    {% elif faltan_para_el_zip %}
+    <div class="aviso warning">Para el ZIP faltan en la ficha de la empresa: {{ faltan_para_el_zip | join(', ') }}. Los PDF se generan igualmente.</div>
+    {% else %}<p class="suave">Se prepara al generar los libros.</p>{% endif %}
+  </section>
+
+  <section class="bloque">
+    <h3>Envío al Registro Mercantil</h3>
+    {% if enviada %}
+    <p>Enviada el <strong>{{ leg.enviada_en | fmt('fecha') }}</strong>{% if leg.referencia %} · referencia <strong>{{ leg.referencia }}</strong>{% endif %}{% if leg.numero_entrada %} · nº de entrada <strong>{{ leg.numero_entrada }}</strong>{% endif %}.
+      {% if leg.acuse_ruta %}<a href="{{ base }}/{{ leg.id }}/libro/acuse" target="_blank">Ver el acuse (PDF)</a>{% endif %}</p>
+    {% else %}
+    <p class="suave">Cuando Legalia2 envíe la legalización, suba aquí el «Acuse de recibo» (PDF) que devuelve el Registro: de él se leen la fecha, la referencia y el nº de entrada, y la legalización queda como enviada y deja de avisar el plazo.</p>
+    <div class="campo"><label for="acuse">Acuse de recibo (PDF)</label><input type="file" id="acuse" name="acuse" accept="application/pdf"></div>
+    <details><summary>Si no tiene el PDF</summary>
+      <div class="campo"><label for="fecha_envio">Fecha del envío</label><input type="text" id="fecha_envio" name="fecha_envio" placeholder="DDMMAA" autocomplete="off"></div>
+      <div class="campo"><label for="referencia">Referencia del documento</label><input type="text" id="referencia" name="referencia" placeholder="B000000102025" autocomplete="off"></div>
+    </details>
+    <button type="submit" name="accion" value="registrar_envio" class="boton primario">3.- Registrar el envío</button>
+    {% endif %}
+  </section>
+
+  <div class="botones-formulario">
+    <button type="button" class="boton" data-cerrar-modal>Cerrar</button>
+    <button type="submit" name="accion" value="ver" class="boton plano">Recalcular la vista</button>
+    <button type="submit" name="accion" value="generar" class="boton primario" {% if enviada or hay_errores %}disabled{% endif %}>1.- Generar los libros</button>
+  </div>
+</form>

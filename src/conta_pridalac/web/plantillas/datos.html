@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block titulo %}Carpeta de datos · Conta Pridalac{% endblock %}
+{% block contenido %}
+<p><a href="/">← Empresas</a></p>
+<h1>Carpeta de datos</h1>
+<p class="suave">Todo lo de Conta (las bases de las empresas, los justificantes y las copias de seguridad) vive en una carpeta. Aquí se ve cuál es y se puede <strong>usar otra que ya tenga datos</strong> o <strong>mover los datos</strong> a otro sitio (otro disco, una carpeta sincronizada, una unidad de red).</p>
+
+{% if mensaje %}<div class="aviso {{ 'error' if tipo == 'error' else 'info' }}" role="status">{{ mensaje }}</div>{% endif %}
+
+{% if traslado %}
+<section class="tarjeta" id="traslado">
+  {% if traslado.estado == 'copiando' %}
+  <h2>Moviendo los datos…</h2>
+  <p class="suave">De <code>{{ traslado.origen }}</code> a <code>{{ traslado.destino }}</code>. <strong>No cierre el programa ni el navegador</strong> hasta que termine; mientras tanto el resto del programa está bloqueado para que nadie escriba en lo que se copia.</p>
+  <progress id="avance" max="{{ traslado.total or 1 }}" value="{{ traslado.hecho }}" style="width:100%"></progress>
+  <p id="que" class="suave">{{ traslado.mensaje }}</p>
+  <script>
+    (function () {
+      var avance = document.getElementById('avance'), que = document.getElementById('que');
+      function mirar() {
+        fetch('/datos/estado').then(function (r) { return r.json(); }).then(function (t) {
+          if (t.estado !== 'copiando') { location.reload(); return; }
+          avance.max = t.total || 1; avance.value = t.hecho; que.textContent = t.mensaje;
+          setTimeout(mirar, 1500);
+        }).catch(function () { setTimeout(mirar, 3000); });
+      }
+      setTimeout(mirar, 1000);
+    })();
+  </script>
+  {% elif traslado.estado == 'listo' %}
+  <h2>Datos movidos</h2>
+  <div class="aviso info" role="status">{{ traslado.mensaje }}</div>
+  <p>Conta ya usa <code>{{ traslado.destino }}</code>.</p>
+  <form method="post" action="/datos/mover/cerrar"><button type="submit" class="boton primario">Entendido</button></form>
+  {% else %}
+  <h2>No se ha movido nada</h2>
+  <div class="aviso error" role="alert">{{ traslado.error }}</div>
+  <p class="suave">Lo copiado a medias se ha borrado y los datos de origen no se han tocado.</p>
+  <form method="post" action="/datos/mover/cerrar"><button type="submit" class="boton">Entendido</button></form>
+  {% endif %}
+</section>
+{% endif %}
+
+<section class="tarjeta">
+  <h2>Dónde están ahora</h2>
+  <table class="lineas"><tbody>
+    <tr><td>Carpeta de datos</td><td><code>{{ raiz }}</code></td></tr>
+    <tr><td>Cómo se ha elegido</td><td>{% if origen == 'variable' %}la variable de entorno <code>CONTA_DATOS</code>{% elif origen == 'guardada' %}elegida desde Conta (guardada en este equipo){% else %}la de por defecto, junto al programa{% endif %}</td></tr>
+    {% if i.existe %}
+    <tr><td>Empresas</td><td>{{ i.empresas | length }}{% if i.empresas %}: {{ i.empresas | join(', ') }}{% endif %}</td></tr>
+    <tr><td>Tamaño</td><td>{{ mb(i.total) }} (bases {{ mb(i.bytes_bd) }} · justificantes {{ mb(i.bytes_justificantes) }} · copias {{ mb(i.bytes_copias) }})</td></tr>
+    {% else %}
+    <tr><td>Estado</td><td><span class="aviso error">{{ i.problema }}</span></td></tr>
+    {% endif %}
+    {% if usa_candado %}<tr><td>Candado</td><td>{{ candado }}</td></tr>{% endif %}
+  </tbody></table>
+</section>
+
+{% if fija %}
+<div class="aviso info" role="status">La carpeta de datos la fija la variable de entorno <code>CONTA_DATOS</code>. Para cambiarla desde aquí, quite esa variable y vuelva a arrancar el programa.</div>
+{% elif not (traslado and traslado.estado == 'copiando') %}
+<section class="tarjeta">
+  <h2>Usar otra carpeta que ya tiene datos</h2>
+  <p class="suave">Por ejemplo, la carpeta de datos de otro equipo (en un disco externo o en una carpeta sincronizada), o una que se movió de sitio. Tiene que contener una subcarpeta <code>bd</code> con las bases de las empresas. No se copia ni se borra nada: sólo se cambia cuál se usa.</p>
+  <form method="post" action="/datos/usar" class="formulario">
+    <div class="campo doble"><label for="ruta">Carpeta</label>
+      <div class="con-boton"><input id="ruta" name="ruta" type="text" autocomplete="off" placeholder="D:\Datos\ContaPridalac"><button type="button" class="boton" data-examinar="ruta">Examinar…</button></div></div>
+    <div class="botones-formulario"><button type="submit" class="boton primario">Usar esta carpeta</button></div>
+  </form>
+</section>
+
+<section class="tarjeta">
+  <h2>Mover los datos a otra carpeta</h2>
+  <p class="suave">Copia <strong>todo</strong> (bases, justificantes y copias) a una carpeta <strong>vacía o nueva</strong>, comprueba que la copia es idéntica (integridad de cada base y huella de cada fichero) y sólo entonces pasa a usarla. La carpeta antigua <strong>no se borra</strong>: queda con una nota (<code>MOVIDO_A.txt</code>) por si algo no cuadra. Puede tardar varios minutos si hay muchos justificantes.</p>
+  <form method="post" action="/datos/mover" class="formulario" onsubmit="return confirm('Se van a copiar todos los datos a esa carpeta y el programa quedará bloqueado hasta que termine. ¿Seguir?')">
+    <div class="campo doble"><label for="destino">Carpeta de destino (vacía o nueva)</label>
+      <div class="con-boton"><input id="destino" name="destino" type="text" autocomplete="off" placeholder="D:\Mi unidad\ContaPridalac"><button type="button" class="boton" data-examinar="destino">Examinar…</button></div></div>
+    <div class="botones-formulario"><button type="submit" class="boton primario">Mover los datos</button></div>
+  </form>
+</section>
+
+<section class="tarjeta">
+  <h2>Si la carpeta se sincroniza (Drive, OneDrive, Dropbox) o está en red</h2>
+  <ul>
+    <li><strong>Un solo equipo a la vez.</strong> Conta pone un <em>candado</em> en la carpeta para no abrirse desde dos ordenadores a la vez; si el otro equipo se cerró mal, se puede forzar desde la pantalla de bloqueo.</li>
+    <li><strong>Cierre Conta antes de cambiar de equipo y espere a que termine la sincronización</strong> (el fichero del candado y las bases tardan en llegar al otro ordenador).</li>
+    <li>En Drive, elija «Mantener los archivos sin conexión» (no «Transmitir»); una base abierta a medio descargar se estropea.</li>
+    <li>Si aparecen ficheros «copia en conflicto» junto a las bases, no los borre: avise a quien mantiene el programa.</li>
+  </ul>
+</section>
+<script>
+  Array.prototype.forEach.call(document.querySelectorAll('[data-examinar]'), function (b) {
+    b.addEventListener('click', function () {
+      var campo = document.getElementById(b.getAttribute('data-examinar'));
+      b.disabled = true; var texto = b.textContent; b.textContent = 'Abriendo…';
+      fetch('/datos/examinar', { method: 'POST' }).then(function (r) { return r.json(); }).then(function (r) {
+        if (r.ruta) campo.value = r.ruta; else if (r.error) alert(r.error);
+      }).catch(function () { alert('No se pudo abrir el selector; escriba la ruta a mano.'); }).then(function () { b.disabled = false; b.textContent = texto; });
+    });
+  });
+</script>
+{% endif %}
+{% endblock %}

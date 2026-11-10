@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="es" data-theme="{{ preferencias.tema if preferencias else 'auto' }}" data-menu="{{ preferencias.menu if preferencias else 'horizontal' }}" data-ayudas="{{ preferencias.ayudas if preferencias else 'tooltip' }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}Conta Pridalac{% endblock %}</title>
+  <link rel="icon" href="/favicon.ico" type="image/svg+xml">
+  <link rel="stylesheet" href="/tema.css">
+  <link rel="stylesheet" href="/static/app.css">
+  <script src="/static/htmx.min.js" defer></script>
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <header class="barra">
+    <a class="marca" href="/">🌿 <span>Conta Pridalac</span></a>
+    {% if ctx %}
+    <nav class="contexto" aria-label="Empresa y ejercicio">
+      <a href="/e/{{ ctx.slug }}/{{ ctx.ejercicio.anio }}" class="inicio boton plano" title="Inicio: todas las opciones de {{ ctx.empresa.nombre }}" aria-label="Inicio">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10"/><path d="M10 20v-5.5h4V20"/></svg>
+      </a>
+      <a href="/empresa/{{ ctx.slug }}" class="empresa" title="Ficha de la empresa: datos, Registro Mercantil y certificado">{{ ctx.empresa.nombre }}</a>
+      <label class="selector">Ejercicio
+        <select onchange="location.href=this.value">
+          {% for e in ejercicios %}
+          <option value="/e/{{ ctx.slug }}/{{ e.anio }}{% if listado %}/{{ listado.nombre }}{% endif %}" {% if e.anio == ctx.ejercicio.anio %}selected{% endif %}>{{ e.anio }}{% if e.cerrado %} (cerrado){% endif %}</option>
+          {% endfor %}
+        </select>
+      </label>
+    </nav>
+    {% endif %}
+    <button type="button" id="tema" class="boton plano" title="Cambiar el tema: automático, claro u oscuro" aria-label="Cambiar el tema"></button>
+    {% if ctx %}<button type="button" id="ayudas" class="boton plano" title="Las explicaciones de las opciones y de las pantallas: siempre visibles en pantalla o solo al pasar el ratón por encima" aria-label="Cambiar cómo se muestran las explicaciones"></button>{% endif %}
+    {% if ctx %}<button type="button" id="disposicion" class="boton plano" title="Cambiar la disposición del menú: las opciones de cada pestaña debajo de la banda o en una columna a la izquierda" aria-label="Cambiar la disposición del menú"></button>{% endif %}
+    <a id="ayuda" class="boton plano" href="{{ ayuda_url(ctx, listado if listado is defined else none, caja_de(listado.nombre) if listado is defined and listado else none) }}" title="Ayuda: explica esta pantalla y todo el programa" aria-label="Ayuda">?</a>
+    <button type="button" id="salir" class="boton plano" title="Cerrar el programa" aria-label="Cerrar el programa">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 3v8"/><path d="M6.3 6.8a8 8 0 1 0 11.4 0"/></svg>
+    </button>
+  </header>
+  {% if ensayo %}<div class="aviso-ensayo" role="alert"><strong>COPIA DE ENSAYO</strong> · esta base no es la contabilidad oficial: no se pueden generar ficheros para la sede ni registrar presentaciones.</div>{% endif %}
+  <div class="marco">
+    {% if ctx %}{% include "_menu.html" %}{% endif %}
+    <div class="cuerpo">
+      <main>
+        {% block contenido %}{% endblock %}
+      </main>
+    </div>
+  </div>
+  <div id="avisos" class="avisos" role="status" aria-live="polite"></div>
+  <dialog id="modal" aria-labelledby="modal-titulo"><div id="modal-contenido"></div></dialog>
+</body>
+</html>

@@ -1,0 +1,29 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+{% macro accion(texto, valor, clase="boton") %}<button type="button" class="{{ clase }}" hx-post="{{ base }}/recalcular" hx-vals='{"accion": "{{ valor }}"}' hx-include="closest form" hx-target="#cuerpo" hx-swap="outerHTML">{{ texto }}</button>{% endmacro %}
+<div id="cuerpo">
+  <datalist id="dl-cuentas">{% for codigo, nombre in cuentas %}<option value="{{ codigo }}">{{ nombre }}</option>{% endfor %}</datalist>
+  <section class="bloque">
+    <div class="campo"><label for="titulo">Título <span class="req">*</span></label><input id="titulo" name="titulo" type="text" value="{{ e.titulo }}" autocomplete="off">
+      <small class="suave">Admite {año}, {mes}, {cmes} (nombre del mes), {trimestre}… y operaciones: «NOMINA {mes-1}/{año}».</small></div>
+  </section>
+  <section class="bloque">
+    <h3>Líneas</h3>
+    <table class="lineas">
+      <thead><tr><th>Cuenta</th><th>Tipo</th><th>Ayuda</th><th class="num">Importe de muestra</th><th>Reglas de vencimiento</th><th></th></tr></thead>
+      <tbody>
+      {% for l in e.lineas %}{% set i = loop.index0 %}
+      <tr>
+        <td><input type="text" name="ln-{{ i }}-cuenta" value="{{ l.cuenta }}" list="dl-cuentas" aria-label="Cuenta" autocomplete="off"></td>
+        <td><select name="ln-{{ i }}-dhc" aria-label="Tipo de línea"><option value="D" {% if l.dhc == 'D' %}selected{% endif %}>Debe</option><option value="H" {% if l.dhc == 'H' %}selected{% endif %}>Haber</option><option value="C" {% if l.dhc == 'C' %}selected{% endif %}>Cuadre</option></select></td>
+        <td><input type="text" name="ln-{{ i }}-ayuda" value="{{ l.ayuda }}" aria-label="Ayuda" autocomplete="off"></td>
+        <td><input class="num" type="text" name="ln-{{ i }}-importe" value="{{ l.importe }}" inputmode="decimal" aria-label="Importe de muestra" autocomplete="off"></td>
+        <td><input type="text" name="ln-{{ i }}-reglas" value="{{ l.reglas }}" aria-label="Reglas de vencimiento" placeholder="D=25 M+1 A=" autocomplete="off"></td>
+        <td>{{ accion("✕", "del-ln-" ~ i, "boton plano quitar-linea") }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {{ accion("＋ Línea", "add-ln") }}
+    <small class="suave">La línea de <strong>cuadre</strong> (sólo una) equilibra el asiento. Reglas de vencimiento, separadas por comas (una por plazo): <code>D=25 M+1 A=</code> es el día 25 del mes siguiente; <code>D+30 M= A=</code>, a 30 días; <code>PT</code> primer día del trimestre siguiente; <code>PM</code>/<code>PL</code> próximo miércoles/lunes; <code>DP5,20</code> primer día de pago de la lista.</small>
+  </section>
+</div>

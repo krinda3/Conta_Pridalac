@@ -1,0 +1,11 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+<form class="formulario" hx-post="{{ base }}/accion/nuevo" hx-target="#modal-contenido" hx-swap="innerHTML">
+  <h2 id="modal-titulo">Nuevo ejercicio</h2>
+  {% for er in errores %}<div class="aviso error" role="alert">{{ er }}</div>{% endfor %}
+  <div class="campo"><label for="anio">Año</label><input id="anio" name="anio" type="text" value="{{ anio }}" inputmode="numeric" autocomplete="off"></div>
+  <p class="suave">Se crea un ejercicio vacío, del 1 de enero al 31 de diciembre. Lo normal es abrir el siguiente al <strong>cerrar</strong> el anterior (así lleva ya su asiento de apertura); esto sirve para empezar la contabilidad de una empresa o para un año intermedio.</p>
+  <div class="botones-formulario">
+    <button type="button" class="boton" data-cerrar-modal>Cancelar</button>
+    <button type="submit" class="boton primario">Crear el ejercicio</button>
+  </div>
+</form>

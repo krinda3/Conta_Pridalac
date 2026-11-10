@@ -1,0 +1,66 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+<form class="formulario liquidacion" hx-post="{{ base }}/guardar" hx-target="#modal-contenido" hx-swap="innerHTML">
+  <h2 id="modal-titulo">{{ texto | replace('REGUL. ', '') }} <span class="estado-iva {{ estado | lower | replace(' ', '-') }}">{{ estado }}</span></h2>
+  <p class="suave">Del {{ desde | fmt('fecha') }} al {{ hasta | fmt('fecha') }}</p>
+  {% for er in errores %}<div class="aviso error" role="alert">{{ er }}</div>{% endfor %}
+  {% if presentada %}
+  <div class="aviso {{ 'info' if estado == 'Presentado' else 'warning' }}">
+    Declaración presentada (modelo {{ presentada.modelo }}, {{ presentada.periodo }}T {{ presentada.anio }}{% if presentada.fecha_emision %}, emitida el {{ presentada.fecha_emision | fmt('fecha') }}{% endif %}):
+    resultado {{ presentada.resultado_liquidacion | fmt('dinero') }}{% if presentada.resultado != presentada.resultado_liquidacion %}, {{ presentada.resultado | fmt('dinero') }} tras compensar{% endif %}.
+    {% if estado == 'Presentado' %}El asiento coincide con lo presentado y no se puede cambiar.{% else %}El asiento da {{ resultado_asiento | fmt('dinero') }}: no coincide con lo presentado. No se puede cambiar desde aquí.{% endif %}
+    <a href="/e/{{ ctx.slug }}/{{ ctx.ejercicio.anio }}/declaraciones?abrir={{ presentada.id }}">Ver la declaración</a>
+  </div>
+  {% endif %}
+  {% if estado == 'Desactualizado' %}
+  <div class="aviso warning">La liquidación grabada ya no coincide con el IVA del periodo: se contabilizaron facturas con fecha del periodo después de liquidar. Compare abajo y vuelva a liquidar si procede.</div>
+  {% endif %}
+  <input type="hidden" name="id" value="{{ id }}">
+
+  <section class="bloque totales-factura">
+    <div><span class="suave">IVA soportado</span><strong>{{ liq.soportado | fmt('dinero') }}</strong></div>
+    <div><span class="suave">IVA repercutido</span><strong>{{ liq.repercutido | fmt('dinero') }}</strong></div>
+    {% if liq.compensado %}<div><span class="suave">Compensado de periodos anteriores</span><strong>{{ liq.compensado | fmt('dinero') }}</strong></div>{% endif %}
+    {% if liq.a_pagar > 0 %}<div><span class="suave">A pagar{% if fecha_pago %} el {{ fecha_pago | fmt('fecha') }}{% endif %}</span><strong>{{ liq.a_pagar | fmt('dinero') }}</strong></div>
+    {% elif liq.a_compensar > 0 %}<div><span class="suave">A compensar en periodos siguientes</span><strong>{{ liq.a_compensar | fmt('dinero') }}</strong></div>
+    {% else %}<div><span class="suave">Resultado</span><strong>{{ 'Sin diferencia' if liq.saldos else 'Sin IVA en el periodo' }}</strong></div>{% endif %}
+  </section>
+
+  {% if saldos %}
+  <section class="bloque">
+    <h3>Cuentas de IVA del periodo</h3>
+    <table class="lineas">
+      <thead><tr><th>Cuenta</th><th>Nombre</th><th class="num">Saldo (debe − haber)</th></tr></thead>
+      <tbody>{% for codigo, nombre, saldo in saldos %}<tr><td>{{ codigo }}</td><td>{{ nombre }}</td><td class="num">{{ saldo | fmt('dinero') }}</td></tr>{% endfor %}</tbody>
+    </table>
+    <small class="suave">No se cuentan las liquidaciones anteriores: es el IVA que se contabilizó con fecha de este periodo.</small>
+  </section>
+  {% endif %}
+
+  {% if comparacion %}
+  <section class="bloque">
+    <h3>Asiento de regularización</h3>
+    <table class="lineas">
+      <thead><tr><th>Cuenta</th><th>Nombre</th><th class="num">Grabado</th><th class="num">Nuevo</th></tr></thead>
+      <tbody>
+      {% for codigo, nombre, grabado, nuevo in comparacion %}
+      <tr {% if grabado != nuevo and asiento %}class="periodo-pendiente"{% endif %}><td>{{ codigo }}</td><td>{{ nombre }}</td>
+        <td class="num">{{ (grabado | fmt('dinero')) if grabado is not none else '—' }}</td><td class="num">{{ (nuevo | fmt('dinero')) if nuevo is not none else '—' }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <small class="suave">Positivo = Debe, negativo = Haber. {% if asiento %}Asiento grabado: {{ asiento.identificador }} del {{ asiento.fecha | fmt('fecha') }}.{% endif %}
+      {% if vencimiento %}Vencimiento: {{ vencimiento[1] | fmt('dinero') }} el {{ vencimiento[0] | fmt('fecha') }}.{% endif %}</small>
+  </section>
+  {% endif %}
+
+  <section class="bloque">
+    <label><input type="checkbox" name="compensar" {% if compensar %}checked{% endif %}> Compensar el saldo a favor de periodos anteriores</label>
+    <button type="submit" name="accion" value="ver" class="boton plano">Recalcular la vista</button>
+  </section>
+
+  <div class="botones-formulario">
+    <button type="button" class="boton" data-cerrar-modal>Cerrar</button>
+    {% if asiento and not presentada %}<button type="submit" name="accion" value="deshacer" class="boton peligro" {% if cerrado %}disabled{% endif %}>Deshacer la liquidación</button>{% endif %}
+    {% if liq.lineas and not presentada %}<button type="submit" name="accion" value="liquidar" class="boton primario" {% if cerrado %}disabled title="Ejercicio cerrado"{% endif %}>{{ 'Volver a liquidar' if asiento else 'Liquidar el periodo' }}</button>{% endif %}
+  </div>
+</form>

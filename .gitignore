@@ -1,0 +1,16 @@
+.venv/
+AEAT/
+__pycache__/
+docs/_muestras/
+
+docs/_manual/
+docs/Exportaciones del programa anterior/
+*.sqlite
+*.db
+.pytest_cache/
+*.egg-info/
+datos_locales/
+*.txt
+*.docx
+ensayo_datos/
+ensayo_original/

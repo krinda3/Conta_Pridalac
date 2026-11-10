@@ -1,0 +1,39 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+{% if hecho %}
+<div class="formulario importacion">
+  <h2 id="modal-titulo">Factura creada</h2>
+  <p class="suave">La factura <strong>{{ hecho.numero }}</strong> de <strong>{{ hecho.proveedor }}</strong> por {{ hecho.total | fmt('dinero') }} se ha dado de alta y queda pagada con {{ hecho.lineas }} línea(s) del extracto.</p>
+  <div class="botones-formulario"><button type="button" class="boton primario" data-cerrar-modal hx-get="{{ base }}/tabla" hx-target="#tabla" hx-swap="innerHTML">Cerrar</button></div>
+</div>
+{% else %}
+<form class="formulario" hx-post="{{ base }}/accion/crear" hx-target="#modal-contenido" hx-swap="innerHTML">
+  <h2 id="modal-titulo">Crear la factura que pagan las líneas marcadas</h2>
+  {% for er in errores %}<div class="aviso error" role="alert">{{ er }}</div>{% endfor %}
+  <input type="hidden" name="paso" value="crear">
+  {% for l in lineas %}<input type="hidden" name="ids" value="l{{ l.id }}">{% endfor %}
+  <p class="suave">Se da de alta una factura recibida cuyo total es lo que suman las líneas (un descuento o una devolución, con importe en negativo, se resta), con el IVA incluido, y queda pagada con ellas. Si el proveedor no existe, créelo antes en Datos.</p>
+  <section class="bloque">
+    <h3>Líneas del extracto ({{ lineas | length }})</h3>
+    <table class="tabla">
+      <thead><tr><th>Fecha</th><th>Banco</th><th>Concepto</th><th class="num">Se paga</th></tr></thead>
+      <tbody>
+        {% for l in lineas %}<tr><td>{{ (l.fecha_valor or l.fecha) | fmt('fecha') }}</td><td>{{ l.banco.nombre }}</td><td>{{ l.texto }}</td><td class="num">{{ (-l.importe) | fmt('dinero') }}</td></tr>{% endfor %}
+      </tbody>
+      <tfoot><tr><td colspan="3">Total de la factura</td><td class="num">{{ total | fmt('dinero') }}</td></tr></tfoot>
+    </table>
+  </section>
+  <div class="campos">
+    <div class="campo"><label for="cr-proveedor">Proveedor</label><input id="cr-proveedor" name="proveedor" list="dl-cr-proveedores" value="{{ valores.proveedor }}" autocomplete="off"></div>
+    <div class="campo"><label for="cr-numero">Nº de factura</label><input id="cr-numero" name="numero" value="{{ valores.numero }}" autocomplete="off"></div>
+    <div class="campo"><label for="cr-fecha">Fecha de la factura</label><input id="cr-fecha" name="fecha" value="{{ valores.fecha }}" autocomplete="off"></div>
+    <div class="campo"><label for="cr-iva">% de IVA</label><input id="cr-iva" name="iva" value="{{ valores.iva }}" inputmode="decimal" autocomplete="off"></div>
+    <div class="campo"><label for="cr-gasto">Subcuenta de gasto (vacía = la del proveedor)</label><input id="cr-gasto" name="gasto" list="dl-cr-cuentas" value="{{ valores.gasto }}" autocomplete="off"></div>
+  </div>
+  <datalist id="dl-cr-proveedores">{% for valor, texto in proveedores %}<option value="{{ valor }}">{{ texto }}</option>{% endfor %}</datalist>
+  <datalist id="dl-cr-cuentas">{% for valor, texto in cuentas %}<option value="{{ valor }}">{{ texto }}</option>{% endfor %}</datalist>
+  <div class="botones-formulario">
+    <button type="button" class="boton" data-cerrar-modal>Cancelar</button>
+    <button type="submit" class="boton primario">Crear y pagar con las líneas</button>
+  </div>
+</form>
+{% endif %}

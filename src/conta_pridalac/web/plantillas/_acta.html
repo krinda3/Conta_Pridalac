@@ -1,0 +1,43 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+<form class="formulario liquidacion" hx-post="{{ base }}/guardar" hx-target="#modal-contenido" hx-swap="innerHTML">
+  <h2 id="modal-titulo">{{ 'Acta nº ' ~ acta.numero if acta else 'Nueva acta' }}</h2>
+  {% for er in errores %}<div class="aviso error" role="alert">{{ er }}</div>{% endfor %}
+  <input type="hidden" name="id" value="{{ id }}">
+
+  <section class="bloque">
+    <h3>La reunión</h3>
+    <div class="campos">
+      <div class="campo"><label for="numero">Nº de acta</label><input id="numero" name="numero" type="number" min="1" value="{{ valores.numero }}"></div>
+      <div class="campo"><label for="fecha">Fecha</label><input id="fecha" name="fecha" type="text" value="{{ valores.fecha }}" placeholder="DDMMAA" autocomplete="off"></div>
+      <div class="campo"><label for="hora_inicio">Hora de inicio</label><input id="hora_inicio" name="hora_inicio" type="text" maxlength="5" value="{{ valores.hora_inicio }}" placeholder="18:00" autocomplete="off"></div>
+      <div class="campo"><label for="hora_fin">Hora de fin</label><input id="hora_fin" name="hora_fin" type="text" maxlength="5" value="{{ valores.hora_fin }}" placeholder="19:00" autocomplete="off"></div>
+      <div class="campo"><label for="clase">Clase de reunión</label><input id="clase" name="clase" type="text" maxlength="32" value="{{ valores.clase }}" autocomplete="off"></div>
+      <div class="campo"><label for="organo">Órgano</label><input id="organo" name="organo" type="text" maxlength="48" value="{{ valores.organo }}" autocomplete="off"></div>
+    </div>
+    <div class="campo"><label for="asistentes">Asistentes (uno por línea)</label><textarea id="asistentes" name="asistentes" rows="3">{{ valores.asistentes }}</textarea></div>
+  </section>
+
+  <section class="bloque">
+    <h3>Contenido</h3>
+    <div class="campo"><label for="orden_del_dia">Orden del día (un punto por línea)</label><textarea id="orden_del_dia" name="orden_del_dia" rows="4">{{ valores.orden_del_dia }}</textarea></div>
+    <div class="campo"><label for="resumen">Resumen de los asuntos debatidos</label><textarea id="resumen" name="resumen" rows="3">{{ valores.resumen }}</textarea></div>
+    <div class="campo"><label for="intervenciones">Intervenciones</label><textarea id="intervenciones" name="intervenciones" rows="3">{{ valores.intervenciones }}</textarea></div>
+    <div class="campo"><label for="acuerdos">Acuerdos adoptados</label><textarea id="acuerdos" name="acuerdos" rows="4">{{ valores.acuerdos }}</textarea></div>
+    <div class="campo"><label for="votaciones">Resultados de las votaciones</label><textarea id="votaciones" name="votaciones" rows="2">{{ valores.votaciones }}</textarea></div>
+  </section>
+
+  <section class="bloque">
+    <h3>Firmas</h3>
+    <div class="campos">
+      <div class="campo doble"><label for="presidente_nombre">Presidente</label><input id="presidente_nombre" name="presidente_nombre" type="text" maxlength="128" value="{{ valores.presidente_nombre }}" autocomplete="off"></div>
+      <div class="campo"><label for="presidente_nif">NIF</label><input id="presidente_nif" name="presidente_nif" type="text" maxlength="20" value="{{ valores.presidente_nif }}" autocomplete="off"></div>
+      <div class="campo doble"><label for="secretario_nombre">Secretario</label><input id="secretario_nombre" name="secretario_nombre" type="text" maxlength="128" value="{{ valores.secretario_nombre }}" autocomplete="off"></div>
+      <div class="campo"><label for="secretario_nif">NIF</label><input id="secretario_nif" name="secretario_nif" type="text" maxlength="20" value="{{ valores.secretario_nif }}" autocomplete="off"></div>
+    </div>
+  </section>
+
+  <div class="botones-formulario">
+    <button type="button" class="boton" data-cerrar-modal>Cerrar</button>
+    <button type="submit" class="boton primario">Guardar</button>
+  </div>
+</form>

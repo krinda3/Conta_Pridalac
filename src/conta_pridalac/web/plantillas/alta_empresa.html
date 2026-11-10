@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block titulo %}Añadir empresa{% endblock %}
+{% block contenido %}
+<h1>Añadir empresa</h1>
+<p class="suave">Elija cómo empezar. Los datos de una empresa viven en su propio fichero, dentro de la carpeta de datos del programa.</p>
+{% for e in errores %}<div class="aviso error" role="alert">{{ e }}</div>{% endfor %}
+
+<div class="tarjetas">
+  <section class="tarjeta">
+    <h2>Empresa nueva</h2>
+    <p class="suave">Empieza vacía, con el plan de cuentas del PGC, los tipos de IVA habituales y las cuentas que necesita el programa.</p>
+    <form class="formulario" method="post" action="/empresa-nueva/vacia">
+      <div class="campo"><label for="nombre">Nombre o razón social</label><input id="nombre" name="nombre" type="text" value="{{ valores.nombre or '' }}" required autocomplete="off"></div>
+      <div class="campo"><label for="nif">NIF o CIF (puede completarse después)</label><input id="nif" name="nif" type="text" value="{{ valores.nif or '' }}" autocomplete="off"></div>
+      <div class="campo"><label for="anio">Año del primer ejercicio</label><input id="anio" name="anio" type="text" inputmode="numeric" value="{{ valores.anio or anio_actual }}" required></div>
+      <div class="campo"><label for="tipo_plan">Plan de cuentas</label>
+        <select id="tipo_plan" name="tipo_plan">{% for clave, texto in tipos_de_plan.items() %}<option value="{{ clave }}" {% if clave == (valores.tipo_plan or 'pymes') %}selected{% endif %}>{{ texto }}</option>{% endfor %}</select>
+        <span class="suave">Una asociación, fundación u otra ONG usa el plan de entidades sin fines lucrativos.</span></div>
+      <div class="campo"><label for="digitos">Dígitos de las subcuentas</label>
+        <select id="digitos" name="digitos">{% for d in digitos_a_elegir %}<option value="{{ d }}" {% if d == (valores.digitos or 8) %}selected{% endif %}>{{ d }} dígitos (por ejemplo {{ '572'.ljust(d - 1, '0') }}1)</option>{% endfor %}</select>
+        <span class="suave">Es la longitud de las cuentas en las que se apunta. Se elige ahora y no se puede cambiar después.</span></div>
+      {% set proteccion_actual = valores.proteccion or 'ninguna' %}{% include '_proteccion.html' %}
+      <div class="botones-formulario"><button type="submit" class="boton primario">Crear la empresa</button></div>
+    </form>
+  </section>
+
+  <section class="tarjeta">
+    <h2>Desde una copia de Gestión MGD</h2>
+    <p class="suave">Trae el plan de cuentas, los terceros, los asientos, las facturas, la tesorería y los justificantes de un ejercicio. Las cuentas conservan los dígitos que tenían en MGD.</p>
+    <form class="formulario" method="post" action="/empresa-nueva/mgd" enctype="multipart/form-data">
+      <div class="campo"><label for="archivo">Copia de seguridad de MGD (un .zip)</label><input id="archivo" name="archivo" type="file" accept=".zip" required></div>
+      <p class="suave">Cada copia es un ejercicio: se importa el de la copia. Antes de crear nada se le enseña lo que contiene.</p>
+      <div class="botones-formulario"><button type="submit" class="boton primario">Examinar la copia</button></div>
+    </form>
+  </section>
+</div>
+<p><a href="/">Volver a las empresas</a></p>
+{% endblock %}

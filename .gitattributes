@@ -1,0 +1,5 @@
+# Los scripts de Linux deben tener siempre fin de línea LF (con CRLF, bash falla), aunque se editen en Windows.
+*.sh text eol=lf
+*.desktop text eol=lf
+# Este mismo fichero, también en LF: con CRLF, git podría leer mal sus reglas.
+.gitattributes text eol=lf

@@ -1,0 +1,55 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+{% set tercero = 'proveedor' if sentido == 'R' else 'cliente' %}
+<form class="formulario importacion" hx-post="{{ base }}/importar" hx-target="#modal-contenido" hx-swap="innerHTML">
+  <h2 id="modal-titulo">Importar desde «{{ nombre_fichero }}»</h2>
+  <input type="hidden" name="paso" value="confirmar">
+  <input type="hidden" name="token" value="{{ token }}">
+  <datalist id="dl-cuentas">{% for codigo, nombre in cuentas %}<option value="{{ codigo }}">{{ nombre }}</option>{% endfor %}</datalist>
+  <section class="bloque totales-factura">
+    <div><span class="suave">Se importarán</span><strong>{{ importables }}</strong></div>
+    <div><span class="suave">Ya existían</span><strong>{{ duplicadas }}</strong></div>
+    <div><span class="suave">Con errores</span><strong>{{ con_errores }}</strong></div>
+  </section>
+
+  {% if nuevos %}
+  <section class="bloque">
+    <h3>{{ tercero | capitalize }}s nuevos</h3>
+    <p class="suave">No existen en la empresa. Se crean con su subcuenta contable; elija la subcuenta de {{ 'gasto' if sentido == 'R' else 'ingreso' }} que se usará en sus facturas.</p>
+    <table class="lineas">
+      <thead><tr><th>Nombre</th><th>NIF</th><th>Subcuenta de {{ 'gasto' if sentido == 'R' else 'ingreso' }}</th></tr></thead>
+      <tbody>{% for clave, p in nuevos %}
+        <tr><td>{{ p.fila.nombre }}</td><td>{{ p.fila.nif }}</td><td><input type="text" name="gasto_{{ clave }}" value="{{ defecto_gasto }}" list="dl-cuentas" autocomplete="off" aria-label="Subcuenta de {{ 'gasto' if sentido == 'R' else 'ingreso' }} de {{ p.fila.nombre }}"></td></tr>
+      {% endfor %}</tbody>
+    </table>
+  </section>
+  {% endif %}
+
+  <section class="bloque">
+    <h3>Filas del Excel</h3>
+    <div class="tabla-desplazable">
+    <table class="lineas">
+      <thead><tr><th>Fila</th><th>{{ tercero | capitalize }}</th><th>Nº factura</th><th>Fecha</th><th class="num">Total</th><th>Pago</th><th>Resultado</th></tr></thead>
+      <tbody>
+      {% for p in planes %}
+      <tr {% if p.estado == 'duplicada' %}class="periodo-pendiente"{% elif p.errores %}class="fila-error"{% endif %}>
+        <td>{{ p.fila.fila }}</td><td>{{ p.fila.nombre }}</td><td>{{ p.fila.numero }}</td><td>{{ p.fila.fecha_factura | fmt('fecha') if p.fila.fecha_factura else '' }}</td>
+        <td class="num">{{ p.fila.total | fmt('dinero') if p.fila.total is not none else '' }}</td>
+        <td>{% if p.banco %}{{ p.fila.fecha_pago | fmt('fecha') }} · {{ p.banco.nombre }}{% else %}<span class="suave">sin pagar</span>{% endif %}</td>
+        <td>
+          {% if p.estado == 'duplicada' %}<strong>Ya existe</strong> · {{ p.detalle }}
+          {% elif p.errores %}<strong>No se importa</strong>{% for er in p.errores %}<br>✖ {{ er }}{% endfor %}
+          {% else %}<strong>Se importa</strong>{% endif %}
+          {% if p.estado != 'duplicada' %}{% for av in p.avisos %}<br><span class="suave">· {{ av }}</span>{% endfor %}{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    </div>
+  </section>
+
+  <div class="botones-formulario">
+    <button type="button" class="boton" data-cerrar-modal>Cancelar</button>
+    <button type="submit" class="boton primario" {% if not importables %}disabled{% endif %}>Importar {{ importables }} factura{{ '' if importables == 1 else 's' }}</button>
+  </div>
+</form>

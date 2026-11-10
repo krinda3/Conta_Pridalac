@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block titulo %}Ficha · {{ empresa.nombre }}{% endblock %}
+{% block contenido %}
+<h1>Ficha de la empresa</h1>
+{% if mensaje %}<div class="aviso ok" role="status">{{ mensaje }}</div>{% endif %}
+{% for e in errores %}<div class="aviso error" role="alert">{{ e }}</div>{% endfor %}
+<form class="formulario ficha" method="post" action="/empresa/{{ slug }}">
+  {% for titulo, campos in secciones %}
+  <h3 class="seccion-formulario">{{ titulo }}</h3>
+  <div class="campos">
+    {% for nombre, etiqueta, ancho in campos %}
+    <div class="campo {% if ancho == 2 %}doble{% endif %}"><label for="f-{{ nombre }}">{{ etiqueta }}</label>
+      <input id="f-{{ nombre }}" name="{{ nombre }}" type="text" value="{{ v.get(nombre, '') }}" autocomplete="off" {% if nombre == 'fecha_constitucion' %}placeholder="DDMMAA"{% endif %}></div>
+    {% endfor %}
+  </div>
+  {% if titulo.startswith("Impuesto sobre Sociedades") %}
+  <p class="suave"><input type="hidden" name="is_cifra_presente" value="1"><label><input type="checkbox" name="is_cifra_menor_1m" value="1" {% if empresa.is_cifra_menor_1m %}checked{% endif %}> El importe neto de la cifra de negocios del periodo anterior es inferior a un millón de euros (marca del 202). La domiciliación usa el IBAN de «Domicilio y contacto».</label></p>
+  {% endif %}
+  {% endfor %}
+  <h3 class="seccion-formulario">Actividades (modelo 390)</h3>
+  <p class="suave">La primera es la principal; el 390 admite hasta 6. Código de actividad (por ejemplo A03) y epígrafe del IAE (por ejemplo 8431).</p>
+  <div class="campos lineas" id="lineas-actividades">
+    {% for d, c, e in actividades %}
+    <div class="linea">
+      <div class="campo doble"><label>Descripción</label><input name="act_descripcion" type="text" maxlength="40" value="{{ d }}" autocomplete="off"></div>
+      <div class="campo"><label>Código</label><input name="act_codigo" type="text" maxlength="3" value="{{ c }}" autocomplete="off"></div>
+      <div class="campo"><label>Epígrafe IAE</label><input name="act_epigrafe" type="text" maxlength="4" value="{{ e }}" autocomplete="off"></div>
+    </div>
+    {% endfor %}
+  </div>
+  <p><button type="button" class="boton plano" data-anadir="lineas-actividades">+ Añadir línea</button></p>
+  <h3 class="seccion-formulario">Representantes con poder (modelo 390)</h3>
+  <p class="suave">Hasta 3. Fecha del poder como DDMMAA y notaría (hasta 12 caracteres).</p>
+  <div class="campos lineas" id="lineas-representantes">
+    {% for n, nif, f, nt in representantes %}
+    <div class="linea">
+      <div class="campo doble"><label>Nombre y apellidos</label><input name="rep_nombre" type="text" maxlength="80" value="{{ n }}" autocomplete="off"></div>
+      <div class="campo"><label>NIF</label><input name="rep_nif" type="text" maxlength="12" value="{{ nif }}" autocomplete="off"></div>
+      <div class="campo"><label>Fecha del poder</label><input name="rep_fecha_poder" type="text" value="{{ f }}" placeholder="DDMMAA" autocomplete="off"></div>
+      <div class="campo"><label>Notaría</label><input name="rep_notaria" type="text" maxlength="12" value="{{ nt }}" autocomplete="off"></div>
+    </div>
+    {% endfor %}
+  </div>
+  <p><button type="button" class="boton plano" data-anadir="lineas-representantes">+ Añadir línea</button></p>
+  <h3 class="seccion-formulario">Modelos que presenta</h3>
+  <p class="suave">Marque lo que esta empresa presenta. Sólo de ello salen los plazos del panel, los avisos de la auditoría, los pasos del trimestre y las opciones del menú; lo demás se esconde (los modelos que ya tienen presentaciones registradas siguen a la vista). Si duda de qué modelos le corresponden, consúltelo con su asesor.</p>
+  <input type="hidden" name="modelos_presente" value="1">
+  <div class="campos">
+    {% for codigo, texto in modelos_texto.items() %}
+    <label class="opcion-radio"><input type="checkbox" name="modelos" value="{{ codigo }}" {% if codigo in modelos_marcados %}checked{% endif %}> {{ texto }}</label>
+    {% endfor %}
+  </div>
+  <h3 class="seccion-formulario">Protección de acceso y certificado digital</h3>
+  {% set proteccion_actual = proteccion %}{% include '_proteccion.html' %}
+  <div id="bloque-certificado">
+  <p class="suave">Con certificado, su contraseña es la de entrada a esta empresa. Aquí sólo se guarda la <strong>ruta</strong> del fichero
+    <code>.pfx</code> (déjelo fuera del repositorio); la contraseña no se guarda en ningún sitio: se pide al abrir la empresa y se mantiene en memoria hasta que la cierre.</p>
+  {% if info %}<div class="aviso {{ 'error' if info.caducado else 'info' }}">Certificado de {{ info.titular }}{% if info.nif %} ({{ info.nif }}){% endif %} · {{ 'caducado' if info.caducado else 'caduca' }} el {{ info.caduca.strftime('%d/%m/%Y') }}</div>{% endif %}
+  <div class="campos">
+    <div class="campo doble"><label for="f-certificado_ruta">Ruta del certificado (.pfx)</label>
+      <div class="con-boton"><input id="f-certificado_ruta" name="certificado_ruta" type="text" value="{{ v.get('certificado_ruta', empresa.certificado_ruta or '') }}" autocomplete="off" placeholder="vacío = sin contraseña">
+        <button type="button" class="boton" id="examinar">Examinar…</button></div></div>
+    <div class="campo"><label for="f-certificado_contrasena">Contraseña del certificado</label>
+      <input id="f-certificado_contrasena" name="certificado_contrasena" type="password" autocomplete="off"></div>
+  </div>
+  <p><button type="button" class="boton" id="leer-certificado">Rellenar la ficha con los datos del certificado</button> <span id="estado-certificado" class="suave" role="status"></span></p>
+  </div>
+  <div class="botones-formulario"><a class="boton" href="/">Volver</a><button type="submit" class="boton primario">Guardar la ficha</button></div>
+</form>
+{% if empresa.certificado_ruta and abierta %}
+<form method="post" action="/empresa/{{ slug }}/salir"><button type="submit" class="boton plano">🔒 Cerrar la empresa (olvidar la contraseña)</button></form>
+{% endif %}
+<script>
+(function () {
+  var base = '/empresa/{{ slug }}';
+  function mostrarCertificado() {
+    var marcada = document.querySelector('input[name="proteccion"]:checked');
+    document.getElementById('bloque-certificado').hidden = !marcada || marcada.value !== 'certificado';
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('input[name="proteccion"]'), function (r) { r.addEventListener('change', mostrarCertificado); });
+  mostrarCertificado();
+  var estado = document.getElementById('estado-certificado');
+  document.querySelectorAll('[data-anadir]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var cont = document.getElementById(b.getAttribute('data-anadir'));
+      var nueva = cont.lastElementChild.cloneNode(true);
+      nueva.querySelectorAll('input').forEach(function (i) { i.value = ''; });
+      cont.appendChild(nueva);
+      nueva.querySelector('input').focus();
+    });
+  });
+  function campo(n) { return document.getElementById('f-' + n); }
+  function post(url, datos) {
+    return fetch(url, { method: 'POST', body: new URLSearchParams(datos), headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }).then(function (r) { return r.json(); });
+  }
+  document.getElementById('examinar').addEventListener('click', function () {
+    estado.textContent = 'Elija el fichero en la ventana que se ha abierto…';
+    post(base + '/examinar', {}).then(function (r) {
+      estado.textContent = r.error || '';
+      if (r.ruta) { campo('certificado_ruta').value = r.ruta; campo('certificado_contrasena').focus(); }
+    }).catch(function () { estado.textContent = 'No se pudo abrir el selector de ficheros; escriba la ruta a mano.'; });
+  });
+  document.getElementById('leer-certificado').addEventListener('click', function () {
+    estado.textContent = 'Leyendo el certificado…';
+    post(base + '/certificado', { ruta: campo('certificado_ruta').value, contrasena: campo('certificado_contrasena').value }).then(function (r) {
+      if (r.error) { estado.textContent = r.error; return; }
+      var puestos = [];
+      ['nombre', 'nif', 'representante_nombre', 'representante_nif'].forEach(function (n) {
+        var c = campo(n);
+        if (r[n] && c && !c.value.trim()) { c.value = r[n]; puestos.push(c.previousElementSibling ? c.previousElementSibling.textContent.replace(' *', '') : n); }
+        else if (r[n] && c && c.value.trim().toUpperCase() !== r[n].toUpperCase()) { puestos.push('«' + n + '» ya tiene otro valor: no se toca'); }
+      });
+      estado.textContent = 'Certificado de ' + r.titular + (r.caducado ? ' (CADUCADO el ' : ' (caduca el ') + r.caduca + '). ' + (puestos.length ? 'Datos: ' + puestos.join(', ') + '.' : 'Nada que rellenar: los datos ya están escritos.');
+    }).catch(function () { estado.textContent = 'No se pudo leer el certificado.'; });
+  });
+})();
+</script>
+{% endblock %}

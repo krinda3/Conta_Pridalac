@@ -1,0 +1,61 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+{% macro accion(texto, valor, clase="boton") %}<button type="button" class="{{ clase }}" hx-post="{{ base }}/recalcular" hx-vals='{"accion": "{{ valor }}"}' hx-include="closest form" hx-target="#cuerpo" hx-swap="outerHTML" hx-encoding="application/x-www-form-urlencoded">{{ texto }}</button>{% endmacro %}
+<div id="cuerpo" hx-sync="this:replace" hx-post="{{ base }}/recalcular" hx-trigger="change[!event.target.matches('[type=file], [name=quitar_adjunto]')]" hx-include="closest form" hx-target="#cuerpo" hx-swap="outerHTML" hx-encoding="application/x-www-form-urlencoded">
+  <datalist id="dl-cuentas">{% for codigo, nombre in cuentas %}<option value="{{ codigo }}">{{ nombre }}</option>{% endfor %}</datalist>
+
+  <section class="bloque rejilla">
+    <div class="campo ancho2"><label for="banco">Banco <span class="req">*</span></label>
+      <select id="banco" name="banco">{% for b in bancos %}<option value="{{ b.id }}" {% if e.banco == b.id | string %}selected{% endif %}>{{ b.nombre }}{% if b.cuenta %} · {{ b.cuenta.codigo }}{% endif %}</option>{% endfor %}</select></div>
+    <div class="campo"><label for="fecha">Fecha <span class="req">*</span></label><input id="fecha" name="fecha" type="text" value="{{ e.fecha }}" placeholder="DDMMAA" autocomplete="off"></div>
+    <div class="campo ancho3"><label for="texto">Texto</label><input id="texto" name="texto" type="text" value="{{ e.texto }}" placeholder="vacío = texto automático (PAGO 20/02/21 · R 48 …)" autocomplete="off"></div>
+  </section>
+
+  <section class="bloque">
+    <h3>Líneas</h3>
+    <table class="lineas">
+      <thead><tr><th>Qué se salda</th><th>Vencimiento o cuenta</th><th class="num">Importe</th><th></th></tr></thead>
+      <tbody>
+      {% for l in e.lineas %}{% set i = loop.index0 %}
+      <tr>
+        <td><select name="ln-{{ i }}-tipo" aria-label="Tipo de línea">
+          <option value="V" {% if l.tipo == 'V' %}selected{% endif %}>Un vencimiento</option>
+          <option value="C" {% if l.tipo == 'C' %}selected{% endif %}>Una cuenta directa</option>
+          <option value="P" {% if l.tipo == 'P' %}selected{% endif %}>Pendiente de aplicar</option></select>
+          <input type="hidden" name="ln-{{ i }}-auto" id="ln-{{ i }}-auto" value="{{ l.auto }}"></td>
+        <td>
+          {% if l.tipo == 'V' %}
+          <select name="ln-{{ i }}-venc" aria-label="Vencimiento"><option value="">— elija el vencimiento —</option>{% for vid, etiqueta in vencimientos %}<option value="{{ vid }}" {% if l.venc == vid | string %}selected{% endif %}>{{ etiqueta }}</option>{% endfor %}</select>
+          <input type="hidden" name="ln-{{ i }}-cuenta" value="">
+          {% elif l.tipo == 'C' %}
+          <input type="text" name="ln-{{ i }}-cuenta" value="{{ l.cuenta }}" list="dl-cuentas" aria-label="Cuenta" placeholder="subcuenta" autocomplete="off"><input type="hidden" name="ln-{{ i }}-venc" value="">
+          {% else %}
+          <span class="suave">irá a la cuenta de partidas pendientes de aplicar</span><input type="hidden" name="ln-{{ i }}-venc" value=""><input type="hidden" name="ln-{{ i }}-cuenta" value="">
+          {% endif %}
+        </td>
+        <td><input class="num" type="text" name="ln-{{ i }}-importe" value="{{ l.importe }}" inputmode="decimal" aria-label="Importe" autocomplete="off" oninput="document.getElementById('ln-{{ i }}-auto').value='0'"></td>
+        <td>{{ accion("✕", "del-ln-" ~ i, "boton plano quitar-linea") }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <div class="fila-acciones">
+      {{ accion("＋ Línea", "add-ln") }}
+      <small class="suave">El importe va con signo desde el banco: <strong>positivo entra dinero</strong> (cobro), <strong>negativo sale</strong> (pago). Al elegir un vencimiento se propone su pendiente.</small>
+    </div>
+  </section>
+
+  <section class="bloque totales-factura">
+    <div><span class="suave">Total del movimiento</span><strong>{{ e.total | fmt('dinero') }}</strong></div>
+    <div><span class="suave">{{ 'Entra en el banco' if e.total > 0 else ('Sale del banco' if e.total < 0 else 'Sin movimiento neto') }}</span><strong>{{ (e.total if e.total >= 0 else -e.total) | fmt('dinero') }}</strong></div>
+  </section>
+
+  {% if e.asiento %}
+  <section class="bloque">
+    <h3>Asiento que se generará</h3>
+    <table class="lineas">
+      <thead><tr><th>Cuenta</th><th>Nombre</th><th class="num">Debe</th><th class="num">Haber</th></tr></thead>
+      <tbody>{% for codigo, nombre, debe, haber in e.asiento %}<tr><td>{{ codigo }}</td><td>{{ nombre }}</td><td class="num">{{ (debe or none) | fmt('dinero') }}</td><td class="num">{{ (haber or none) | fmt('dinero') }}</td></tr>{% endfor %}</tbody>
+    </table>
+  </section>
+  {% endif %}
+</div>

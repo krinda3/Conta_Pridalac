@@ -1,0 +1,386 @@
+[
+{
+"orden": 1,
+"pos": 1,
+"lon": 2,
+"tipo": "An",
+"desc": "Inicio del identificador de modelo y página",
+"casilla": null
+},
+{
+"orden": 2,
+"pos": 3,
+"lon": 3,
+"tipo": "Num",
+"desc": "Modelo",
+"casilla": null
+},
+{
+"orden": 3,
+"pos": 6,
+"lon": 2,
+"tipo": "Num",
+"desc": "Página",
+"casilla": null
+},
+{
+"orden": 4,
+"pos": 8,
+"lon": 4,
+"tipo": "An",
+"desc": "Fin de identificador de modelo",
+"casilla": null
+},
+{
+"orden": 5,
+"pos": 12,
+"lon": 1,
+"tipo": "A",
+"desc": "Indicador de página complementaria",
+"casilla": null
+},
+{
+"orden": 6,
+"pos": 13,
+"lon": 1,
+"tipo": "A",
+"desc": "Tipo de declaración",
+"casilla": null
+},
+{
+"orden": 7,
+"pos": 14,
+"lon": 9,
+"tipo": "An",
+"desc": "Identificación. Sujeto pasivo. NIF",
+"casilla": null
+},
+{
+"orden": 8,
+"pos": 23,
+"lon": 60,
+"tipo": "An",
+"desc": "Identificación. Sujeto pasivo. Denominación o Apellidos",
+"casilla": null
+},
+{
+"orden": 9,
+"pos": 83,
+"lon": 20,
+"tipo": "An",
+"desc": "Identificación. Sujeto pasivo. Nombre",
+"casilla": null
+},
+{
+"orden": 10,
+"pos": 103,
+"lon": 4,
+"tipo": "Num",
+"desc": "Devengo. Ejercicio",
+"casilla": null
+},
+{
+"orden": 11,
+"pos": 107,
+"lon": 2,
+"tipo": "An",
+"desc": "Devengo. Periodo",
+"casilla": null
+},
+{
+"orden": 12,
+"pos": 109,
+"lon": 8,
+"tipo": "Num",
+"desc": "Rendim. del trabajo - Rendimientos dinerarios - Nº de perceptores",
+"casilla": 1
+},
+{
+"orden": 13,
+"pos": 117,
+"lon": 17,
+"tipo": "Num",
+"desc": "Rendim. del trabajo - Rendimientos dinerarios - Importe percepciones",
+"casilla": 2
+},
+{
+"orden": 14,
+"pos": 134,
+"lon": 17,
+"tipo": "Num",
+"desc": "Rendim. del trabajo - Rendimientos dinerarios - Importe retenciones",
+"casilla": 3
+},
+{
+"orden": 15,
+"pos": 151,
+"lon": 8,
+"tipo": "Num",
+"desc": "Rendim. del trabajo - Rendimientos en especie- Nº de perceptores",
+"casilla": 4
+},
+{
+"orden": 16,
+"pos": 159,
+"lon": 17,
+"tipo": "Num",
+"desc": "Rendim. del trabajo - Rendimientos en especie- Valor percepciones en especie",
+"casilla": 5
+},
+{
+"orden": 17,
+"pos": 176,
+"lon": 17,
+"tipo": "Num",
+"desc": "Rendim. del trabajo - Rendimientos en especie- Importe ingresos a cuenta",
+"casilla": 6
+},
+{
+"orden": 18,
+"pos": 193,
+"lon": 8,
+"tipo": "Num",
+"desc": "Rendim. actividades económicas - Rendimientos dinerarios -Nº de perceptores",
+"casilla": 7
+},
+{
+"orden": 19,
+"pos": 201,
+"lon": 17,
+"tipo": "Num",
+"desc": "Rendim. actividades económicas - Rendimientos dinerarios -Importe percepciones",
+"casilla": 8
+},
+{
+"orden": 20,
+"pos": 218,
+"lon": 17,
+"tipo": "Num",
+"desc": "Rendim. actividades económicas - Rendimientos dinerarios -Importe retenciones",
+"casilla": 9
+},
+{
+"orden": 21,
+"pos": 235,
+"lon": 8,
+"tipo": "Num",
+"desc": "Rendim. actividades económicas - Rendimientos en especie -Nº de perceptores",
+"casilla": 10
+},
+{
+"orden": 22,
+"pos": 243,
+"lon": 17,
+"tipo": "Num",
+"desc": "Rendim. actividades económicas - Rendimientos en especie-Valor percepciones en especie",
+"casilla": 11
+},
+{
+"orden": 23,
+"pos": 260,
+"lon": 17,
+"tipo": "Num",
+"desc": "Rendim. actividades económicas - Rendimientos en especie- Importe de los ingresos a cuenta",
+"casilla": 12
+},
+{
+"orden": 24,
+"pos": 277,
+"lon": 8,
+"tipo": "Num",
+"desc": "Premios- Premios dinerarios - Nº de perceptores",
+"casilla": 13
+},
+{
+"orden": 25,
+"pos": 285,
+"lon": 17,
+"tipo": "Num",
+"desc": "Premios - Premios dinerarios - Importe de las percepciones",
+"casilla": 14
+},
+{
+"orden": 26,
+"pos": 302,
+"lon": 17,
+"tipo": "Num",
+"desc": "Premios - Premios dinerarios - Importe de las retenciones",
+"casilla": 15
+},
+{
+"orden": 27,
+"pos": 319,
+"lon": 8,
+"tipo": "Num",
+"desc": "Premios - Premios en especie - Nº de perceptores",
+"casilla": 16
+},
+{
+"orden": 28,
+"pos": 327,
+"lon": 17,
+"tipo": "Num",
+"desc": "Premios - Premios en especie - Valor percepciones en especie",
+"casilla": 17
+},
+{
+"orden": 29,
+"pos": 344,
+"lon": 17,
+"tipo": "Num",
+"desc": "Premios - Premios en especie - Importe de los ingresos a cuenta",
+"casilla": 18
+},
+{
+"orden": 30,
+"pos": 361,
+"lon": 8,
+"tipo": "Num",
+"desc": "Ganancias patrim. Aprovecham. Forestales - Percep. dinerarias - Nº perceptores",
+"casilla": 19
+},
+{
+"orden": 31,
+"pos": 369,
+"lon": 17,
+"tipo": "Num",
+"desc": "Ganancias patrim. Aprovecham. Forestales - Percep. dinerarias - Importe percepciones",
+"casilla": 20
+},
+{
+"orden": 32,
+"pos": 386,
+"lon": 17,
+"tipo": "Num",
+"desc": "Ganancias patrim. Aprovecham. Forestales - Percep. dinerarias - Importe retenciones",
+"casilla": 21
+},
+{
+"orden": 33,
+"pos": 403,
+"lon": 8,
+"tipo": "Num",
+"desc": "Ganancias patrim. Aprovecham. Forestales - Percep. en especie - Nº perceptores",
+"casilla": 22
+},
+{
+"orden": 34,
+"pos": 411,
+"lon": 17,
+"tipo": "Num",
+"desc": "Ganancias patrim. Aprovecham. Forestales - Percep. en especie - Importe percepciones",
+"casilla": 23
+},
+{
+"orden": 35,
+"pos": 428,
+"lon": 17,
+"tipo": "Num",
+"desc": "Ganancias patrim. Aprovecham. Forestales - Percep. en especie - Importe ingresos a cuenta",
+"casilla": 24
+},
+{
+"orden": 36,
+"pos": 445,
+"lon": 8,
+"tipo": "Num",
+"desc": "Contraprest. cesión dchos. imagen - Nº de perceptores -",
+"casilla": 25
+},
+{
+"orden": 37,
+"pos": 453,
+"lon": 17,
+"tipo": "Num",
+"desc": "Contraprest. cesión dchos. imagen - Contraprestaciones satisfechas",
+"casilla": 26
+},
+{
+"orden": 38,
+"pos": 470,
+"lon": 17,
+"tipo": "Num",
+"desc": "Contraprest. cesión dchos. imagen - Importe de los ingresos a cuenta",
+"casilla": 27
+},
+{
+"orden": 39,
+"pos": 487,
+"lon": 17,
+"tipo": "Num",
+"desc": "Total liquidación - Suma retenciones e ingresos a cuenta",
+"casilla": 28
+},
+{
+"orden": 40,
+"pos": 504,
+"lon": 17,
+"tipo": "N",
+"desc": "Total liquidación - Resultado de anteriores declaraciones",
+"casilla": 29
+},
+{
+"orden": 41,
+"pos": 521,
+"lon": 17,
+"tipo": "Num",
+"desc": "Total liquidación - Resultado a ingresar",
+"casilla": 30
+},
+{
+"orden": 42,
+"pos": 538,
+"lon": 1,
+"tipo": "An",
+"desc": "Declaración complementaria",
+"casilla": null
+},
+{
+"orden": 43,
+"pos": 539,
+"lon": 13,
+"tipo": "An",
+"desc": "Número de justificante de la declaración anterior",
+"casilla": null
+},
+{
+"orden": 44,
+"pos": 552,
+"lon": 1,
+"tipo": "An",
+"desc": "Reservado. Administración presentando declaración de Colegio Concertado (CC)",
+"casilla": null
+},
+{
+"orden": 45,
+"pos": 553,
+"lon": 34,
+"tipo": "An",
+"desc": "Domiciliación - IBAN",
+"casilla": null
+},
+{
+"orden": 46,
+"pos": 587,
+"lon": 389,
+"tipo": "An",
+"desc": "Reservado para la Administración",
+"casilla": null
+},
+{
+"orden": 47,
+"pos": 976,
+"lon": 13,
+"tipo": "An",
+"desc": "Reservado para el sello electrónico de la AEAT",
+"casilla": null
+},
+{
+"orden": 48,
+"pos": 989,
+"lon": 12,
+"tipo": "An",
+"desc": "Indicador de fin de registro",
+"casilla": null
+}
+]

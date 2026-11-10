@@ -1,0 +1,24 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+<form class="formulario" hx-post="{{ base }}/accion/copiar" hx-target="#modal-contenido" hx-swap="innerHTML">
+  <h2 id="modal-titulo">Copiar un fichero para presentarlo</h2>
+  {% for er in errores %}<div class="aviso error" role="alert">{{ er }}</div>{% endfor %}
+  <p>Se copia a <code>{{ destino }}</code> con un nombre que se entienda, para encontrarlo fácilmente al subirlo a la sede. El original no se toca.</p>
+  {% if resultado %}
+  <div class="aviso info" role="status">
+    <strong>{{ 'Copiado.' if resultado.nueva else 'Ya estaba copiado.' }}</strong> <code>{{ resultado.ruta }}</code>
+    <p><button type="button" class="boton" hx-post="{{ base }}/{{ resultado.id }}/carpeta-copia" hx-swap="none">Abrir la carpeta</button></p>
+  </div>
+  {% endif %}
+  {% if not opciones %}
+  <div class="aviso info">Todavía no hay ningún fichero generado. Genérelo desde la ficha del trimestre.</div>
+  {% else %}
+  <div class="campo"><label for="presentacion">Fichero</label>
+    <select id="presentacion" name="presentacion">
+      {% for p, nombre in opciones %}<option value="{{ p.id }}">{{ p.periodo }} {{ p.anio }} · {{ p.tipo_presentacion }} · {{ 'presentado' if p.estado == 'presentada' else 'sin presentar' }} → {{ nombre }}</option>{% endfor %}
+    </select></div>
+  {% endif %}
+  <div class="botones-formulario">
+    <button type="button" class="boton" data-cerrar-modal>Cerrar</button>
+    {% if opciones %}<button type="submit" class="boton primario">Copiar</button>{% endif %}
+  </div>
+</form>

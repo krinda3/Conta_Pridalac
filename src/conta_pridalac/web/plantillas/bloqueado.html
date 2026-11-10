@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block titulo %}Datos en uso · Conta Pridalac{% endblock %}
+{% block contenido %}
+<h1>Los datos están en uso en otro equipo</h1>
+
+{% if mensaje %}<div class="aviso {{ 'error' if tipo == 'error' else 'info' }}" role="status">{{ mensaje }}</div>{% endif %}
+
+{% if perdido %}
+<div class="aviso error" role="alert"><strong>Otro equipo ha tomado el control de los datos mientras tenía Conta abierto aquí.</strong> Para no estropearlos, este programa ha dejado de trabajar con ellos. No se ha perdido nada de lo ya guardado.</div>
+{% endif %}
+
+<section class="tarjeta">
+  <p>La carpeta de datos <code>{{ raiz }}</code> la tiene abierta:</p>
+  <p><strong>{{ quien }}</strong></p>
+  {% if reciente %}
+  <p class="suave">Su última señal es <strong>reciente</strong>: lo normal es que Conta siga abierto allí. Ciérrelo en ese equipo, espere a que termine la sincronización de la carpeta y pulse «Reintentar».</p>
+  {% elif pillado %}
+  <p class="suave">Hace <strong>mucho</strong> que no da señales: probablemente se cerró mal (se apagó el equipo, se fue la luz o se cerró a la fuerza) y el candado quedó pillado. Si está seguro de que ya no se usa allí, puede tomar el control.</p>
+  {% else %}
+  <p class="suave">Su última señal no es de este mismo minuto. Si no está seguro de que se haya cerrado, mejor ciérrelo en ese equipo y reintente.</p>
+  {% endif %}
+  <div style="display:flex; gap:.6rem; flex-wrap:wrap">
+    <form method="post" action="/bloqueado/reintentar"><button type="submit" class="boton primario">Reintentar</button></form>
+    <a class="boton" href="/datos">Usar otra carpeta de datos</a>
+  </div>
+</section>
+
+<section class="tarjeta">
+  <h2>Tomar el control (forzar)</h2>
+  <div class="aviso warning" role="note">Hágalo <strong>solo si de verdad quedó pillado</strong>. Si el otro equipo sigue abierto y ambos escriben a la vez, las bases se pueden estropear y los últimos cambios de uno de los dos se pierden.</div>
+  <form method="post" action="/bloqueado/forzar" class="formulario" style="margin-top:.6rem">
+    <div class="campo"><label for="confirmacion">Para confirmarlo, escriba FORZAR</label><input id="confirmacion" name="confirmacion" type="text" autocomplete="off"></div>
+    <div class="botones-formulario"><button type="submit" class="boton">Tomar el control</button></div>
+  </form>
+</section>
+{% endblock %}

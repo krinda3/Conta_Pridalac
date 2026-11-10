@@ -1,0 +1,28 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+{% if resultado %}
+{% set r = resultado %}
+<div class="formulario importacion">
+  <h2 id="modal-titulo">Facturas cargadas</h2>
+  <p class="suave"><strong>{{ r.fichero }}</strong></p>
+  <section class="bloque totales-factura">
+    <div><span class="suave">Facturas del fichero</span><strong>{{ r.leidas }}</strong></div>
+    <div><span class="suave">Nuevas</span><strong>{{ r.nuevas }}</strong></div>
+    <div><span class="suave">Ya estaban</span><strong>{{ r.repetidas }}</strong></div>
+    {% if r.recuperadas %}<div><span class="suave">Recuperadas (las había borrado)</span><strong>{{ r.recuperadas }}</strong></div>{% endif %}
+  </section>
+  {% for av in r.avisos %}<div class="aviso warning">{{ av }}</div>{% endfor %}
+  <div class="botones-formulario"><button type="button" class="boton primario" data-cerrar-modal hx-get="{{ base }}/tabla" hx-target="#tabla" hx-swap="innerHTML">Cerrar</button></div>
+</div>
+{% else %}
+<form class="formulario" hx-post="{{ base }}/accion/cargar" hx-encoding="multipart/form-data" hx-target="#modal-contenido" hx-swap="innerHTML">
+  <h2 id="modal-titulo">Cargar facturas {{ 'emitidas' if listado.sentido == 'E' else 'recibidas' }} de Verifactu</h2>
+  {% for er in errores %}<div class="aviso error" role="alert">{{ er }}</div>{% endfor %}
+  <p class="suave">{% if listado.sentido == 'E' %}Elija el Excel de facturas emitidas que exporta Verifactu (sale uno por empresa: tiene que ser el de esta).{% else %}Elija el Excel «facturas recibidas» que exporta Verifactu.{% endif %} Las columnas se reconocen por su nombre; las facturas que ya estén cargadas no se repiten. No se contabiliza nada: las facturas quedan en la lista de trabajo para conciliarlas con el extracto.</p>
+  <p class="suave">¿No usa Verifactu? <a href="/e/{{ ctx.slug }}/{{ ctx.ejercicio.anio }}/plantilla-excel/{{ 'emitidas' if listado.sentido == 'E' else 'recibidas' }}">Descargar la plantilla de Excel</a> (con las columnas que el programa lee) · <a href="/e/{{ ctx.slug }}/{{ ctx.ejercicio.anio }}/ayuda/facturas#plantillas-de-excel" target="_blank">cómo rellenarla</a>.</p>
+  <div class="campo"><label for="fichero">Fichero Excel (.xlsx)</label><input id="fichero" name="fichero" type="file" accept=".xlsx,.xlsm" required></div>
+  <div class="botones-formulario">
+    <button type="button" class="boton" data-cerrar-modal>Cancelar</button>
+    <button type="submit" class="boton primario">Cargar</button>
+  </div>
+</form>
+{% endif %}

@@ -1,0 +1,47 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+<form class="formulario" hx-post="{{ base }}/guardar" hx-target="#modal-contenido" hx-swap="innerHTML">
+  <h2 id="modal-titulo">{{ listado.titulo }} · {{ 'Editar' if id else 'Añadir' }}</h2>
+  {% for e in errores %}<div class="aviso error" role="alert">{{ e }}</div>{% endfor %}
+  {% if id %}<input type="hidden" name="id" value="{{ id }}">{% endif %}
+  {% set cabecera = listado.cabecera_de_formulario(ctx, id) if id else [] %}
+  {% if cabecera %}<dl class="datos-ficha">{% for nombre, valor in cabecera %}<div><dt>{{ nombre }}</dt><dd>{{ valor if valor else '—' }}</dd></div>{% endfor %}</dl>{% endif %}
+  {% set enlaces = listado.enlaces_de_formulario(ctx, id) if id else [] %}
+  {% if enlaces %}<p>{% for texto, url in enlaces %}<a class="boton" href="{{ url }}" target="_blank" rel="noopener">{{ texto }}</a> {% endfor %}</p>{% endif %}
+  {% set ns = namespace(abierta=false) %}
+  {% for c in listado.campos %}
+  {% if loop.first or c.seccion %}
+  {% if ns.abierta %}</div>{% endif %}
+  {% if c.seccion %}<h3 class="seccion-formulario">{{ c.seccion }}</h3>{% endif %}
+  <div class="campos">{% set ns.abierta = true %}
+  {% endif %}
+  <div class="campo {% if c.ancho == 2 %}doble{% endif %}">
+    {% if c.tipo == "checkbox" %}
+    <label class="marca"><input type="checkbox" name="{{ c.nombre }}" {% if valores.get(c.nombre) in ('on', 'True', True) %}checked{% endif %}> {{ c.titulo }}</label>
+    {% else %}
+    <label for="f-{{ c.nombre }}">{{ c.titulo }}{% if c.requerido %} <span class="req" title="Obligatorio">*</span>{% endif %}</label>
+    {% if c.tipo == "select" %}
+    <select id="f-{{ c.nombre }}" name="{{ c.nombre }}" {% if c.solo_alta and id %}disabled{% endif %}>
+      {% for valor, texto in opciones[c.nombre] %}<option value="{{ valor }}" {% if valores.get(c.nombre) == valor %}selected{% endif %}>{{ texto }}</option>{% endfor %}
+    </select>
+    {% elif c.tipo == "textarea" %}
+    <textarea id="f-{{ c.nombre }}" name="{{ c.nombre }}" rows="3">{{ valores.get(c.nombre) or '' }}</textarea>
+    {% else %}
+    <input id="f-{{ c.nombre }}" name="{{ c.nombre }}" type="text" value="{{ valores.get(c.nombre) or '' }}" {% if c.tipo == 'fecha' %}placeholder="DDMMAA"{% endif %}
+           {% if c.tipo in ('dinero', 'numero') %}inputmode="decimal"{% endif %} {% if c.solo_alta and id %}readonly{% endif %} autocomplete="off"
+           {% if c.sugerencias %}list="dl-{{ c.lista or c.nombre }}"{% endif %}>
+    {% endif %}
+    {% if c.ayuda %}<small class="suave">{{ c.ayuda }}</small>{% endif %}
+    {% endif %}
+  </div>
+  {% endfor %}
+  {% if ns.abierta %}</div>{% endif %}
+  {% set listas = namespace(hechas=[]) %}
+  {% for c in listado.campos if c.sugerencias and (c.lista or c.nombre) not in listas.hechas %}
+  {% set _ = listas.hechas.append(c.lista or c.nombre) %}
+  <datalist id="dl-{{ c.lista or c.nombre }}">{% for valor, texto in c.sugerencias(ctx) %}<option value="{{ valor }}">{{ texto }}</option>{% endfor %}</datalist>
+  {% endfor %}
+  <div class="botones-formulario">
+    <button type="button" class="boton" data-cerrar-modal>Cancelar</button>
+    <button type="submit" class="boton primario">Guardar</button>
+  </div>
+</form>

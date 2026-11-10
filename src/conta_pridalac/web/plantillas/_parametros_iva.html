@@ -1,0 +1,20 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+<form class="formulario" hx-post="{{ base }}/accion/parametros" hx-target="#modal-contenido" hx-swap="innerHTML">
+  <h2 id="modal-titulo">Parámetros del IVA</h2>
+  {% for er in errores %}<div class="aviso error" role="alert">{{ er }}</div>{% endfor %}
+  <datalist id="dl-cuentas">{% for codigo, nombre in cuentas %}<option value="{{ codigo }}">{{ nombre }}</option>{% endfor %}</datalist>
+  <div class="campo"><label for="IVA_PERIODICIDAD">Periodicidad de las declaraciones</label>
+    <select id="IVA_PERIODICIDAD" name="IVA_PERIODICIDAD">
+      <option value="4" {% if valores.IVA_PERIODICIDAD == '4' %}selected{% endif %}>Trimestral</option>
+      <option value="6" {% if valores.IVA_PERIODICIDAD == '6' %}selected{% endif %}>Bimestral</option>
+      <option value="12" {% if valores.IVA_PERIODICIDAD == '12' %}selected{% endif %}>Mensual</option></select></div>
+  <div class="campo"><label for="IVA_DIAS_PAGO">Día de pago de cada periodo (separados por comas)</label>
+    <input id="IVA_DIAS_PAGO" name="IVA_DIAS_PAGO" type="text" value="{{ valores.IVA_DIAS_PAGO }}" placeholder="vacío = día 25" autocomplete="off">
+    <small class="suave">Un número por periodo: el día del mes siguiente en que vence el IVA a ingresar. Por ejemplo <code>20,20,20,30</code> (el cuarto trimestre vence el 30 de enero).</small></div>
+  <div class="campo"><label for="IVA_DEBE">Cuenta de Hacienda deudora por IVA (a compensar o devolver)</label><input id="IVA_DEBE" name="IVA_DEBE" type="text" list="dl-cuentas" value="{{ valores.IVA_DEBE }}" autocomplete="off"></div>
+  <div class="campo"><label for="IVA_HABER">Cuenta de Hacienda acreedora por IVA (a pagar)</label><input id="IVA_HABER" name="IVA_HABER" type="text" list="dl-cuentas" value="{{ valores.IVA_HABER }}" autocomplete="off"></div>
+  <div class="botones-formulario">
+    <button type="button" class="boton" data-cerrar-modal>Cancelar</button>
+    <button type="submit" class="boton primario">Guardar</button>
+  </div>
+</form>

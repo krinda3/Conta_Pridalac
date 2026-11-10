@@ -1,0 +1,45 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+{% set selecciona = listado.borrar or listado.acciones_con_seleccion %}
+{% for e in errores %}<div class="aviso error" role="alert">{{ e }}</div>{% endfor %}
+{% if resumen %}<p class="resumen-listado">{{ resumen }}</p>{% endif %}
+<div class="desplazable">
+<table class="datos" data-lista="{{ listado.nombre }}" data-base="{{ base }}" data-doble-clic="{{ 'si' if listado.abre_con_doble_clic() else 'no' }}">
+  <thead>
+    <tr>
+      {% if selecciona %}<th class="sel-col"><input type="checkbox" id="todas" aria-label="Seleccionar todas"></th>{% endif %}
+      {% for c in listado.columnas %}
+      <th class="{{ 'num' if c.tipo in ('dinero', 'entero', 'porcentaje') else '' }}{% if orden == c.clave %} ordenada {{ dir }}{% endif %}" data-clave="{{ c.clave }}" data-peso="{{ c.ancho }}"
+          aria-sort="{% if orden == c.clave %}{{ 'descending' if dir == 'desc' else 'ascending' }}{% else %}none{% endif %}">
+        <button type="button" class="orden" title="Ordenar por {{ c.titulo }}">{{ c.titulo }}<span class="flecha" aria-hidden="true"></span></button>
+        <span class="rz" role="separator" aria-label="Ajustar el ancho de {{ c.titulo }}"></span>
+      </th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for f in filas %}
+    <tr {% if f.id %}data-id="{{ f.id }}"{% endif %} class="{{ f.clase }}">
+      {% if selecciona %}<td class="sel-col">{% if f.id and f.borrable %}<input type="checkbox" class="sel" name="ids" value="{{ f.id }}" aria-label="Seleccionar fila">{% endif %}</td>{% endif %}
+      {% for c in listado.columnas %}
+      {% set v = f.valores.get(c.clave) %}
+      <td class="{{ clase_numero(v, c.tipo) }}" data-clave="{{ c.clave }}">{{ v | fmt(c.tipo) }}</td>
+      {% endfor %}
+    </tr>
+    {% else %}
+    <tr class="vacia"><td colspan="{{ listado.columnas | length + (1 if selecciona else 0) }}">{{ vacio }}{% if q %} que coincida con «{{ q }}»{% endif %}.</td></tr>
+    {% endfor %}
+  </tbody>
+  {% if totales %}
+  <tfoot>
+    <tr>
+      {% if selecciona %}<td></td>{% endif %}
+      {% for c in listado.columnas %}
+      {% set v = totales.get(c.clave) %}
+      <td class="{{ clase_numero(v, c.tipo) }}">{% if loop.first and v is none %}Totales{% else %}{{ v | fmt(c.tipo) }}{% endif %}</td>
+      {% endfor %}
+    </tr>
+  </tfoot>
+  {% endif %}
+</table>
+</div>
+<p class="pie-tabla suave" id="contador">{{ filas | length }} fila{{ '' if filas | length == 1 else 's' }}</p>

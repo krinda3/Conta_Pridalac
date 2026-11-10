@@ -1,0 +1,39 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+{% if resultado %}
+<div class="formulario importacion">
+  <h2 id="modal-titulo">Facturas contabilizadas como pendientes de {{ 'cobro' if listado.sentido == 'E' else 'pago' }}</h2>
+  <section class="bloque totales-factura">
+    <div><span class="suave">Facturas creadas</span><strong>{{ resultado.facturas | length }}</strong></div>
+    <div><span class="suave">Justificantes (PDF)</span><strong>{{ resultado.pdfs }}</strong></div>
+  </section>
+  <p class="suave">Quedan en <a href="/e/{{ ctx.slug }}/{{ ctx.ejercicio.anio }}/vencimientos">Vencimientos pendientes</a>. Cuando se paguen, concílielas con su movimiento del extracto.</p>
+  {% if resultado.terceros_nuevos %}<div class="aviso info">{{ 'Clientes' if listado.sentido == 'E' else 'Proveedores' }} nuevos: {{ resultado.terceros_nuevos | join(', ') }}. Revise su subcuenta de {{ 'ingreso' if listado.sentido == 'E' else 'gasto' }}.</div>{% endif %}
+  {% for av in resultado.avisos %}<div class="aviso warning">{{ av }}</div>{% endfor %}
+  <div class="botones-formulario"><button type="button" class="boton primario" data-cerrar-modal hx-get="{{ base }}/tabla" hx-target="#tabla" hx-swap="innerHTML">Cerrar</button></div>
+</div>
+{% else %}
+<form class="formulario" hx-post="{{ base }}/accion/pendientes" hx-target="#modal-contenido" hx-swap="innerHTML">
+  <h2 id="modal-titulo">Contabilizar el resto como pendientes de {{ 'cobro' if listado.sentido == 'E' else 'pago' }}</h2>
+  {% for er in errores %}<div class="aviso error" role="alert">{{ er }}</div>{% endfor %}
+  <p class="suave">Haga esto al final, cuando ya haya aplicado las propuestas y marcado las pagadas por el socio. Las facturas que quedan en la lista, sin {{ 'cobro' if listado.sentido == 'E' else 'pago' }}, se contabilizan con su vencimiento por {{ 'cobrar' if listado.sentido == 'E' else 'pagar' }} y aparecen en Vencimientos pendientes. Es todo o nada.</p>
+  {% if preparadas.sin_aplicar %}<div class="aviso warning" role="alert"><strong>Antes, aplique las propuestas.</strong> Hay {{ preparadas.sin_aplicar }} factura(s) con propuesta segura o marcadas como pagadas por un socio que todavía no se han aplicado: pulse «Aplicar propuestas» primero. Si no, se quedarán sin contabilizar.</div>{% endif %}
+  <section class="bloque totales-factura">
+    <div><span class="suave">Se contabilizarán</span><strong>{{ preparadas.aplicables | length }}</strong></div>
+    <div><span class="suave">Se dejan fuera</span><strong>{{ preparadas.omitidas | length }}</strong></div>
+  </section>
+  {% if preparadas.avisos %}
+  <div class="aviso info"><strong>Revise el IVA de estas facturas antes de aplicar:</strong> lo que el Excel no explica con base e IVA se contabiliza sin IVA.
+    {% for f, texto in preparadas.avisos[:8] %}<br>{{ f.nombre }} · {{ f.numero_factura or '—' }} · {{ f.total | fmt('dinero') }}: {{ texto }}{% endfor %}
+    {% if preparadas.avisos | length > 8 %}<br>y {{ preparadas.avisos | length - 8 }} más{% endif %}</div>
+  {% endif %}
+  {% if preparadas.omitidas %}
+  <div class="aviso warning"><strong>Se dejan fuera:</strong>
+    {% for f, motivo in preparadas.omitidas[:8] %}<br>{{ f.nombre }} · {{ f.numero_factura or '—' }} · {{ f.total | fmt('dinero') }}: {{ motivo }}{% endfor %}
+    {% if preparadas.omitidas | length > 8 %}<br>y {{ preparadas.omitidas | length - 8 }} más{% endif %}</div>
+  {% endif %}
+  <div class="botones-formulario">
+    <button type="button" class="boton" data-cerrar-modal>Cancelar</button>
+    {% if preparadas.aplicables %}<button type="submit" class="boton primario">Contabilizar {{ preparadas.aplicables | length }}</button>{% endif %}
+  </div>
+</form>
+{% endif %}

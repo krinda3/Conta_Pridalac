@@ -1,0 +1,18 @@
+{# Banda con los títulos de las cajas y, debajo, las opciones de la caja abierta. En la pantalla de una opción se abre su caja; en el inicio, la última que se usó (app.js). #}
+{% set pantalla = listado.nombre if listado else None %}
+{% set abierta = caja_de(pantalla) %}
+<nav class="cajas" aria-label="Opciones del programa" data-inicio="{{ '' if abierta else '1' }}" data-guardada="{{ preferencias.caja if preferencias else '' }}">
+  <div class="banda" role="tablist">
+    {% for caja in menu %}
+    <button type="button" role="tab" class="pestana{% if caja.id == abierta %} activa{% endif %}" id="pestana-{{ caja.id }}" data-caja="{{ caja.id }}" aria-controls="caja-{{ caja.id }}" aria-expanded="{{ 'true' if caja.id == abierta else 'false' }}">{{ caja.titulo }}</button>
+    {% endfor %}
+  </div>
+  {% for caja in menu %}
+  <div class="caja" id="caja-{{ caja.id }}" data-caja="{{ caja.id }}" role="tabpanel" aria-labelledby="pestana-{{ caja.id }}" {% if caja.id != abierta %}hidden{% endif %}>
+    {% for o in caja.opciones %}
+      {% if o.proximamente %}<div class="opcion proximamente" title="Todavía no está en el programa"><strong>{{ o.titulo }}</strong><span class="explicacion">{{ o.descripcion }} <em>(próximamente)</em></span></div>
+      {% else %}<a class="opcion{% if o.nombre == pantalla or pantalla in o.alias %} actual{% endif %}" title="{{ o.descripcion }}" href="/e/{{ ctx.slug }}/{{ ctx.ejercicio.anio }}/{{ o.nombre }}"><strong>{{ o.titulo }}</strong><span class="explicacion">{{ o.descripcion }}</span></a>{% endif %}
+    {% endfor %}
+  </div>
+  {% endfor %}
+</nav>

@@ -1,0 +1,20 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+{% if hecho %}
+<div class="formulario importacion">
+  <h2 id="modal-titulo">Trabajando en {{ hecho }}</h2>
+  <p class="suave">Las pantallas de recibidas, emitidas, líneas sin factura y sugerencias de pago enseñan ahora sólo lo del {{ hecho }}, y el asistente cuenta sus pasos con las fechas de ese trimestre.</p>
+  <div class="botones-formulario"><button type="button" class="boton primario" onclick="location.reload()">Aceptar</button></div>
+</div>
+{% else %}
+<form class="formulario" hx-post="{{ base }}/accion/cambiar" hx-target="#modal-contenido" hx-swap="innerHTML">
+  <h2 id="modal-titulo">Cambiar de trimestre</h2>
+  {% for er in errores %}<div class="aviso error" role="alert">{{ er }}</div>{% endfor %}
+  <p class="suave">Ahora trabaja en <strong>{{ etiqueta }}</strong>. Elija el trimestre con el que quiere trabajar: las facturas, las líneas del extracto y las sugerencias de las demás pantallas se limitan a sus fechas, para no mezclar trimestres.</p>
+  <div class="campo"><label for="trimestre">Trimestre de trabajo</label>
+    <select id="trimestre" name="trimestre">{% for valor, texto in opciones %}<option value="{{ valor }}" {% if valor == actual %}selected{% endif %}>{{ texto }}</option>{% endfor %}</select></div>
+  <div class="botones-formulario">
+    <button type="button" class="boton" data-cerrar-modal>Cancelar</button>
+    <button type="submit" class="boton primario">Trabajar con este trimestre</button>
+  </div>
+</form>
+{% endif %}

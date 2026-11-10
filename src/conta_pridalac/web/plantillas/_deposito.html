@@ -1,0 +1,181 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+{% macro num(nombre, ancho="5.5rem") %}<input type="text" inputmode="decimal" name="c_{{ nombre }}" value="{{ entradas.get('c_' ~ nombre, '') }}" style="width:{{ ancho }};text-align:right" autocomplete="off" {% if enviado %}disabled{% endif %}>{% endmacro %}
+<form class="formulario liquidacion" hx-post="{{ base }}/guardar" hx-target="#modal-contenido" hx-swap="innerHTML" hx-encoding="multipart/form-data">
+  <h2 id="modal-titulo">Datos de cierre · depósito de cuentas {{ ej.anio }} <span class="estado-iva">{{ 'Depositado' if enviado else ('Preparado' if dep and dep.carpeta_ruta else 'Sin preparar') }}</span></h2>
+  <p class="suave">{{ ctx.empresa.nombre }} · Registro Mercantil de {{ ctx.empresa.registro_provincia or '—' }} · cuentas del {{ ej.fecha_inicio | fmt('fecha') }} al {{ ej.fecha_fin | fmt('fecha') }} · plazo del depósito: hasta el {{ plazo | fmt('fecha') }}</p>
+  {% for er in errores %}<div class="aviso error" role="alert">{{ er }}</div>{% endfor %}
+  <input type="hidden" name="id" value="{{ id }}">
+
+  <section class="bloque">
+    <h3>Controles</h3>
+    {% for h in hallazgos %}
+    <div class="aviso {{ 'error' if h.gravedad == 'ERROR' else 'warning' }}">{{ 'Error' if h.gravedad == 'ERROR' else 'Aviso' }}: {{ h.mensaje }}</div>
+    {% else %}
+    <div class="aviso info">Sin errores ni avisos.</div>
+    {% endfor %}
+    {% for a in avisos_memoria %}<div class="aviso info">Memoria: {{ a }}</div>{% endfor %}
+    {% if hay_errores %}<small class="suave">Mientras haya errores no se puede preparar el depósito.</small>{% endif %}
+  </section>
+
+  <section class="bloque">
+    <h3>Datos de personal</h3>
+    <table class="lineas">
+      <thead><tr><th></th><th class="num">Fijo</th><th class="num">No fijo</th><th class="num">Discapacidad</th></tr></thead>
+      <tbody>
+        <tr><td>Nº medio de empleados</td><td class="num">{{ num('medio_fijo') }}</td><td class="num">{{ num('medio_no_fijo') }}</td><td class="num">{{ num('medio_discapacidad') }}</td></tr>
+      </tbody>
+    </table>
+    <table class="lineas">
+      <thead><tr><th>Nº de empleados al final</th><th class="num">Hombres</th><th class="num">Mujeres</th></tr></thead>
+      <tbody>
+        <tr><td>Fijos</td><td class="num">{{ num('final_fijo_h') }}</td><td class="num">{{ num('final_fijo_m') }}</td></tr>
+        <tr><td>No fijos</td><td class="num">{{ num('final_nofijo_h') }}</td><td class="num">{{ num('final_nofijo_m') }}</td></tr>
+      </tbody>
+    </table>
+    <table class="lineas">
+      <thead><tr><th>Órgano de administración</th><th class="num">{{ ej.anio }}</th><th class="num">{{ ej.anio - 1 }}</th></tr></thead>
+      <tbody>
+        <tr><td>Nº total de miembros</td>
+          <td class="num"><input type="number" min="0" name="miembros_organo" value="{{ entradas.miembros_organo }}" style="width:5rem" {% if enviado %}disabled{% endif %}></td>
+          <td class="num"><input type="number" min="0" name="miembros_organo_anterior" value="{{ entradas.miembros_organo_anterior }}" style="width:5rem" {% if enviado %}disabled{% endif %}></td></tr>
+        <tr><td>Nº de mujeres</td>
+          <td class="num"><input type="number" min="0" name="mujeres_organo" value="{{ entradas.mujeres_organo }}" style="width:5rem" {% if enviado %}disabled{% endif %}></td>
+          <td class="num"><input type="number" min="0" name="mujeres_organo_anterior" value="{{ entradas.mujeres_organo_anterior }}" style="width:5rem" {% if enviado %}disabled{% endif %}></td></tr>
+      </tbody>
+    </table>
+    <small class="suave">Sin dato del año anterior se usa el del actual (D2 lo exige). El personal va al XBRL; si no lo escribe, queda a cero.</small>
+  </section>
+
+  <section class="bloque">
+    <h3>Otros datos</h3>
+    <div class="campo"><label for="c_roac">R.O.A.C. del auditor</label><input type="text" id="c_roac" name="c_roac" value="{{ entradas.get('c_roac', '') }}" style="width:10rem" {% if enviado %}disabled{% endif %}></div>
+    <div class="campo"><label for="c_lei">Legal entity identifier (LEI)</label><input type="text" id="c_lei" name="c_lei" value="{{ entradas.get('c_lei', '') }}" style="width:16rem" {% if enviado %}disabled{% endif %}></div>
+    <div class="campo"><label for="c_paginas">Nº de páginas presentadas</label><input type="number" min="0" id="c_paginas" name="c_paginas" value="{{ entradas.get('c_paginas', '') }}" style="width:5rem" placeholder="auto" {% if enviado %}disabled{% endif %}>
+      <small class="suave">vacío = las de la memoria más la certificación</small></div>
+    <div class="campo"><label><input type="checkbox" name="c_microempresa" value="1" {% if entradas.get('c_microempresa') == '1' %}checked{% endif %} {% if enviado %}disabled{% endif %}> Microempresa</label></div>
+    <div class="campo"><label for="c_causa">Causa de no presentación de cuentas del ejercicio anterior</label><input type="text" id="c_causa" name="c_causa" value="{{ entradas.get('c_causa', '') }}" style="width:24rem" {% if enviado %}disabled{% endif %}></div>
+    <small class="suave">El R.O.A.C., el LEI y la causa se guardan aquí, pero D2 todavía los pide a mano (no se conoce su código en el formulario).</small>
+  </section>
+
+  <section class="bloque">
+    <h3>Datos del presentador <small class="suave">(de la ficha de la empresa)</small></h3>
+    <p>{{ presentador or '—' }} · {{ ctx.empresa.presentador_nif or '—' }} · {{ ctx.empresa.presentador_domicilio or '—' }}, {{ ctx.empresa.presentador_cp or '' }} {{ ctx.empresa.presentador_poblacion or '' }} · {{ ctx.empresa.presentador_telefono or '—' }} · {{ ctx.empresa.presentador_email or '—' }}</p>
+  </section>
+
+  <section class="bloque">
+    <h3>Certificación</h3>
+    <div class="campo"><label for="fecha_formulacion">Formulación</label><input type="text" id="fecha_formulacion" name="fecha_formulacion" value="{{ entradas.fecha_formulacion }}" placeholder="DDMMAA" autocomplete="off" style="width:8rem" {% if enviado %}disabled{% endif %}>
+      <label for="fecha_aprobacion">Junta (aprobación)</label><input type="text" id="fecha_aprobacion" name="fecha_aprobacion" value="{{ entradas.fecha_aprobacion }}" placeholder="DDMMAA" autocomplete="off" style="width:8rem" {% if enviado %}disabled{% endif %}>
+      <label for="c_fecha_emision">Emisión</label><input type="text" id="c_fecha_emision" name="c_fecha_emision" value="{{ entradas.get('c_fecha_emision', '') }}" placeholder="DD/MM/AAAA" autocomplete="off" style="width:8rem" {% if enviado %}disabled{% endif %}>
+      {% if acta %}<br><small class="suave">Acta nº {{ acta.numero }} del {{ acta.fecha | fmt('fecha') }}, la que aprueba las cuentas de {{ ej.anio }}.</small>{% endif %}</div>
+    <p>Resultado del ejercicio: <strong>{{ resultado }}</strong>. Aplicación del beneficio (si hay pérdidas, la certificación dice que se compensan con futuros beneficios):</p>
+    <table class="lineas">
+      <tbody>
+      {% for clave, etiqueta in aplicacion %}<tr><td>{{ etiqueta }}</td><td class="num">{{ num(clave) }}</td></tr>{% endfor %}
+      <tr><td><strong>Total aplicación</strong></td><td class="num"><strong>{{ total_aplicacion }}</strong></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="bloque">
+    <h3>Memoria</h3>
+    <div class="campo"><label>Capital</label>{{ num('capital', '8rem') }} <label>Desembolsado</label>{{ num('desembolsado', '8rem') }}</div>
+    <div class="campo"><label>Nº de participaciones</label>{{ num('participaciones', '8rem') }} <label>Valor nominal</label>{{ num('valor_nominal', '6rem') }}</div>
+    <h4>Situación fiscal</h4>
+    <div class="campo"><label>Resultado de pérdidas y ganancias</label> <strong>{{ resultado }}</strong></div>
+    <div class="campo"><label>Impuesto sobre sociedades</label>{{ num('impuesto', '8rem') }} <label>Resto de ajustes extracontables</label>{{ num('ajustes', '8rem') }}</div>
+    <div class="campo"><label>Compensación de bases imponibles negativas</label>{{ num('compensacion_bin', '8rem') }} <label>Base imponible del ejercicio</label>{{ num('base_imponible', '8rem') }}</div>
+    <small class="suave">La memoria usa el nº de participaciones; la base imponible sale del IS presentado cuando lo hay.</small>
+  </section>
+
+  <section class="bloque">
+    <h3>Periodo medio de pago a proveedores</h3>
+    <div class="campo"><label>Saldo medio de acreedores comerciales</label>{{ num('saldo_medio', '8rem') }} <label>Compras netas y gastos de servicios exteriores</label> <strong id="compras" data-importe="{{ compras_importe }}">{{ compras }}</strong></div>
+    <div class="campo"><label for="pmp_actual">Días {{ ej.anio }}</label><input type="number" min="0" id="pmp_actual" name="pmp_actual" value="{{ entradas.pmp_actual }}" style="width:5rem" {% if enviado %}disabled{% endif %}>
+      <label for="pmp_anterior">Días {{ ej.anio - 1 }}</label><input type="number" min="0" id="pmp_anterior" name="pmp_anterior" value="{{ entradas.pmp_anterior }}" style="width:5rem" {% if enviado %}disabled{% endif %}>
+      <small class="suave">días = saldo medio ÷ compras × 365</small></div>
+    <script>
+      (function () {
+        var s = document.querySelector('input[name="c_saldo_medio"]'), c = document.getElementById('compras'), d = document.getElementById('pmp_actual');
+        if (!s || !c || !d) return;
+        s.addEventListener('input', function () {
+          var saldo = parseFloat(String(s.value).replace(/\./g, '').replace(',', '.')), compras = parseFloat(c.dataset.importe);
+          if (isFinite(saldo) && compras > 0) d.value = Math.max(0, Math.round(saldo / compras * 365));
+        });
+      })();
+    </script>
+  </section>
+
+  <section class="bloque">
+    <h3>Base de reparto</h3>
+    <p>Saldo de la cuenta de pérdidas y ganancias: <strong>{{ resultado }}</strong></p>
+    <div class="campo"><label>Remanente</label>{{ num('reparto_remanente', '8rem') }} <label>Reservas voluntarias</label>{{ num('reparto_voluntarias', '8rem') }} <label>Otras reservas de libre disposición</label>{{ num('reparto_otras', '8rem') }}</div>
+    <p>Total base de reparto = total aplicación: <strong>{{ total_aplicacion }}</strong></p>
+  </section>
+
+  <section class="bloque">
+    <h3>Importes que van al formulario de D2 y al XBRL</h3>
+    {% if importes %}
+    <table class="lineas">
+      <thead><tr><th>Código</th><th>Partida</th><th class="num">{{ ej.anio }}</th><th class="num">{{ ej.anio - 1 }}</th></tr></thead>
+      <tbody>
+      {% for f in importes.filas %}
+      <tr><td><code>{{ f.codigo }}</code>{% if not f.confirmado %} <span class="suave" title="Código inferido de la numeración de D2: compruebe en D2 que el importe cae en su casilla">(inferido)</span>{% endif %}</td>
+        <td>{{ f.etiqueta }}</td><td class="num">{{ f.actual | fmt('importe') }}</td><td class="num">{{ f.anterior | fmt('importe') }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+  </section>
+
+  <section class="bloque">
+    <h3>1. ZIP para D2</h3>
+    {% if dep and dep.zip_nombre %}
+    <p><a href="{{ base }}/{{ dep.id }}/doc/zip">{{ dep.zip_nombre }}</a> (lleva <a href="{{ base }}/{{ dep.id }}/doc/xbrl">DEPOSITO.xbrl</a>, <a href="{{ base }}/{{ dep.id }}/doc/xml">DEPOSITO.xml</a> y <a href="{{ base }}/{{ dep.id }}/doc/memoria" target="_blank">MEMORIA.pdf</a>)<br>
+      <small class="suave">En D2: importar el ZIP y generar la huella (D2 la calcula sobre su propio ZIP, por eso no la puede calcular Conta). Se guarda en <code>{{ ctx.config.almacen }}/{{ dep.carpeta_ruta }}</code>.</small></p>
+    <button type="submit" name="accion" value="copiar_zip" class="boton {{ 'hecho' if hecho.zip else 'primario' }}">{{ '✓ ' if hecho.zip }}2.- Copiar el ZIP a {{ carpeta_rm }}</button>
+    <p class="suave"><strong>Ahora, en D2:</strong> importe el ZIP, corrija lo que pida y genere la huella.</p>
+    {% else %}<p class="suave">Se prepara con «Preparar el depósito»: el ZIP con <code>DEPOSITO.xbrl</code>, <code>DEPOSITO.xml</code> y <code>MEMORIA.pdf</code>, igual que el del programa anterior.</p>{% endif %}
+  </section>
+
+  <section class="bloque">
+    <h3>2. Huella de D2 y certificación para firmar</h3>
+    {% if dep and dep.zip_nombre %}
+    {% if dep.huella_d2 %}
+    <p>Huella de D2: <code>{{ dep.huella_d2 }}</code><br>
+      <a href="{{ base }}/{{ dep.id }}/doc/cac" target="_blank">{{ nombre_cac }}</a>: la certificación del acuerdo de la junta con esa huella, <strong>para firmarla digitalmente</strong> y adjuntarla en D2.</p>
+    <button type="submit" name="accion" value="copiar_cac" class="boton {{ 'hecho' if hecho.cac else 'primario' }}">{{ '✓ ' if hecho.cac }}4.- Copiar la certificación a {{ carpeta_rm }}</button>
+    <p class="suave"><strong>Ahora:</strong> firme la certificación y, en D2 (sin cerrarlo), envíe el depósito: al presentarlo le pedirá la certificación firmada.</p>
+    {% endif %}
+    {% if not enviado %}
+    <p class="suave">Tras importar el ZIP en D2 y generar la huella, escríbala aquí o suba el <code>Huella.pdf</code> (o <code>Huella.txt</code>) que crea D2 en la carpeta «Presentacion» del depósito. Si vuelve a preparar el depósito y el ZIP cambia, la huella deja de valer y hay que volver a importarlo en D2.</p>
+    <div class="campo"><label for="huella_d2">Huella digital que genera D2</label><input type="text" id="huella_d2" name="huella_d2" value="" style="width:28rem" autocomplete="off" placeholder="{{ dep.huella_d2 or 'OPk+H1A/cxIJBa73Vn5Nmx7x36jzO6ngE5NZzP4vpZw=' }}"></div>
+    <div class="campo"><label for="huella_pdf">o el PDF / TXT de la huella</label><input type="file" id="huella_pdf" name="huella_pdf" accept="application/pdf,text/plain"></div>
+    <button type="submit" name="accion" value="registrar_huella" class="boton {{ 'hecho' if hecho.huella else 'primario' }}">{{ '✓ ' if hecho.huella }}3.- Guardar la huella y preparar la certificación</button>
+    {% endif %}
+    {% else %}<p class="suave">Primero prepare el depósito e impórtelo en D2.</p>{% endif %}
+  </section>
+
+  <section class="bloque">
+    <h3>Envío al Registro Mercantil</h3>
+    {% if enviado %}
+    <p>Depositado el <strong>{{ dep.enviado_en | fmt('fecha') }}</strong>{% if dep.referencia %} · referencia <strong>{{ dep.referencia }}</strong>{% endif %}{% if dep.numero_entrada %} · nº de entrada <strong>{{ dep.numero_entrada }}</strong>{% endif %}.
+      {% if dep.acuse_ruta %}<a href="{{ base }}/{{ dep.id }}/doc/acuse" target="_blank">Ver el acuse (PDF)</a>{% endif %}</p>
+    {% else %}
+    <p class="suave">Cuando D2 envíe el depósito, suba aquí el «Acuse de recibo» (PDF) que devuelve el Registro: de él se leen la fecha, la referencia y el nº de entrada, y el depósito queda como enviado y deja de avisar el plazo.</p>
+    <div class="campo"><label for="acuse">Acuse de recibo (PDF)</label><input type="file" id="acuse" name="acuse" accept="application/pdf"></div>
+    <details><summary>Si no tiene el PDF</summary>
+      <div class="campo"><label for="fecha_envio">Fecha del envío</label><input type="text" id="fecha_envio" name="fecha_envio" placeholder="DDMMAA" autocomplete="off"></div>
+      <div class="campo"><label for="referencia">Referencia del documento</label><input type="text" id="referencia" name="referencia" placeholder="28065B0000001020250" autocomplete="off"></div>
+    </details>
+    <button type="submit" name="accion" value="registrar_envio" class="boton primario">5.- Registrar el envío</button>
+    {% endif %}
+  </section>
+
+  <div class="botones-formulario">
+    <button type="button" class="boton" data-cerrar-modal>Cerrar</button>
+    <button type="submit" name="accion" value="ver" class="boton plano">Recalcular la vista</button>
+    <button type="submit" name="accion" value="guardar" class="boton plano" {% if enviado %}disabled{% endif %}>Guardar los datos</button>
+    <button type="submit" name="accion" value="preparar" class="boton {{ 'hecho' if hecho.preparar else 'primario' }}" {% if enviado or hay_errores %}disabled{% endif %}>{{ '✓ ' if hecho.preparar }}1.- Preparar el depósito</button>
+  </div>
+</form>

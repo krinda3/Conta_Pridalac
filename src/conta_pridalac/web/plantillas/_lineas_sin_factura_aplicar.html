@@ -1,0 +1,47 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+{% if resultado %}
+<div class="formulario importacion">
+  <h2 id="modal-titulo">Líneas contabilizadas</h2>
+  <section class="bloque totales-factura">
+    <div><span class="suave">Movimientos a una cuenta</span><strong>{{ resultado.movimientos }}</strong></div>
+    <div><span class="suave">Tickets (facturas con IVA al 21 %)</span><strong>{{ resultado.tickets }}</strong></div>
+  </section>
+  {% for av in resultado.avisos %}<div class="aviso warning">{{ av }}</div>{% endfor %}
+  <div class="botones-formulario"><button type="button" class="boton primario" data-cerrar-modal hx-get="{{ base }}/tabla" hx-target="#tabla" hx-swap="innerHTML">Cerrar</button></div>
+</div>
+{% else %}
+<form class="formulario" hx-post="{{ base }}/accion/aplicar" hx-target="#modal-contenido" hx-swap="innerHTML">
+  <h2 id="modal-titulo">Aplicar las sugerencias</h2>
+  {% for er in errores %}<div class="aviso error" role="alert">{{ er }}</div>{% endfor %}
+  <p class="suave">Se contabilizan las líneas que tienen una regla: las que van a una cuenta, como un movimiento de banco con su fecha y su importe, y los tickets, como una factura con el IVA al 21 % incluido, pagada por la línea. Es todo o nada. Las líneas sin regla se quedan en la lista: decida cada una con doble clic.</p>
+  <section class="bloque totales-factura">
+    <div><span class="suave">Se contabilizarán</span><strong>{{ preparadas.aplicables | length }}</strong></div>
+    <div><span class="suave">Sin regla</span><strong>{{ preparadas.sin_regla }}</strong></div>
+    <div><span class="suave">Se dejan fuera</span><strong>{{ preparadas.omitidas | length }}</strong></div>
+  </section>
+  {% if preparadas.aplicables %}
+  <p class="suave"><strong>Revise lo que se propone</strong> y desmarque lo que no quiera contabilizar así: una regla puede no valer para todas las líneas de un mismo concepto (por ejemplo, un recibo de Mapfre de la empresa y otro del socio). Las desmarcadas se quedan en la lista para decidirlas una a una.</p>
+  <div style="max-height: 20rem; overflow: auto">
+    <table class="tabla">
+      <thead><tr><th><input type="checkbox" checked aria-label="Marcar todas" onclick="document.querySelectorAll('#lineas-aplicables input[name=linea]').forEach(c => c.checked = this.checked)"></th><th>Fecha</th><th>Concepto</th><th class="num">Importe</th><th>Se propone</th></tr></thead>
+      <tbody id="lineas-aplicables">
+        {% for p in preparadas.aplicables %}
+        <tr><td><input type="checkbox" name="linea" value="{{ p.linea.id }}" id="lin-{{ p.linea.id }}" checked aria-label="Contabilizar {{ p.linea.texto }}"></td>
+            <td><label for="lin-{{ p.linea.id }}">{{ (p.linea.fecha_valor or p.linea.fecha) | fmt('fecha') }}</label></td><td><label for="lin-{{ p.linea.id }}">{{ p.linea.texto }}</label></td>
+            <td class="num">{{ p.linea.importe | fmt('dinero') }}</td><td>{{ p.regla.describir() }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+  {% if preparadas.omitidas %}
+  <div class="aviso warning"><strong>Se dejan fuera:</strong>
+    {% for l, motivo in preparadas.omitidas[:8] %}<br>{{ l.texto }} · {{ l.importe | fmt('dinero') }}: {{ motivo }}{% endfor %}
+    {% if preparadas.omitidas | length > 8 %}<br>y {{ preparadas.omitidas | length - 8 }} más{% endif %}</div>
+  {% endif %}
+  <div class="botones-formulario">
+    <button type="button" class="boton" data-cerrar-modal>Cancelar</button>
+    {% if preparadas.aplicables %}<button type="submit" class="boton primario">Contabilizar las marcadas</button>{% endif %}
+  </div>
+</form>
+{% endif %}

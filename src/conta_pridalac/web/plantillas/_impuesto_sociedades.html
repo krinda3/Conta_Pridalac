@@ -1,0 +1,133 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+{% macro dinero(nombre, ancho="7.5rem") %}<input type="text" inputmode="decimal" name="{{ nombre }}" value="{{ e.get(nombre, '') }}" style="width:{{ ancho }};text-align:right" autocomplete="off">{% endmacro %}
+{% macro texto(nombre, ancho="12rem", marcador="") %}<input type="text" name="{{ nombre }}" value="{{ e.get(nombre, '') }}" style="width:{{ ancho }}" autocomplete="off" placeholder="{{ marcador }}">{% endmacro %}
+<form class="formulario liquidacion" hx-post="{{ base }}/guardar" hx-target="#modal-contenido" hx-swap="innerHTML">
+  <h2 id="modal-titulo">Impuesto sobre Sociedades {{ ej.anio }} · modelo 200</h2>
+  <p class="suave">{{ ctx.empresa.nombre }} · ejercicio del {{ ej.fecha_inicio | fmt('fecha') }} al {{ ej.fecha_fin | fmt('fecha') }}</p>
+  {% for er in errores %}<div class="aviso error" role="alert">{{ er }}</div>{% endfor %}
+  {% if not ej.cerrado %}<div class="aviso warning">El ejercicio todavía está abierto: el cálculo puede cambiar hasta que se cierre.</div>{% endif %}
+  <input type="hidden" name="id" value="{{ id }}">
+
+  {% if p %}
+  <section class="bloque">
+    <h3>Cálculo de la base imponible y de la cuota</h3>
+    <table class="lineas">
+      <tbody>
+        <tr><td>Resultado contable del ejercicio</td><td class="num">{{ eur(p.resultado) }}</td></tr>
+        {% for c in p.correcciones %}
+        <tr><td>&nbsp;&nbsp;{{ '+' if c.aumento else '−' }} {{ c.concepto }}{% if c.automatica %} <small class="suave">(automática)</small>{% endif %}{% if not c.permanente %} <small class="suave">(temporaria)</small>{% endif %}</td>
+            <td class="num">{{ eur(c.aumento if c.aumento else -c.disminucion) }}</td></tr>
+        {% endfor %}
+        <tr><td><strong>Base antes de compensar bases negativas</strong></td><td class="num"><strong>{{ eur(p.base_previa) }}</strong></td></tr>
+        {% for anio, importe in p.compensaciones %}
+        <tr><td>&nbsp;&nbsp;− Base negativa de {{ anio }}</td><td class="num">{{ eur(importe) }}</td></tr>
+        {% endfor %}
+        <tr><td><strong>Base imponible</strong></td><td class="num"><strong>{{ eur(p.base_imponible) }}</strong></td></tr>
+        <tr><td>Tipo de gravamen <small class="suave">({{ p.tipo.motivo }})</small></td><td class="num">{{ tipo_texto }}{% if p.tipo.marcar_00088 %} · casilla 00088{% endif %}</td></tr>
+        <tr><td><strong>Cuota íntegra</strong></td><td class="num"><strong>{{ eur(p.cuota_integra) }}</strong></td></tr>
+      </tbody>
+    </table>
+    {% if p.base_negativa_generada %}<p class="suave">Este ejercicio genera una base imponible negativa de <strong>{{ eur(p.base_negativa_generada) }}</strong> que queda pendiente de compensar: añádala abajo en «Bases imponibles negativas» con el año {{ ej.anio }}.</p>{% endif %}
+    <small class="suave">Bases negativas pendientes al empezar el ejercicio: {{ eur(p.bases_pendientes) }}. Límite de compensación de este ejercicio: {{ eur(p.limite_compensacion) }}.
+      Este cálculo es una vista previa: las retenciones, los pagos fraccionados y el resto de la liquidación se añaden al generar el fichero.</small>
+  </section>
+  {% endif %}
+
+  <section class="bloque">
+    <h3>Fichero para la sede</h3>
+    {% for h in hallazgos %}
+    <div class="aviso {{ 'error' if h.gravedad == 'ERROR' else 'warning' }}">{{ 'Error' if h.gravedad == 'ERROR' else 'Aviso' }}: {{ h.mensaje }}</div>
+    {% else %}
+    <div class="aviso info">Sin errores ni avisos.</div>
+    {% endfor %}
+    <p class="suave">El fichero se genera con los datos guardados (al pulsar el botón se guardan primero). Guardado en el almacén como <code>{{ nombre_fichero }}</code>.</p>
+    <button type="submit" name="accion" value="generar" class="boton {{ 'hecho' if hecho.generar else 'primario' }}" {% if hay_errores %}disabled title="Hay errores en los controles"{% endif %}>{{ '✓ ' if hecho.generar }}1.- Generar el fichero</button>
+    {% if generada %}
+    <p>Generado el {{ generada.creada_en | fmt('fecha') }} · {{ generada.fichero_nombre }} · diseño {{ generada.diseno_version }} · resultado {{ eur(generada.resultado) }}</p>
+    <button type="button" class="boton {{ 'hecho' if hecho.copiar else 'primario' }}" hx-post="{{ base }}/{{ generada.id }}/copiar" hx-swap="none" title="Copia el fichero a {{ carpeta }} con un nombre que se entienda">{{ '✓ ' if hecho.copiar }}2.- Copiar para presentar</button>
+    <button type="button" class="boton plano" hx-post="{{ base }}/{{ generada.id }}/carpeta-copia" hx-swap="none">Abrir la carpeta de copias</button>
+    <p class="suave"><strong>Ahora:</strong> en la sede de la AEAT, «Presentar mediante fichero» y suba el fichero copiado. Con un ejercicio ya presentado con otro programa sirve solo para comprobarlo: no lo presente de nuevo.</p>
+    {% endif %}
+  </section>
+
+  <section class="bloque">
+    <h3>Tipo de gravamen</h3>
+    <label><input type="checkbox" name="forzar_25" value="1" {% if e.get('forzar_25') %}checked{% endif %}> Aplicar siempre el tipo general del 25 % (no usar el tipo reducido de microempresas)</label>
+    <small class="suave">Sin marcar, el programa propone 21 % / 22 % (2025) si la cifra de negocios del año anterior es inferior a 1 M€ y la entidad no es patrimonial (casilla 00066 en los caracteres).</small>
+  </section>
+
+  <section class="bloque">
+    <h3>Datos de cierre</h3>
+    <div class="campo"><label for="personal_fijo">Personal fijo</label>{{ texto('personal_fijo', '5rem') }}
+      <label for="personal_no_fijo">No fijo</label>{{ texto('personal_no_fijo', '5rem') }}
+      <label><input type="checkbox" name="agricola" value="1" {% if e.get('agricola') %}checked{% endif %}> Realiza actividades agrícolas y/o ganaderas</label></div>
+    <div class="campo"><label for="firmante_cargo">Firma: cargo</label>{{ texto('firmante_cargo', '10rem', 'Administrador') }}
+      <label for="firmante_nif">NIF</label>{{ texto('firmante_nif', '8rem') }}
+      <label for="firmante_nombre">Nombre</label>{{ texto('firmante_nombre', '18rem') }}</div>
+    <div class="campo"><label for="contacto_nombre">Contacto para incidencias</label>{{ texto('contacto_nombre', '18rem') }}
+      <label for="contacto_telefono">Teléfono</label>{{ texto('contacto_telefono', '8rem') }}</div>
+    <label><input type="checkbox" name="compensar" value="1" {% if e.get('compensar') %}checked{% endif %}> Compensar las bases imponibles negativas pendientes en este ejercicio</label>
+  </section>
+
+  <section class="bloque">
+    <h3>Correcciones al resultado contable</h3>
+    <small class="suave">Las multas y sanciones (cuentas que empiezan por las indicadas abajo) y el gasto por el propio impuesto se suman solos como correcciones permanentes: no hace falta escribirlos aquí. Aquí van las demás.</small>
+    <table class="lineas">
+      <thead><tr><th>Concepto</th><th class="num">Aumentos</th><th class="num">Disminuciones</th><th>Permanente</th></tr></thead>
+      <tbody>
+        {% for i in range(n_correcciones) %}
+        <tr><td>{{ texto('corr_' ~ i ~ '_concepto', '24rem') }}</td><td class="num">{{ dinero('corr_' ~ i ~ '_aumento') }}</td><td class="num">{{ dinero('corr_' ~ i ~ '_disminucion') }}</td>
+            <td style="text-align:center"><input type="checkbox" name="corr_{{ i }}_perm" value="1" {% if e.get('corr_' ~ i ~ '_perm') or not e.get('corr_' ~ i ~ '_concepto') %}checked{% endif %}></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div class="campo"><label for="no_deducibles">Cuentas no deducibles</label>{{ texto('no_deducibles', '14rem', '678') }}
+      <small class="suave">Códigos o principios de código, separados por comas (678 = multas y sanciones).</small></div>
+    <div class="campo"><label for="cuentas_impuesto">Gasto por el impuesto</label>{{ texto('cuentas_impuesto', '14rem', '630,633,638') }}</div>
+  </section>
+
+  <section class="bloque">
+    <h3>Retenciones e ingresos a cuenta</h3>
+    <table class="lineas">
+      <tbody>
+        {% for clave, titulo in retenciones %}<tr><td>{{ titulo }}</td><td class="num">{{ dinero('ret_' ~ clave) }}</td></tr>{% endfor %}
+        <tr><td>Incremento por pérdida de beneficios fiscales</td><td class="num">{{ dinero('inc_perdida') }}</td></tr>
+        <tr><td>Intereses de demora</td><td class="num">{{ dinero('intereses') }}</td></tr>
+        <tr><td>Abono de deducciones I+D+i (art. 44.2 LIS)</td><td class="num">{{ dinero('abono_idi') }}</td></tr>
+      </tbody>
+    </table>
+    <small class="suave">Los pagos fraccionados (modelo 202) se toman de las presentaciones del ejercicio.</small>
+  </section>
+
+  <section class="bloque">
+    <h3>Bases imponibles negativas</h3>
+    <small class="suave">Una fila por año en que se generó la base negativa. «Pendiente (manual)» solo si arrastra el saldo de otro programa. Un año sin importe se borra al guardar.</small>
+    <table class="lineas">
+      <thead><tr><th>Año</th><th class="num">Base negativa</th><th class="num">Ya aplicado</th><th class="num">Pendiente (manual)</th></tr></thead>
+      <tbody>
+        {% for i in range(n_bases) %}
+        <tr><td>{{ texto('bn_' ~ i ~ '_anio', '4.5rem') }}</td><td class="num">{{ dinero('bn_' ~ i ~ '_base') }}</td><td class="num">{{ dinero('bn_' ~ i ~ '_aplicado') }}</td><td class="num">{{ dinero('bn_' ~ i ~ '_manual') }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+  <section class="bloque">
+    <h3>Caracteres de la declaración</h3>
+    <details>
+      <summary>{{ marcadas | length }} marcada{{ '' if marcadas | length == 1 else 's' }}: abrir la lista completa del modelo 200</summary>
+      <small class="suave">Marque solo lo que corresponda a la entidad (por ejemplo 00066 entidad patrimonial, 00027 base imponible negativa o cero, 00006 incentivos de reducida dimensión).</small>
+      <div style="columns:2 22rem;column-gap:2rem">
+        {% for casilla, nombre in caracteres %}
+        <label style="display:block"><input type="checkbox" name="car_{{ casilla }}" value="1" {% if e.get('car_' ~ casilla) %}checked{% endif %}> <code>{{ '%05d' | format(casilla) }}</code> {{ nombre }}</label>
+        {% endfor %}
+      </div>
+    </details>
+  </section>
+
+  <div class="botones-formulario">
+    <button type="button" class="boton" data-cerrar-modal>Cerrar</button>
+    <button type="submit" name="accion" value="ver" class="boton plano">Recalcular la vista</button>
+    <button type="submit" name="accion" value="guardar" class="boton primario">Guardar los datos</button>
+  </div>
+</form>

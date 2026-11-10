@@ -1,0 +1,37 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+{% if resultado %}
+{% set r = resultado.r %}
+<div class="formulario importacion">
+  <h2 id="modal-titulo">Extracto importado</h2>
+  <p class="suave"><strong>{{ resultado.fichero }}</strong> en <strong>{{ resultado.banco }}</strong> · formato {{ formatos.get(r.formato, r.formato) }}{% if r.desde %} · del {{ r.desde | fmt('fecha') }} al {{ r.hasta | fmt('fecha') }}{% endif %}</p>
+  <section class="bloque totales-factura">
+    <div><span class="suave">Líneas del fichero</span><strong>{{ r.lineas }}</strong></div>
+    <div><span class="suave">Nuevas</span><strong>{{ r.nuevas }}</strong></div>
+    <div><span class="suave">Ya estaban</span><strong>{{ r.repetidas }}</strong></div>
+  </section>
+  {% if r.invertido %}<div class="aviso info">Los gastos venían en positivo: se les ha dado la vuelta para que sean cargos, como en el Mayor.</div>{% endif %}
+  {% if r.saldo_final is not none %}<p class="suave">Saldo del extracto: {{ r.saldo_inicial | fmt('dinero') }} → {{ r.saldo_final | fmt('dinero') }}</p>{% endif %}
+  {% if r.saltos %}
+  <div class="aviso warning" role="alert"><strong>Faltan líneas en el extracto.</strong> El saldo no encaja en {{ r.saltos | length }} punto(s):
+    {% for s in r.saltos[:5] %}<br>entre el {{ s.antes.fecha | fmt('fecha') }} y el {{ s.despues.fecha | fmt('fecha') }} faltan movimientos por {{ s.diferencia | fmt('dinero') }} €{% endfor %}
+    {% if r.saltos | length > 5 %}<br>y {{ r.saltos | length - 5 }} más{% endif %}</div>
+  {% endif %}
+  {% for av in r.avisos %}<div class="aviso warning">{{ av }}</div>{% endfor %}
+  <div class="botones-formulario"><button type="button" class="boton primario" data-cerrar-modal hx-get="{{ base }}/tabla" hx-target="#tabla" hx-swap="innerHTML">Cerrar</button></div>
+</div>
+{% else %}
+<form class="formulario" hx-post="{{ base }}/accion/importar" hx-encoding="multipart/form-data" hx-target="#modal-contenido" hx-swap="innerHTML">
+  <h2 id="modal-titulo">Importar un extracto</h2>
+  {% for er in errores %}<div class="aviso error" role="alert">{{ er }}</div>{% endfor %}
+  <p class="suave">Elija el Excel que descarga el banco o la tarjeta, tal cual (no hace falta recortarlo ni cambiar las fechas). Las columnas se reconocen por su nombre; lo que ya esté importado no se repite.</p>
+  <div class="campo"><label for="banco">Banco o tarjeta</label>
+    <select id="banco" name="banco" required><option value="">—</option>{% for id, nombre in bancos %}<option value="{{ id }}">{{ nombre }}</option>{% endfor %}</select></div>
+  <div class="campo"><label for="fichero">Fichero Excel (.xlsx)</label><input id="fichero" name="fichero" type="file" accept=".xlsx,.xlsm" required></div>
+  <div class="campo"><label for="signo">Signo de los importes</label>
+    <select id="signo" name="signo"><option value="">Automático (la tarjeta trae los gastos en positivo)</option><option value="si">Dar la vuelta al signo</option><option value="no">Dejarlo como viene</option></select></div>
+  <div class="botones-formulario">
+    <button type="button" class="boton" data-cerrar-modal>Cancelar</button>
+    <button type="submit" class="boton primario">Importar</button>
+  </div>
+</form>
+{% endif %}

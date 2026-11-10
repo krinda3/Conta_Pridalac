@@ -1,0 +1,16 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+<div class="formulario importacion">
+  <h2 id="modal-titulo">Importación terminada</h2>
+  <section class="bloque totales-factura">
+    <div><span class="suave">Facturas importadas</span><strong>{{ resultado.importadas | length }}</strong></div>
+    <div><span class="suave">Movimientos de banco</span><strong>{{ resultado.movimientos }}</strong></div>
+    <div><span class="suave">PDF adjuntados</span><strong>{{ resultado.pdfs }}</strong></div>
+  </section>
+  {% if resultado.terceros_nuevos %}<p><strong>{{ 'Proveedores' if sentido == 'R' else 'Clientes' }} creados:</strong> {{ resultado.terceros_nuevos | join(' · ') }}</p>{% endif %}
+  {% for av in resultado.avisos %}<div class="aviso warning">{{ av }}</div>{% endfor %}
+  {% if resultado.importadas %}
+  <p class="suave">Facturas grabadas (fila del Excel → nº de factura): {% for fila, numero in resultado.importadas %}{{ fila }}→{{ numero }}{{ ', ' if not loop.last }}{% endfor %}</p>
+  {% endif %}
+  {% if no_importadas %}<p class="suave">No se han importado {{ no_importadas | length }} filas (ya existían o tenían errores).</p>{% endif %}
+  <div class="botones-formulario"><button type="button" class="boton primario" data-cerrar-modal>Cerrar</button></div>
+</div>

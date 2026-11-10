@@ -1,0 +1,43 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+<form class="formulario liquidacion" hx-post="{{ base }}/guardar" hx-target="#modal-contenido" hx-swap="innerHTML">
+  <h2 id="modal-titulo">{{ 'Socio' if socio else 'Nuevo socio' }}{% if socio %} · {{ socio.nombre }}{% endif %}</h2>
+  {% for er in errores %}<div class="aviso error" role="alert">{{ er }}</div>{% endfor %}
+  <input type="hidden" name="id" value="{{ id }}">
+
+  <section class="bloque">
+    <h3>Datos del socio</h3>
+    <div class="campos">
+      <div class="campo doble"><label for="nombre">Apellidos, Nombre / Razón social *</label><input id="nombre" name="nombre" type="text" maxlength="128" value="{{ valores.nombre }}" autocomplete="off"></div>
+      <div class="campo"><label for="nif">NIF</label><input id="nif" name="nif" type="text" maxlength="20" value="{{ valores.nif }}" autocomplete="off"></div>
+      <div class="campo"><label for="orden">Nº de orden</label><input id="orden" name="orden" type="number" min="0" value="{{ valores.orden }}"></div>
+      <div class="campo"><label for="nacionalidad">Nacionalidad</label><input id="nacionalidad" name="nacionalidad" type="text" maxlength="32" value="{{ valores.nacionalidad }}" autocomplete="off"></div>
+      <div class="campo"><label for="fecha_nacimiento">Fecha de nacimiento</label><input id="fecha_nacimiento" name="fecha_nacimiento" type="text" value="{{ valores.fecha_nacimiento }}" placeholder="DDMMAA" autocomplete="off"></div>
+      <div class="campo doble"><label for="domicilio">Domicilio</label><input id="domicilio" name="domicilio" type="text" maxlength="128" value="{{ valores.domicilio }}" autocomplete="off"></div>
+      <div class="campo"><label for="poblacion">Población</label><input id="poblacion" name="poblacion" type="text" maxlength="64" value="{{ valores.poblacion }}" autocomplete="off"></div>
+      <div class="campo"><label for="provincia">Provincia</label><input id="provincia" name="provincia" type="text" maxlength="32" value="{{ valores.provincia }}" autocomplete="off"></div>
+      <div class="campo"><label for="profesion">Profesión</label><input id="profesion" name="profesion" type="text" maxlength="64" value="{{ valores.profesion }}" autocomplete="off"></div>
+      <div class="campo"><label for="estado_civil">Estado civil</label><input id="estado_civil" name="estado_civil" type="text" maxlength="32" value="{{ valores.estado_civil }}" autocomplete="off"></div>
+    </div>
+  </section>
+
+  <section class="bloque">
+    <h3>Movimientos de sus participaciones</h3>
+    <p class="suave">Constitución, compras, ventas, ampliaciones… Las bajas (ventas, reducciones) llevan el número en negativo. «De» y «A» son la numeración de las participaciones, si la tiene. El valor nominal puede tener decimales (6,0101).</p>
+    <div class="campos lineas">
+      {% for fecha, tipo, concepto, participaciones, desde, hasta, nominal in movimientos %}
+      <div class="campo"><label>Fecha</label><input name="mov_fecha" type="text" value="{{ fecha }}" placeholder="DDMMAA" autocomplete="off"></div>
+      <div class="campo"><label>Tipo</label><select name="mov_tipo">{% for t in tipos %}<option {% if t == tipo %}selected{% endif %}>{{ t }}</option>{% endfor %}</select></div>
+      <div class="campo doble"><label>Concepto</label><input name="mov_concepto" type="text" maxlength="128" value="{{ concepto }}" autocomplete="off"></div>
+      <div class="campo"><label>Participaciones</label><input name="mov_participaciones" type="text" inputmode="numeric" value="{{ participaciones }}" autocomplete="off"></div>
+      <div class="campo"><label>De</label><input name="mov_desde" type="text" inputmode="numeric" value="{{ desde }}" autocomplete="off"></div>
+      <div class="campo"><label>A</label><input name="mov_hasta" type="text" inputmode="numeric" value="{{ hasta }}" autocomplete="off"></div>
+      <div class="campo"><label>Valor nominal</label><input name="mov_nominal" type="text" value="{{ nominal }}" autocomplete="off"></div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <div class="botones-formulario">
+    <button type="button" class="boton" data-cerrar-modal>Cerrar</button>
+    <button type="submit" class="boton primario">Guardar</button>
+  </div>
+</form>

@@ -1,0 +1,70 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+<form class="formulario ejercicio" hx-post="{{ base }}/guardar" hx-target="#modal-contenido" hx-swap="innerHTML">
+  <h2 id="modal-titulo">Ejercicio {{ ej.anio }} <span class="estado-iva {{ 'liquidado' if ej.cerrado else 'sin-liquidar' }}">{{ 'Cerrado' if ej.cerrado else 'Abierto' }}</span></h2>
+  <p class="suave">Del {{ ej.fecha_inicio | fmt('fecha') }} al {{ ej.fecha_fin | fmt('fecha') }}</p>
+  {% for er in errores %}<div class="aviso error" role="alert">{{ er }}</div>{% endfor %}
+  <input type="hidden" name="id" value="{{ ej.anio }}">
+
+  <section class="bloque totales-factura">
+    <div><span class="suave">Asientos</span><strong>{{ n_asientos }}</strong></div>
+    <div><span class="suave">{{ 'Resultado' if ej.cerrado else 'Resultado provisional' }} ({{ 'beneficio' if resultado >= 0 else 'pérdida' }})</span><strong>{{ (resultado if resultado >= 0 else -resultado) | fmt('dinero') }}</strong></div>
+    <div><span class="suave">Regularización</span><strong>{{ regul.identificador if regul else '—' }}</strong></div>
+    <div><span class="suave">Asiento de cierre</span><strong>{{ cierre.identificador if cierre else '—' }}</strong></div>
+    <div><span class="suave">Apertura de {{ siguiente.anio if siguiente else 'el siguiente' }}</span><strong>{{ apertura.identificador if apertura else '—' }}</strong></div>
+  </section>
+
+  <section class="bloque">
+    <h3>Lista de comprobación</h3>
+    <table class="lineas comprobacion">
+      <tbody>
+        <tr>
+          <td class="icono">{% if errores_aud %}<span class="mal">✖</span>{% elif avisos %}<span class="ojo">⚠</span>{% else %}<span class="bien-ok">✔</span>{% endif %}</td>
+          <td><strong>Auditoría de integridad</strong>
+            {% if errores_aud %}<div class="mal">{{ errores_aud | length }} error(es): bloquean el cierre. Hay que corregirlos antes.</div>
+              <ul class="lista-errores">{% for h in errores_aud[:8] %}<li>{{ h.referencia }}: {{ h.mensaje }}</li>{% endfor %}{% if errores_aud | length > 8 %}<li>… y {{ errores_aud | length - 8 }} más</li>{% endif %}</ul>
+            {% else %}<div class="suave">Sin errores.</div>{% endif %}
+            <div><a href="/e/{{ ctx.slug }}/{{ ej.anio }}/auditoria">Ver la auditoría completa</a></div>
+            {% if avisos %}<div class="suave">{{ avisos.values() | sum }} aviso(s) que no bloquean: {% for codigo, n in avisos.items() %}{{ codigo.replace('_', ' ') }} ({{ n }}){{ ', ' if not loop.last }}{% endfor %}.</div>{% endif %}
+          </td>
+        </tr>
+        <tr>
+          <td class="icono">{% if iva is string %}<span class="ojo">⚠</span>{% elif iva.get('Sin liquidar', 0) or iva.get('Desactualizado', 0) %}<span class="ojo">⚠</span>{% else %}<span class="bien-ok">✔</span>{% endif %}</td>
+          <td><strong>Liquidaciones del IVA</strong>
+            {% if iva is string %}<div class="suave">{{ iva }}</div>
+            {% else %}<div class="suave">{{ iva.get('Liquidado', 0) }} liquidado(s){% if iva.get('Sin liquidar', 0) %} · <span class="ojo">{{ iva['Sin liquidar'] }} sin liquidar</span>{% endif %}{% if iva.get('Desactualizado', 0) %} · <span class="ojo">{{ iva['Desactualizado'] }} desactualizado(s)</span>{% endif %}{% if iva.get('Sin IVA', 0) %} · {{ iva['Sin IVA'] }} sin IVA{% endif %}.
+              <a href="/e/{{ ctx.slug }}/{{ ej.anio }}/liquidacion-iva">Ver las liquidaciones</a></div>{% endif %}
+          </td>
+        </tr>
+        <tr>
+          <td class="icono">{% if pendientes_amortizar %}<span class="ojo">⚠</span>{% else %}<span class="bien-ok">✔</span>{% endif %}</td>
+          <td><strong>Amortización de los bienes de inversión</strong>
+            <div class="suave">{% if pendientes_amortizar %}{{ pendientes_amortizar }} periodo(s) sin amortizar por {{ importe_amortizar | fmt('dinero') }}. <a href="/e/{{ ctx.slug }}/{{ ej.anio }}/bienes">Ir a los bienes</a>{% else %}Todo amortizado.{% endif %}</div></td>
+        </tr>
+        <tr>
+          <td class="icono"><span class="bien-ok">{{ '✔' if regul or not sin_regularizar else 'ℹ' }}</span></td>
+          <td><strong>Regularización de ingresos y gastos</strong>
+            <div class="suave">{% if regul %}Hecha ({{ regul.identificador }}).{% elif sin_regularizar %}Se hará al cerrar: {{ sin_regularizar }} cuenta(s) de los grupos 6 y 7 se saldan contra Pérdidas y Ganancias.{% else %}No hay ingresos ni gastos que regularizar.{% endif %}</div></td>
+        </tr>
+        <tr>
+          <td class="icono"><span class="bien-ok">ℹ</span></td>
+          <td><strong>Vencimientos pendientes</strong>
+            <div class="suave">{% if n_cartera %}{{ n_cartera }} por {{ importe_cartera | fmt('dinero') }} pendientes: se arrastran a la apertura del ejercicio siguiente. <a href="/e/{{ ctx.slug }}/{{ ej.anio }}/vencimientos">Ver la cartera</a>{% else %}No hay vencimientos pendientes.{% endif %}</div></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  {% if mensaje_cierre %}<div class="aviso info">{{ mensaje_cierre }}</div>{% endif %}
+
+  <div class="botones-formulario">
+    <button type="button" class="boton" data-cerrar-modal>Cerrar la ventana</button>
+    {% if ej.cerrado %}
+      <button type="submit" name="accion" value="reabrir" class="boton peligro" onclick="return confirm('¿Reabrir el ejercicio {{ ej.anio }}? Se deshacen el asiento de cierre, la regularización de ingresos y gastos y la apertura del ejercicio siguiente.')">Reabrir el ejercicio</button>
+    {% else %}
+      <label class="inline"><input type="checkbox" name="abrir_siguiente" checked> Abrir el ejercicio siguiente</label>
+      <button type="submit" name="accion" value="cerrar" class="boton primario" {% if errores_aud %}disabled title="La auditoría tiene errores"{% endif %}
+              onclick="return confirm('¿Cerrar el ejercicio {{ ej.anio }}? Ya no admitirá movimientos hasta que se reabra.')">Cerrar el ejercicio</button>
+    {% endif %}
+  </div>
+  {% if ej.cerrado %}<p class="suave">Reabrir sólo es posible mientras el ejercicio siguiente no tenga más movimientos que su apertura.</p>{% endif %}
+</form>

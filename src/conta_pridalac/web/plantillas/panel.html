@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block titulo %}{{ ctx.empresa.nombre }} {{ ctx.ejercicio.anio }}{% endblock %}
+{% block contenido %}
+<h1>{{ ctx.empresa.nombre }} <span class="suave">· ejercicio {{ ctx.ejercicio.anio }}{% if ctx.ejercicio.cerrado %} (cerrado){% endif %}</span></h1>
+{% if plazos %}
+<section class="alertas-plazos" aria-label="Plazos de los modelos de la AEAT">
+  {% for h in plazos %}<div class="aviso {{ 'error' if h.gravedad == 'ERROR' else 'warning' }}" role="{{ 'alert' if h.gravedad == 'ERROR' else 'status' }}">{{ h.mensaje }}
+    <a href="/e/{{ ctx.slug }}/{{ ctx.ejercicio.anio }}/modelo-{{ h.referencia.split(' ')[0] }}">Abrir el modelo {{ h.referencia.split(' ')[0] }}</a></div>{% endfor %}
+</section>
+{% endif %}
+<p class="suave">Elija una caja en la banda de arriba: sus opciones se abren debajo y se queda abierta la última que usó.</p>
+{% endblock %}

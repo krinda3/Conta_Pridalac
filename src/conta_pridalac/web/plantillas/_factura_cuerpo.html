@@ -1,0 +1,111 @@
+{% set base = "/e/" ~ ctx.slug ~ "/" ~ ctx.ejercicio.anio ~ "/" ~ listado.nombre %}
+{% macro accion(texto, valor, clase="boton") %}<button type="button" class="{{ clase }}" hx-post="{{ base }}/recalcular" hx-vals='{"accion": "{{ valor }}"}' hx-include="closest form" hx-target="#cuerpo" hx-swap="outerHTML" hx-encoding="application/x-www-form-urlencoded">{{ texto }}</button>{% endmacro %}
+<div id="cuerpo" hx-sync="this:replace" hx-post="{{ base }}/recalcular" hx-trigger="change[!event.target.matches('[type=file], [name=quitar_adjunto]')]" hx-include="closest form" hx-target="#cuerpo" hx-swap="outerHTML" hx-encoding="application/x-www-form-urlencoded">
+  <datalist id="dl-cuentas-4">{% for codigo, nombre in cuentas_tercero %}<option value="{{ codigo }}">{{ nombre }}</option>{% endfor %}</datalist>
+  <datalist id="dl-cuentas">{% for codigo, nombre in cuentas %}<option value="{{ codigo }}">{{ nombre }}</option>{% endfor %}</datalist>
+  <input type="hidden" name="tercero_previo" value="{{ e.tercero_previo }}">
+  <input type="hidden" name="plazos_auto" id="plazos_auto" value="{{ '1' if e.plazos_auto else '0' }}">
+
+  <section class="bloque rejilla">
+    <div class="campo"><label for="fecha_contable">Fecha contable <span class="req">*</span></label><input id="fecha_contable" name="fecha_contable" type="text" value="{{ e.fecha_contable }}" placeholder="DDMMAA" autocomplete="off"></div>
+    <div class="campo"><label for="fecha_factura">Fecha de la factura</label><input id="fecha_factura" name="fecha_factura" type="text" value="{{ e.fecha_factura }}" placeholder="DDMMAA" autocomplete="off"></div>
+    <div class="campo"><label for="numero_factura">Nº de factura</label><input id="numero_factura" name="numero_factura" type="text" value="{{ e.numero_factura }}" autocomplete="off"></div>
+    <div class="campo ancho2"><label for="tercero_texto">{{ etiqueta_tercero }}</label>
+      <input type="hidden" name="tercero" value="{{ e.tercero }}">
+      <input id="tercero_texto" name="tercero_texto" type="text" list="dl-terceros" value="{{ e.tercero_texto or '' }}" placeholder="Escriba para buscar por nombre o NIF" autocomplete="off">
+      <datalist id="dl-terceros">{% for t in terceros %}<option value="{{ t.nombre }}{% if t.nif %} · {{ t.nif }}{% endif %}"></option>{% endfor %}</datalist>
+      {% if e.aviso_tercero %}<small class="error-texto" role="alert">{{ e.aviso_tercero }}</small>{% endif %}</div>
+    <div class="campo"><label for="cuenta_tercero">Cuenta del {{ etiqueta_tercero | lower }} <span class="req">*</span></label><input id="cuenta_tercero" name="cuenta_tercero" type="text" list="dl-cuentas-4" value="{{ e.cuenta_tercero }}" autocomplete="off"></div>
+    <div class="campo"><label for="contrapartida">Cuenta de {{ etiqueta_contra | lower }} <span class="req">*</span></label><input id="contrapartida" name="contrapartida" type="text" list="dl-cuentas" value="{{ e.contrapartida }}" autocomplete="off"></div>
+    <div class="campo ancho2"><label for="concepto">Concepto</label><input id="concepto" name="concepto" type="text" value="{{ e.concepto }}" autocomplete="off"></div>
+    <div class="campo ancho2"><label for="notas">Notas</label><input id="notas" name="notas" type="text" value="{{ e.notas }}" autocomplete="off"></div>
+  </section>
+
+  <section class="bloque">
+    <h3>Líneas de IVA</h3>
+    {% if not tipos_iva %}<div class="aviso warning">Esta empresa no tiene tipos de IVA en su catálogo: escriba el % y la cuenta de IVA a mano.</div>{% endif %}
+    <table class="lineas">
+      <thead><tr><th>Tipo</th><th class="num">Base</th><th class="num">% IVA</th><th class="num">Cuota</th><th>Cuenta IVA</th><th class="num">% rec.</th><th class="num">Recargo</th><th title="Deducible">Ded.</th><th title="Bien de inversión">B.I.</th><th></th></tr></thead>
+      <tbody>
+      {% for l in e.ivas %}{% set i = loop.index0 %}
+      <tr>
+        <td>
+          <input type="hidden" name="iva-{{ i }}-tipo_previo" value="{{ l.tipo_previo }}"><input type="hidden" name="iva-{{ i }}-auto" value="{{ l.auto }}" id="iva-{{ i }}-auto">
+          <select name="iva-{{ i }}-tipo" aria-label="Tipo de IVA"><option value="">—</option>{% for t in tipos_iva %}<option value="{{ t.numero }}" {% if l.tipo == t.numero | string %}selected{% endif %}>{{ t.texto }}</option>{% endfor %}</select>
+        </td>
+        <td><input class="num" type="text" name="iva-{{ i }}-base" value="{{ l.base }}" inputmode="decimal" aria-label="Base" id="iva-{{ i }}-base" autocomplete="off"></td>
+        <td><input class="num corto" type="text" name="iva-{{ i }}-pct" value="{{ l.pct }}" inputmode="decimal" aria-label="% IVA" autocomplete="off"></td>
+        <td><input class="num" type="text" name="iva-{{ i }}-cuota" value="{{ l.cuota }}" inputmode="decimal" aria-label="Cuota" autocomplete="off" oninput="document.getElementById('iva-{{ i }}-auto').value='0'"></td>
+        <td><input type="text" name="iva-{{ i }}-cuenta" value="{{ l.cuenta }}" list="dl-cuentas" aria-label="Cuenta de IVA" autocomplete="off"></td>
+        <td><input class="num corto" type="text" name="iva-{{ i }}-pct_rec" value="{{ l.pct_rec }}" inputmode="decimal" aria-label="% recargo" autocomplete="off"></td>
+        <td><input class="num corto" type="text" name="iva-{{ i }}-cuota_rec" value="{{ l.cuota_rec }}" inputmode="decimal" aria-label="Cuota de recargo" autocomplete="off"><input type="hidden" name="iva-{{ i }}-cuenta_rec" value="{{ l.cuenta_rec }}"></td>
+        <td class="centro"><input type="checkbox" name="iva-{{ i }}-deducible" {% if l.deducible %}checked{% endif %} aria-label="Deducible"></td>
+        <td class="centro"><input type="checkbox" name="iva-{{ i }}-bien" {% if l.bien %}checked{% endif %} aria-label="Bien de inversión"></td>
+        <td>{{ accion("✕", "del-iva-" ~ i, "boton plano quitar-linea") }}</td>
+      </tr>
+      {% for mov, fecha, banco, importe, linea in hechos %}
+      <tr class="suave"><td colspan="5">↳ {{ fecha | fmt('fecha') }} · {{ importe | fmt('dinero') }} · {{ banco }}{% if linea %} · «{{ linea }}»{% endif %} — <a href="/e/{{ ctx.slug }}/{{ ctx.ejercicio.anio }}/movimientos?abrir={{ mov }}">ver el movimiento</a></td></tr>
+      {% endfor %}
+      {% endfor %}
+      </tbody>
+    </table>
+    {{ accion("＋ Línea de IVA", "add-iva") }}
+  </section>
+
+  <section class="bloque">
+    <h3>Ajustes y retenciones <span class="suave">(opcional)</span></h3>
+    {% if e.ajustes %}
+    <table class="lineas">
+      <thead><tr><th>Cuenta</th><th class="num">Importe</th><th>Contra</th><th>Afecta al IVA</th><th>Decl. terceros</th><th></th></tr></thead>
+      <tbody>
+      {% for a in e.ajustes %}{% set i = loop.index0 %}
+      <tr>
+        <td><input type="text" name="aj-{{ i }}-cuenta" value="{{ a.cuenta }}" list="dl-cuentas" aria-label="Cuenta del ajuste" autocomplete="off"></td>
+        <td><input class="num" type="text" name="aj-{{ i }}-importe" value="{{ a.importe }}" inputmode="decimal" aria-label="Importe del ajuste" autocomplete="off"></td>
+        <td><select name="aj-{{ i }}-contra" aria-label="Contrapartida del ajuste">{% for v, t in contras %}<option value="{{ v }}" {% if a.contra == v %}selected{% endif %}>{{ t }}</option>{% endfor %}</select></td>
+        <td class="centro"><input type="checkbox" name="aj-{{ i }}-afecta_iva" {% if a.afecta_iva %}checked{% endif %}></td>
+        <td class="centro"><input type="checkbox" name="aj-{{ i }}-decl" {% if a.decl %}checked{% endif %}></td>
+        <td>{{ accion("✕", "del-aj-" ~ i, "boton plano quitar-linea") }}</td>
+      </tr>
+      {% for mov, fecha, banco, importe, linea in hechos %}
+      <tr class="suave"><td colspan="5">↳ {{ fecha | fmt('fecha') }} · {{ importe | fmt('dinero') }} · {{ banco }}{% if linea %} · «{{ linea }}»{% endif %} — <a href="/e/{{ ctx.slug }}/{{ ctx.ejercicio.anio }}/movimientos?abrir={{ mov }}">ver el movimiento</a></td></tr>
+      {% endfor %}
+      {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+    {{ accion("＋ Ajuste o retención", "add-aj") }}
+    <small class="suave">Una retención de IRPF en una factura recibida va con importe negativo (por ejemplo −108,75) y crea su propio vencimiento a favor de Hacienda.</small>
+  </section>
+
+  <section class="bloque totales-factura">
+    <div><span class="suave">Total de la factura</span><strong>{{ e.total | fmt('dinero') if e.total is not none else '—' }}</strong></div>
+    <div><span class="suave">A vencer (total + retenciones)</span><strong>{{ e.a_vencer | fmt('dinero') if e.a_vencer is not none else '—' }}</strong></div>
+    <div><span class="suave">Suma de los vencimientos</span><strong>{{ e.suma_plazos | fmt('dinero') if e.suma_plazos is not none else '—' }}</strong></div>
+    {% if diferencia is not none and diferencia != 0 %}<div class="descuadre"><span>Diferencia</span><strong>{{ diferencia | fmt('dinero') }}</strong></div>{% endif %}
+  </section>
+
+  <section class="bloque">
+    <h3>Vencimientos</h3>
+    <table class="lineas">
+      <thead><tr><th>Fecha</th><th class="num">Importe</th><th>Pago con</th><th>Cuenta</th><th></th></tr></thead>
+      <tbody>
+      {% for p in e.plazos %}{% set i = loop.index0 %}
+      <tr>
+        <td><input type="text" name="pl-{{ i }}-fecha" value="{{ p.fecha }}" placeholder="DDMMAA" aria-label="Fecha del vencimiento" autocomplete="off" oninput="document.getElementById('plazos_auto').value='0'"></td>
+        <td><input class="num" type="text" name="pl-{{ i }}-importe" value="{{ p.importe }}" inputmode="decimal" aria-label="Importe del vencimiento" autocomplete="off" oninput="document.getElementById('plazos_auto').value='0'"></td>
+        <td>{% if p.pagos %}<span class="suave">Pagado</span><input type="hidden" name="pl-{{ i }}-banco" value="{{ p.banco }}">{% else %}<select name="pl-{{ i }}-banco" aria-label="Pago con"><option value="">—</option>{% for b in bancos %}<option value="{{ b.id }}" {% if p.banco == b.id | string %}selected{% endif %}>{{ b.nombre }}</option>{% endfor %}</select>{% endif %}<input type="hidden" name="pl-{{ i }}-forma" value="{{ p.forma }}"></td>
+        <td>{{ p.cuenta or '' }}<input type="hidden" name="pl-{{ i }}-cuenta" value="{{ p.cuenta }}"><input type="hidden" name="pl-{{ i }}-pagos" value="{{ '1' if p.pagos else '0' }}"><input type="hidden" name="pl-{{ i }}-vid" value="{{ p.vid }}"></td>
+        <td>{% set hechos = pagos_de.get(p.vid, []) %}{% if p.pagos %}{% if hechos %}<a class="etiqueta-aviso" href="/e/{{ ctx.slug }}/{{ ctx.ejercicio.anio }}/movimientos?abrir={{ hechos[0][0] }}" title="Tiene cobros o pagos aplicados: abrir el movimiento">con pagos</a>{% else %}<span class="etiqueta-aviso" title="Tiene cobros o pagos aplicados">con pagos</span>{% endif %}{% else %}{{ accion("✕", "del-pl-" ~ i, "boton plano quitar-linea") }}{% endif %}</td>
+      </tr>
+      {% for mov, fecha, banco, importe, linea in hechos %}
+      <tr class="suave"><td colspan="5">↳ {{ fecha | fmt('fecha') }} · {{ importe | fmt('dinero') }} · {{ banco }}{% if linea %} · «{{ linea }}»{% endif %} — <a href="/e/{{ ctx.slug }}/{{ ctx.ejercicio.anio }}/movimientos?abrir={{ mov }}">ver el movimiento</a></td></tr>
+      {% endfor %}
+      {% endfor %}
+      </tbody>
+    </table>
+    <div class="fila-acciones">
+      {{ accion("＋ Vencimiento", "add-pl") }}
+    </div>
+  </section>
+</div>
